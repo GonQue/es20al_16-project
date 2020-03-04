@@ -1,6 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
+
 public class QuestionProposalService {
 
-    public void teacherEvaluatesSubmittedQuestion() {}
+    public ProposedQuestionDto studentSubmitQuestion(ProposedQuestionDto proposedQuestionDto) {
+        return null;
+    }
 }
