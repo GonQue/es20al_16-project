@@ -1,12 +1,6 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
-
-import org.springframework.data.annotation.Transient;
-import org.springframework.format.annotation.DateTimeFormat;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.QuestionClarification;
+package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto;
 
 import java.io.Serializable;
-import java.time.format.DateTimeFormatter;
 
 public class QuestionClarificationDto implements Serializable {
 
