@@ -6,7 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 
 public class ProposedQuestion extends Question {
 
-    private Integer userID;
+    private Integer userKey;
     private String justification;
     private Integer assignedTeacherID; // maybe its needed
 
