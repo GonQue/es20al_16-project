@@ -19,18 +19,19 @@ class StudentSubmitQuestionTest extends Specification {
 
     def setup() {
         questionPropService = new QuestionProposalService()
-        course = new Course(COURSE_ONE)
     }
     // verificar que aluno está inscrito
 
     def 'the user is not a Student'() {
-        given: "a teacher"
+        /*given: "a teacher"
         def user = new User()
         user.setKey(1)
         user.setRole(User.Role.TEACHER)
 
         when:
         questionPropService.studentSubmitQuestion()
+        */
+        expect: false
     }
 
     def 'the topic for the new question exists'() {
@@ -58,6 +59,7 @@ class StudentSubmitQuestionTest extends Specification {
         optionsDto.setContent(OPTION_CONTENT)
         optionsDto.setCorrect(true)
         options.add(optionsDto)
+        expect: false
     }
 
     def 'create a question with no options'() {
