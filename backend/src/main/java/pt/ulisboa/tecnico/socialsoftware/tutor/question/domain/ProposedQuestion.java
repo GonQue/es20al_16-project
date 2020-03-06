@@ -10,7 +10,7 @@ public class ProposedQuestion extends Question {
         APPROVED, REJECTED, AWAITING
     }
 
-    private Integer userID;
+    private Integer userKey;
     private String justification;
     private Evaluation evaluation = Evaluation.AWAITING;
     private Integer assignedTeacherID; // maybe its needed
