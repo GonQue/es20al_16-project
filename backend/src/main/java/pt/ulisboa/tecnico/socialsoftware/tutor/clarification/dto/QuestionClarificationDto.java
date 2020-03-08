@@ -5,13 +5,12 @@ import java.io.Serializable;
 public class QuestionClarificationDto implements Serializable {
 
     /*private Integer id;
-    private Integer key;
     private Integer questionId;
+    private Integer userId;
     private String content;
     private String status;
     private String creationDate = null;
-    private ImageDto image;
-    private Integer numberOfAnswers;
+    private String answerDate = null
     private Integer teacherId;
     private String teacherResponse;
 
@@ -36,6 +35,7 @@ public class QuestionClarificationDto implements Serializable {
             this.image = new ImageDto(clarification.getImage());
         if (clarification.getCreationDate() != null)
             this.creationDate = clarification.getCreationDate().format(formatter);
+            this.creationDate = clarification.getAnswerDate().format(formatter);
 
     }
 
@@ -47,12 +47,12 @@ public class QuestionClarificationDto implements Serializable {
         this.id = id;
     }
 
-    public Integer getKey() {
-        return key;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setKey(Integer key) {
-        this.key = key;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getQuestionId() {
@@ -83,7 +83,15 @@ public class QuestionClarificationDto implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(String answerDate) {
+        this.answerDate = answerDate;
+    }
+
+    public String getAnswerDate() {
+        return answerDate;
+    }
+
+    public void setAnswerDate(String creationDate) {
         this.creationDate = creationDate;
     }
 
