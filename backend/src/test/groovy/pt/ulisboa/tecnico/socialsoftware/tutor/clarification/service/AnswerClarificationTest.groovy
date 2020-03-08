@@ -61,5 +61,4 @@ class AnswerClarificationTest extends Specification{
         // an exception is thrown
         expect: false
     }
-
 }
