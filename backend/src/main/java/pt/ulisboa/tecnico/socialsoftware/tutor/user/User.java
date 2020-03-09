@@ -114,6 +114,10 @@ public class User implements UserDetails, Importable {
         return enrolledCoursesAcronyms;
     }
 
+    public boolean hasEnrolledCourseAcronym(String acronym) {
+        return this.getEnrolledCoursesAcronyms().contains(acronym);
+    }
+
     public void setEnrolledCoursesAcronyms(String enrolledCoursesAcronyms) {
         this.enrolledCoursesAcronyms = enrolledCoursesAcronyms;
     }
