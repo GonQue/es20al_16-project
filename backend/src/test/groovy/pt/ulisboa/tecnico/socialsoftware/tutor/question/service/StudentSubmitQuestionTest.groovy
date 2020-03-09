@@ -1,15 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.TutorApplication
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
 class StudentSubmitQuestionTest extends Specification {
@@ -19,21 +22,40 @@ class StudentSubmitQuestionTest extends Specification {
     static final String TOPIC_NAME = "Topic name"
 
     def questionPropService
-    def user
+    def student
+    def studentDto
     def propQuestionDto
+    def questionDto
 
     def setup() {
         questionPropService = new QuestionProposalService()
+
+        student = new User("name", "username", 1, User.Role.STUDENT)
+        student.setId(1)
+        studentDto = new UserDto(student)
+
+        questionDto = new QuestionDto()
+        questionDto.setId(1)
+        questionDto.setTitle(QUESTION_TITLE)
+        questionDto.setContent(QUESTION_CONTENT)
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        questionDto.setOptions(options)
     }
 
     def 'the user is not a Student'() {
-        given: "a teacher"
-        user = new User()
-        user.setKey(1)
-        user.setRole(User.Role.TEACHER)
+        given: "a user"
+        def user = new User("name", "username2", 2, User.Role.TEACHER)
+        user.setId(2)
+        and: "a userDto"
+        def userDto = new UserDto(user)
         and: "a proposedQuestionDto"
         propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setUserKey(1)
+        propQuestionDto.setQuestion(questionDto)
+        propQuestionDto.setStudent(userDto)
 
         when:
         questionPropService.studentSubmitQuestion(propQuestionDto)
@@ -42,138 +64,88 @@ class StudentSubmitQuestionTest extends Specification {
         thrown(TutorException)
     }
 
-    // Existe um TutorPermissionEvaluator que talvez nao permita isso
-    /*def 'the student is not enrolled in the course'() {
+    def 'the student is not enrolled in the course'() {
         given: "a course execution"
-        courseExecution = new CourseExecution()
-        user.setRole(User.Role.STUDENT)
-        courseExecution.addUser(user)
-        user.addCourse(courseExecution)
+        def courseExecution = new CourseExecution()
+        courseExecution.addUser(student)
+        student.addCourse(courseExecution)
         and: "another student"
-        def anotherUser = new User("name", "username2", 2, User.Role.STUDENT)
+        def anotherStudent = new User("name", "username2", 2, User.Role.STUDENT)
+        anotherStudent.setId(2)
+        def anotherStudentDto = new UserDto(anotherStudent)
+        and: "a proposedQuestionDto"
+        propQuestionDto = new ProposedQuestionDto()
+        propQuestionDto.setId(1)
+        propQuestionDto.setQuestion(questionDto)
+        propQuestionDto.setStudent(anotherStudentDto)
 
         when:
         questionPropService.studentSubmitQuestion(propQuestionDto)
 
         then:
         thrown(TutorException)
-    }*/
+    }
 
-    def 'the topic for the new question exists'() {
+    def 'the topic for the new question exists in the student course'() {
         given: "a topic"
-        def topicDto = new TopicDto()
-        topicDto.setId(1)
-        topicDto.setName(TOPIC_NAME)
-        and: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
+        def topic = new Topic()
+        topic.setId(1)
+        topic.setName(TOPIC_NAME)
+        and: "a course"
+        def course = new Course("course", Course.Type.TECNICO)
+        course.addTopic(topic)
+        and: "a course execution"
+        def courseExecution = new CourseExecution(course, "AC", "1S", Course.Type.TECNICO)
+        def courseSet = new HashSet<CourseExecution>()
+        courseSet.add(courseExecution)
+        student.setCourseExecutions(courseSet)
+        and: "a topicDto"
+        def topicDto = new TopicDto(topic)
         def topics = new ArrayList<TopicDto>()
         topics.add(topicDto)
-        propQuestionDto.setTopics(topics)
+        and: "a proposedQuestionDto"
+        def propQuestionDto = new ProposedQuestionDto()
+        propQuestionDto.setId(1)
+        questionDto.setTopics(topics)
+        propQuestionDto.setQuestion(questionDto)
+        propQuestionDto.setStudent(studentDto)
 
         when:
         def result = questionPropService.studentSubmitQuestion(propQuestionDto)
 
         then:
         result.getKey() == 1
-        result.getTopics().size() == 1
-        result.getTopics().get(0).getId() == 1
-        result.getTopics().get(0).getName() == TOPIC_NAME
+        result.getQuestion().getTopics().size() == 1
+        result.getQuestion().getTopics().get(0).getId() == 1
+        result.getQuestion().getTopics().get(0).getName() == TOPIC_NAME
+        result.getStudent().getId() == student.getId()
+        student.getCourseExecutions().size() == 1
+        student.getCourseExecutions().get(0).getCourse().getTopics().size() == 1
+        student.getCourseExecutions().get(0).getCourse().getTopics().getId() == 1
     }
 
-    def 'create a question with no image and 2 options'() {
-        given: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
-        propQuestionDto.setTitle(QUESTION_TITLE)
-        propQuestionDto.setContent(QUESTION_CONTENT)
-        and: "two options"
-        def optionsDto = new OptionDto()
-        optionsDto.setContent(OPTION_CONTENT)
-        optionsDto.setCorrect(false)
-        def options = new ArrayList<OptionDto>()
-        options.add(optionsDto)
-        optionsDto = new OptionDto()
-        optionsDto.setContent(OPTION_CONTENT)
-        optionsDto.setCorrect(true)
-        options.add(optionsDto)
-        propQuestionDto.setOptions(options)
-        and: "a user"
-        user = new User("nome", "username", 1, User.Role.STUDENT)
-        propQuestionDto.setUserKey(1)
+    def 'the question is not empty'() {
+        given: "a proposed question"
+        propQuestionDto = new ProposedQuestionDto()
+        propQuestionDto.setQuestion(questionDto)
+        propQuestionDto.setId(1)
+        propQuestionDto.setStudent(studentDto)
 
         when:
         def result = questionPropService.studentSubmitQuestion(propQuestionDto)
 
         then:
-        result.getKey() == 1
-        result.getTitle() == QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getImage().getId() == null
-        result.getOptions().size() == 2
-        result.getUserKey() == 1
+        result.getId() == 1
+        result.getQuestion() != null
+        result.getQuestion().getId() == 1
     }
 
-    def 'create a question with no options'() {
-        given: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
-        propQuestionDto.setTitle(QUESTION_TITLE)
-        propQuestionDto.setContent(QUESTION_CONTENT)
-        and: "no options"
-        propQuestionDto.setOptions(null)
-
-        when:
-        questionPropService.studentSubmitQuestion(propQuestionDto)
-
-        then:
-        thrown(TutorException)
-    }
-
-    def 'question title is empty'() {
-        given: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
-        propQuestionDto.setTitle(null)
-
-        when:
-        questionPropService.studentSubmitQuestion(propQuestionDto)
-
-        then:
-        thrown(TutorException)
-    }
-
-    def 'question title is blank'() {
-        given: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
-        propQuestionDto.setTitle("    ")
-
-        when:
-        questionPropService.studentSubmitQuestion(propQuestionDto)
-
-        then:
-        thrown(TutorException)
-    }
-
-    def 'question content is empty'() {
-        given: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
-        propQuestionDto.setContent(null)
-
-        when:
-        questionPropService.studentSubmitQuestion(propQuestionDto)
-
-        then:
-        thrown(TutorException)
-    }
-
-    def 'question content is blank'() {
-        given: "a proposedQuestionDto"
-        def propQuestionDto = new ProposedQuestionDto()
-        propQuestionDto.setKey(1)
-        propQuestionDto.setContent("     ")
+    def 'the student is empty'() {
+        given: "a proposed question"
+        propQuestionDto = new ProposedQuestionDto()
+        propQuestionDto.setQuestion(questionDto)
+        propQuestionDto.setId(1)
+        propQuestionDto.setStudent(null)
 
         when:
         questionPropService.studentSubmitQuestion(propQuestionDto)

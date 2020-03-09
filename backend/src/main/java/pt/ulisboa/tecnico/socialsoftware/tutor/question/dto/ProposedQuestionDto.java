@@ -1,20 +1,57 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
-public class ProposedQuestionDto extends QuestionDto {
-    private Integer userKey;
+public class ProposedQuestionDto {
+
+    private Integer id;
+    private QuestionDto question;
+    private UserDto student;
     private String justification;
-    private Integer assignedTeacherID; // maybe its needed
+    private UserDto teacher;
 
-    public ProposedQuestionDto() {
+    public ProposedQuestionDto() {}
+
+    public ProposedQuestionDto(ProposedQuestion proposedQuestion) {}
+
+    public Integer getId() {
+        return id;
     }
 
-    public ProposedQuestionDto(ProposedQuestion proposedQuestion) {
-        super(proposedQuestion);
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setUserKey(Integer key) { userKey = key; }
+    public QuestionDto getQuestion() {
+        return question;
+    }
 
-    public Integer getUserKey() { return userKey; }
+    public void setQuestion(QuestionDto question) {
+        this.question = question;
+    }
+
+    public UserDto getStudent() {
+        return student;
+    }
+
+    public void setStudent(UserDto student) {
+        this.student = student;
+    }
+
+    public String getJustification() {
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
+    }
+
+    public UserDto getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(UserDto teacher) {
+        this.teacher = teacher;
+    }
 }
