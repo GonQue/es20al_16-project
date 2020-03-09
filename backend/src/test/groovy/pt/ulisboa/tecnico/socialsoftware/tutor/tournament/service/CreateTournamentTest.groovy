@@ -16,7 +16,17 @@ class CreateTournamentTest extends Specification {
         expect: false
     }
 
+    def "create tournament with 0 topics"(){
+        // create a tournament with 0 topics
+        expect: false
+    }
+
     def "tournament creator is not a student"(){
+        //throw exception
+        expect: false
+    }
+
+    def "student is not in course execution of tournament"(){
         //throw exception
         expect: false
     }
