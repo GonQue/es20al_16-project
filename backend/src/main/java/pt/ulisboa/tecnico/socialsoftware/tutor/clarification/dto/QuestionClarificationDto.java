@@ -1,19 +1,22 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto;
 
+import org.springframework.data.annotation.Transient;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification;
+
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 
 public class QuestionClarificationDto implements Serializable {
 
-    /*private Integer id;
+    private Integer id;
     private Integer key;
     private Integer questionId;
     private String content;
     private String status;
     private String creationDate = null;
-    private ImageDto image;
-    private Integer numberOfAnswers;
     private Integer teacherId;
     private String teacherResponse;
+    private String responseDate = null;
 
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -21,22 +24,17 @@ public class QuestionClarificationDto implements Serializable {
     public QuestionClarificationDto() {
     }
 
-
     public QuestionClarificationDto(QuestionClarification clarification) {
         this.id = clarification.getId();
         this.key = clarification.getKey();
         this.questionId = clarification.getQuestionId();
         this.content = clarification.getContent();
-        this.status = clarification.getStatus().name();
-        this.numberOfAnswers = clarification.getNumberOfAnswers();
+        this.status = clarification.getStatus();
         this.teacherId = clarification.getTeacherId();
         this.teacherResponse = clarification.getTeacherResponse();
 
-        if (clarification.getImage() != null)
-            this.image = new ImageDto(clarification.getImage());
         if (clarification.getCreationDate() != null)
             this.creationDate = clarification.getCreationDate().format(formatter);
-
     }
 
     public Integer getId() {
@@ -87,22 +85,6 @@ public class QuestionClarificationDto implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public ImageDto getImage() {
-        return image;
-    }
-
-    public void setImage(ImageDto image) {
-        this.image = image;
-    }
-
-    public Integer getNumberOfAnswers() {
-        return numberOfAnswers;
-    }
-
-    public void setNumberOfAnswers(Integer numberOfAnswers) {
-        this.numberOfAnswers = numberOfAnswers;
-    }
-
     public Integer getTeacherId() {
         return teacherId;
     }
@@ -119,22 +101,17 @@ public class QuestionClarificationDto implements Serializable {
         this.teacherResponse = teacherResponse;
     }
 
-    public DateTimeFormatter getFormatter() {
-        return formatter;
-    }
+    public String getResponseDate() { return responseDate; }
 
-    public void setFormatter(DateTimeFormatter formatter) {
-        this.formatter = formatter;
-    }
+    public void setResponseDate(String responseDate) { this.responseDate = responseDate; }
 
     @Override
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
+                "questionId" + questionId +
                 ", content='" + content + '\'' +
-                ", numberOfAnswers=" + numberOfAnswers +
                 ", status='" + status + '\'' +
-                ", image=" + image +
                 '}';
-    }*/
+    }
 }
