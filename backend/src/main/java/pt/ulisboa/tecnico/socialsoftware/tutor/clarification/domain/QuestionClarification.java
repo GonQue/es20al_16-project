@@ -1,21 +1,39 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
+
+@Entity
+@Table(name = "clarifications")
 public class QuestionClarification {
-    public enum Status {
-        ANSWERED, NOT_ANSWERED
-    }
+    public enum Status { ANSWERED, NOT_ANSWERED }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer key;
-    private Integer questionId;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    private Question question;
     private String content;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "creation_date")
     private LocalDateTime creationDate = null;
-    private Integer teacherId;
-    private String teacherResponse;
-    private LocalDateTime responseDate = null;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarification", orphanRemoval=true)
+    private List<ClarificationResponse> responses = new ArrayList<>();
 
     public QuestionClarification() {
     }
@@ -28,21 +46,9 @@ public class QuestionClarification {
         this.id = id;
     }
 
-    public Integer getKey() {
-        return key;
-    }
+    public Question getQuestion() { return question; }
 
-    public void setKey(Integer key) {
-        this.key = key;
-    }
-
-    public Integer getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(Integer questionId) {
-        this.questionId = questionId;
-    }
+    public void setQuestion(Question question) { this.question = question; }
 
     public String getContent() {
         return content;
@@ -52,11 +58,11 @@ public class QuestionClarification {
         this.content = content;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -68,37 +74,23 @@ public class QuestionClarification {
         this.creationDate = creationDate;
     }
 
-    public Integer getTeacherId() {
-        return teacherId;
-    }
+    public List<ClarificationResponse> getResponses() { return responses; }
 
-    public void setTeacherId(Integer teacherId) {
-        this.teacherId = teacherId;
-    }
+    public void setResponses(List<ClarificationResponse> responses) { this.responses = responses; }
 
-    public String getTeacherResponse() {
-        return teacherResponse;
-    }
-
-    public void setTeacherResponse(String teacherResponse) {
-        this.teacherResponse = teacherResponse;
-    }
-
-    public LocalDateTime getResponseDate() {
-        return responseDate;
-    }
-
-    public void setResponseDate(LocalDateTime responseDate) {
-        this.responseDate = responseDate;
+    public void addResponse(ClarificationResponse clarificationResponse) {
+        responses.add(clarificationResponse);
     }
 
     @Override
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
-                "questionId" + questionId +
-                ", content='" + content + '\'' +
-                ", status='" + status + '\'' +
+                ", question='" + question +
+                ", content='" + content +
+                ", status='" + status +
+                ", creation date='" + creationDate +
+                ", responses='" + responses +
                 '}';
     }
 }
