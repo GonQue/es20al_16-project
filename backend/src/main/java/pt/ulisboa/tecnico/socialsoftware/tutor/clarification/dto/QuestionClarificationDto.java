@@ -24,17 +24,17 @@ public class QuestionClarificationDto implements Serializable {
     public QuestionClarificationDto() {
     }
 
-    public QuestionClarificationDto(QuestionClarification clarification) {
-        this.id = clarification.getId();
-        this.key = clarification.getKey();
-        this.questionId = clarification.getQuestionId();
-        this.content = clarification.getContent();
-        this.status = clarification.getStatus();
-        this.teacherId = clarification.getTeacherId();
-        this.teacherResponse = clarification.getTeacherResponse();
+    public QuestionClarificationDto(QuestionClarification questionClarification) {
+        this.id = questionClarification.getId();
+        this.key = questionClarification.getKey();
+        this.questionId = questionClarification.getQuestionId();
+        this.content = questionClarification.getContent();
+        this.status = questionClarification.getStatus().name();
+        this.teacherId = questionClarification.getTeacherId();
+        this.teacherResponse = questionClarification.getTeacherResponse();
 
-        if (clarification.getCreationDate() != null)
-            this.creationDate = clarification.getCreationDate().format(formatter);
+        if (questionClarification.getCreationDate() != null)
+            this.creationDate = questionClarification.getCreationDate().format(formatter);
     }
 
     public Integer getId() {
