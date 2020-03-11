@@ -114,10 +114,11 @@ public class QuestionClarification {
     public void answerQuestionClarification(QuestionClarificationDto questionClarificationDto) {
         if(getStatus() == Status.ANSWERED || questionClarificationDto.getTeacherId() == null || questionClarificationDto.getTeacherResponse() == null)
             throw new TutorException(USER_NOT_FOUND, questionClarificationDto.getTeacherId());
+
         setStatus(Status.ANSWERED);
         setTeacherId(questionClarificationDto.getTeacherId());
         setTeacherResponse(questionClarificationDto.getTeacherResponse());
-        // response date
+        setResponseDate(LocalDateTime.now());
     }
 
     @Override

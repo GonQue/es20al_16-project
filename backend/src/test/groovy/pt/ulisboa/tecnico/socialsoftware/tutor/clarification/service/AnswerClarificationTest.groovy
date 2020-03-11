@@ -15,7 +15,6 @@ import spock.lang.Specification
 
 @DataJpaTest
 class AnswerClarificationTest extends Specification{
-    public static final String CLARIFICATION_CONTENT = 'question content'
     public static final String TEACHER_RESPONSE = "teacher response"
 
     @Autowired
@@ -60,13 +59,11 @@ class AnswerClarificationTest extends Specification{
         questionClarificationService.answerClarification(questionClarificationDto)
 
         then: "the need is clarified"
-        //questionClarificationRepository.count == 1L
         def result = questionClarificationRepository.findAll().get(0)
         result.getStatus() == QuestionClarification.Status.ANSWERED
-        //questionClarification date
         result.getTeacherId() == questionClarification.getTeacherId()
         result.getTeacherResponse() == TEACHER_RESPONSE
-        //response date
+        result.getResponseDate() != null
     }
 
     def 'the teacher with the id does not exist'() {

@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_NOT_FOUND;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
@@ -33,11 +34,14 @@ public class QuestionClarificationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionClarificationDto answerClarification(QuestionClarificationDto questionClarificationDto) {
         if(questionClarificationDto.getTeacherId() == null) throw new TutorException(USER_NOT_FOUND, -1);
+
         User user = userRepository.findById(questionClarificationDto.getTeacherId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, questionClarificationDto.getTeacherId()));
+
         if(user.getRole() != User.Role.TEACHER) throw new TutorException(USER_NOT_FOUND, questionClarificationDto.getTeacherId());
 
         QuestionClarification questionClarification = questionClarificationRepository.findById(questionClarificationDto.getId()).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionClarificationDto.getId()));
         questionClarification.answerQuestionClarification(questionClarificationDto);
+
         return new QuestionClarificationDto(questionClarification);
     }
 }
