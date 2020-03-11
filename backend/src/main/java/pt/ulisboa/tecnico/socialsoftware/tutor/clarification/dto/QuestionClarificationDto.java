@@ -1,18 +1,25 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto;
 
+import org.springframework.data.annotation.Transient;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification;
+
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class QuestionClarificationDto implements Serializable {
 
-    /*private Integer id;
+    private Integer id;
+    private Integer key;
     private Integer questionId;
     private Integer userId;
+    private Integer answerId;
     private String content;
     private String status;
     private String creationDate = null;
-    private String answerDate = null
     private Integer teacherId;
     private String teacherResponse;
+    private String responseDate = null;
 
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -20,23 +27,19 @@ public class QuestionClarificationDto implements Serializable {
     public QuestionClarificationDto() {
     }
 
-
     public QuestionClarificationDto(QuestionClarification clarification) {
         this.id = clarification.getId();
         this.key = clarification.getKey();
         this.questionId = clarification.getQuestionId();
         this.content = clarification.getContent();
-        this.status = clarification.getStatus().name();
-        this.numberOfAnswers = clarification.getNumberOfAnswers();
+        this.status = clarification.getStatus();
+        this.answerId = clarification.getAnswerId();
         this.teacherId = clarification.getTeacherId();
+        this.userId = clarification.getUserId();
         this.teacherResponse = clarification.getTeacherResponse();
 
-        if (clarification.getImage() != null)
-            this.image = new ImageDto(clarification.getImage());
         if (clarification.getCreationDate() != null)
             this.creationDate = clarification.getCreationDate().format(formatter);
-            this.creationDate = clarification.getAnswerDate().format(formatter);
-
     }
 
     public Integer getId() {
@@ -47,12 +50,12 @@ public class QuestionClarificationDto implements Serializable {
         this.id = id;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getKey() {
+        return key;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setKey(Integer key) {
+        this.key = key;
     }
 
     public Integer getQuestionId() {
@@ -83,32 +86,24 @@ public class QuestionClarificationDto implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(String answerDate) {
-        this.answerDate = answerDate;
-    }
-
-    public String getAnswerDate() {
-        return answerDate;
-    }
-
-    public void setAnswerDate(String creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 
-    public ImageDto getImage() {
-        return image;
+    public Integer getAnswerId() {
+        return answerId;
     }
 
-    public void setImage(ImageDto image) {
-        this.image = image;
+    public void setAnswerId(Integer answerId) {
+        this.answerId = answerId;
     }
 
-    public Integer getNumberOfAnswers() {
-        return numberOfAnswers;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setNumberOfAnswers(Integer numberOfAnswers) {
-        this.numberOfAnswers = numberOfAnswers;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getTeacherId() {
@@ -127,22 +122,17 @@ public class QuestionClarificationDto implements Serializable {
         this.teacherResponse = teacherResponse;
     }
 
-    public DateTimeFormatter getFormatter() {
-        return formatter;
-    }
+    public String getResponseDate() { return responseDate; }
 
-    public void setFormatter(DateTimeFormatter formatter) {
-        this.formatter = formatter;
-    }
+    public void setResponseDate(String responseDate) { this.responseDate = responseDate; }
 
     @Override
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
+                "questionId" + questionId +
                 ", content='" + content + '\'' +
-                ", numberOfAnswers=" + numberOfAnswers +
                 ", status='" + status + '\'' +
-                ", image=" + image +
                 '}';
-    }*/
+    }
 }
