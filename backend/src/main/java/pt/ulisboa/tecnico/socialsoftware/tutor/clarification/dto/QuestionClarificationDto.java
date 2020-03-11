@@ -8,6 +8,9 @@ import java.time.format.DateTimeFormatter;
 
 public class QuestionClarificationDto implements Serializable {
 
+    public enum Status {
+        ANSWERED, NOT_ANSWERED
+    }
     private Integer id;
     private Integer key;
     private Integer questionId;
@@ -26,19 +29,20 @@ public class QuestionClarificationDto implements Serializable {
     public QuestionClarificationDto() {
     }
 
-    public QuestionClarificationDto(QuestionClarification clarification) {
-        this.id = clarification.getId();
-        this.key = clarification.getKey();
-        this.questionId = clarification.getQuestionId();
-        this.content = clarification.getContent();
-        this.status = clarification.getStatus();
-        this.answerId = clarification.getAnswerId();
-        this.teacherId = clarification.getTeacherId();
-        this.userId = clarification.getUserId();
-        this.teacherResponse = clarification.getTeacherResponse();
+    public QuestionClarificationDto(QuestionClarification questionClarification) {
+        this.id = questionClarification.getId();
+        this.key = questionClarification.getKey();
+        this.questionId = questionClarification.getQuestionId();
+        this.content = questionClarification.getContent();
+        this.status = questionClarification.getStatus().name();
+        this.answerId = questionClarification.getAnswerId();
+        this.teacherId = questionClarification.getTeacherId();
+        this.userId = questionClarification.getUserId();
+        this.teacherResponse = questionClarification.getTeacherResponse();
 
-        if (clarification.getCreationDate() != null)
-            this.creationDate = clarification.getCreationDate().format(formatter);
+        if (questionClarification.getCreationDate() != null)
+            this.creationDate = questionClarification.getCreationDate().format(formatter);
+
     }
 
     public Integer getId() {
@@ -89,6 +93,7 @@ public class QuestionClarificationDto implements Serializable {
         this.creationDate = creationDate;
     }
 
+
     public Integer getAnswerId() {
         return answerId;
     }
@@ -134,4 +139,6 @@ public class QuestionClarificationDto implements Serializable {
                 ", status='" + status + '\'' +
                 '}';
     }
+
 }
+

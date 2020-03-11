@@ -1,22 +1,41 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
+
+@Entity
+@Table(name = "clarifications")
 public class QuestionClarification {
     public enum Status {
         ANSWERED, NOT_ANSWERED
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique=true, nullable = false)
     private Integer key;
+
     private Integer questionId;
-    private Integer answerId;
     private String content;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "creation_date")
     private LocalDateTime creationDate = null;
     private Integer teacherId;
-    private Integer userId;
     private String teacherResponse;
+    private Integer userId;
+    private Integer answerId;
+
+    @Column(name = "responseDate_date")
     private LocalDateTime responseDate = null;
 
     public QuestionClarification() {
@@ -54,11 +73,12 @@ public class QuestionClarification {
         this.content = content;
     }
 
-    public String getStatus() {
+
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -69,6 +89,7 @@ public class QuestionClarification {
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
+
 
     public Integer getAnswerId() {
         return answerId;
@@ -110,6 +131,16 @@ public class QuestionClarification {
         this.responseDate = responseDate;
     }
 
+    public void answerQuestionClarification(QuestionClarificationDto questionClarificationDto) {
+        if(getStatus() == Status.ANSWERED || questionClarificationDto.getTeacherId() == null || questionClarificationDto.getTeacherResponse() == null)
+            throw new TutorException(USER_NOT_FOUND, questionClarificationDto.getTeacherId());
+        setStatus(Status.ANSWERED);
+        setTeacherId(questionClarificationDto.getTeacherId());
+        setTeacherResponse(questionClarificationDto.getTeacherResponse());
+        // response date
+    }
+
+
     @Override
     public String toString() {
         return "QuestionDto{" +
@@ -119,4 +150,6 @@ public class QuestionClarification {
                 ", status='" + status + '\'' +
                 '}';
     }
+
 }
+
