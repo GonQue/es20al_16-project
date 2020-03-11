@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Transient;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class QuestionClarificationDto implements Serializable {
