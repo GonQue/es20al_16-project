@@ -56,6 +56,7 @@ public enum ErrorMessage {
     RESPONSE_CONTENT("The response should have a valid content"),
     USER_IS_NOT_A_TEACHER("The user is not a teacher"),
     USER_ID_IS_NULL("The user id is null"),
+    CLARIFICATION_ID_IS_NULL("The clarification id is null"),
 
     ACCESS_DENIED("You do not have permission to view this resource");
 

@@ -1,16 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
 
 @Entity
 @Table(name = "clarifications")
@@ -32,7 +27,7 @@ public class QuestionClarification {
     @Column(name = "creation_date")
     private LocalDateTime creationDate = null;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarification", orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarificationQuestion", orphanRemoval=true)
     private List<ClarificationResponse> responses = new ArrayList<>();
 
     public QuestionClarification() {
@@ -76,8 +71,6 @@ public class QuestionClarification {
 
     public List<ClarificationResponse> getResponses() { return responses; }
 
-    public void setResponses(List<ClarificationResponse> responses) { this.responses = responses; }
-
     public void addResponse(ClarificationResponse clarificationResponse) {
         responses.add(clarificationResponse);
     }
@@ -86,11 +79,6 @@ public class QuestionClarification {
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
-                ", question='" + question +
-                ", content='" + content +
-                ", status='" + status +
-                ", creation date='" + creationDate +
-                ", responses='" + responses +
                 '}';
     }
 }

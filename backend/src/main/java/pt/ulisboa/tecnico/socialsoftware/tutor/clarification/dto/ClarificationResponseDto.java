@@ -50,8 +50,8 @@ public class ClarificationResponseDto implements Serializable {
     public String toString() {
         return "ClarificationResponse{" +
                 "id=" + id +
-                ", teacher response='" + teacherResponse +
-                ", response date='" + responseDate +
+                ", response=" + teacherResponse +
+                ", date=" + responseDate +
                 '}';
     }
 }

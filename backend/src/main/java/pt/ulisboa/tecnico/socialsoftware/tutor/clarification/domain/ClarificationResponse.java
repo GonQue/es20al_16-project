@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "clarification_responses")
 public class ClarificationResponse {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "clarification_id")
-    private QuestionClarification clarification;
+    private QuestionClarification clarificationQuestion;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "teacher_id")
     private User teacher;
+
     private String teacherResponse;
 
     @Column(name = "responseDate_date")
@@ -30,7 +30,7 @@ public class ClarificationResponse {
     }
 
     public ClarificationResponse(QuestionClarification c, User t, ClarificationResponseDto questionClarificationDto) {
-        clarification = c;
+        clarificationQuestion = c;
         teacher = t;
         teacherResponse = questionClarificationDto.getTeacherResponse();
         responseDate = LocalDateTime.now();
@@ -44,9 +44,9 @@ public class ClarificationResponse {
         this.id = id;
     }
 
-    public QuestionClarification getClarification() { return clarification; }
+    public QuestionClarification getClarificationQuestion() { return clarificationQuestion; }
 
-    public void setClarification(QuestionClarification clarification) { this.clarification = clarification; }
+    public void setClarificationQuestion(QuestionClarification clarificationQuestion) { this.clarificationQuestion = clarificationQuestion; }
 
     public User getTeacher() { return teacher; }
 
@@ -72,10 +72,10 @@ public class ClarificationResponse {
     public String toString() {
         return "ClarificationResponse{" +
                 "id=" + id +
-                ", clarification='" + clarification +
-                ", teacher='" + teacher +
-                ", teacher response='" + teacherResponse +
-                ", response date='" + responseDate +
+                ", clarification id=" + clarificationQuestion.getId() +
+                ", teacher=" + teacher.getUsername() +
+                ", response=" + teacherResponse +
+                ", date=" + responseDate +
                 '}';
     }
 }
