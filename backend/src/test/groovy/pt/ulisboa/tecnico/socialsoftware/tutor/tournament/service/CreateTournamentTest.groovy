@@ -1,15 +1,27 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
@@ -18,16 +30,40 @@ import java.time.format.DateTimeFormatter
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_DATA
 
+@DataJpaTest
 class CreateTournamentTest extends Specification {
 
     public static final String COURSE_NAME = "Software Architecture"
     public static final String TOURNAMENT_NAME = "Tournament name"
+    public static final String QUIZ_NAME = "Quiz name"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
-    public static final String TOPIC_NAME= "topic name"
+    public static final String TOPIC_NAME_1= "topic name 1"
+    public static final String TOPIC_NAME_2= "topic name 2"
     public static final int NUMBER_OF_QUESTIONS = 5
-    
-    def tournamentService
+
+    @Autowired
+    TournamentService tournamentService
+
+    @Autowired
+    TournamentRepository tournamentRepository
+
+    @Autowired
+    CourseRepository courseRepository
+
+    @Autowired
+    CourseExecutionRepository courseExecutionRepository
+
+    @Autowired
+    UserRepository userRepository
+
+    @Autowired
+    QuizRepository quizRepository
+
+    @Autowired
+    TopicRepository topicRepository
+
+    //def tournamentService
     def tournamentDto
     def formatter
     def course
@@ -41,27 +77,26 @@ class CreateTournamentTest extends Specification {
     def topicDtoTwo
     def topicTwo
     def quizDto
+    def quiz
 
 
     def setup(){
-        tournamentService = new TournamentService()
+        //tournamentService = new TournamentService()
 
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
         tournamentDto = new TournamentDto()
-        tournamentDto.setId(1)
+        tournamentDto.setKey(1)
 
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
+        courseRepository.save(course)
+
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
-        courseExecution.setId(1)
+        courseExecutionRepository.save(courseExecution)
 
-        user = new User()
-        user.setId(1)
-        user.setKey(1)
-        user.setRole(User.Role.STUDENT)
+        user = new User('name', "username", 1, User.Role.STUDENT)
         user.addCourse(courseExecution)
-        courseExecution.addUser(user)
-
+        userRepository.save(user)
 
         userDto = new UserDto(user)
         tournamentDto.setCreator(userDto)
@@ -72,18 +107,27 @@ class CreateTournamentTest extends Specification {
         tournamentDto.setEndDate(endDate.format(formatter))
         tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
 
-        quizDto = new QuizDto()
-        quizDto.setKey(1)
+        quiz = new Quiz()
+        quiz.setKey(1)
+        quiz.setType(Quiz.QuizType.PROPOSED)
+        quiz.setAvailableDate(LocalDateTime.now().minusDays(1))
+        quiz.setCourseExecution(courseExecution)
+        quiz.setTitle(QUIZ_NAME)
+        quizRepository.save(quiz)
+
+        quizDto = new QuizDto(quiz, false)
         tournamentDto.setQuiz(quizDto)
 
-        //TOPICS
-        topicDtoOne = new TopicDto()
-        topicDtoOne.setName(TOPIC_NAME)
-        topicDtoTwo = new TopicDto()
-        topicDtoTwo.setName(TOPIC_NAME)
-        //topicOne = new Topic(course, topicDtoOne)
-        //topicTwo = new Topic(course, topicDtoTwo)
+        //Topics
+        topicOne = new Topic()
+        topicOne.setName(TOPIC_NAME_1)
+        topicTwo = new Topic()
+        topicTwo.setName(TOPIC_NAME_2)
+        topicRepository.save(topicOne)
+        topicRepository.save(topicTwo)
 
+        topicDtoOne = new TopicDto(topicOne)
+        topicDtoTwo = new TopicDto(topicTwo)
         tournamentDto.setTopics(new ArrayList<>(Arrays.asList(topicDtoOne, topicDtoTwo)))
     }
 
@@ -96,18 +140,15 @@ class CreateTournamentTest extends Specification {
         def result = tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        courseExecution.getId() != null
         result.getName() == TOURNAMENT_NAME
-        result.getId() == 1
         result.getKey() == 1
-        result.getUser.getKey() == 1
-        result.getStartDate().format(formatter) == startDate.format(formatter)
-        result.getEndDate().format(formatter) == endDate.format(formatter)
+        result.getStartDate() == startDate.format(formatter)
+        result.getEndDate() == endDate.format(formatter)
         result.getTopics().size() == 2
-        result.getTopics().contains(topicOne)
-        result.getTopics().contains(topicTwo)
+        result.getTopics().contains(topicDtoOne)
+        result.getTopics().contains(topicDtoTwo)
         result.getNumberOfQuestions() == NUMBER_OF_QUESTIONS
-        result.getQuiz().getKey()== 1
+        result.getQuiz().getKey() == 1
         
     }
 
@@ -139,9 +180,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
-        //def exception = thrown(TutorException)
-        //exception.getErrorMessage() == QUESTION_MISSING_DATA
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_CREATOR_NOT_STUDENT
     }
 
     def "student is not in course execution of tournament"(){
@@ -149,9 +189,8 @@ class CreateTournamentTest extends Specification {
         given:"a tournament"
         tournamentDto.setName(TOURNAMENT_NAME)
         and:"a student not in the course execution"
-        def user2 = new User()
-        user2.setId(2)
-        user2.setRole(User.Role.STUDENT)
+        def user2 = new User('name2', "username2", 2, User.Role.STUDENT)
+        userRepository.save(user2)
         def userDto2 = new UserDto(user2)
         tournamentDto.setCreator(userDto2)
 
@@ -159,10 +198,11 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
-
-
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_CREATOR_NOT_ENROLLED
     }
+
+
 
     def "End time before start time"(){
         given:"a tournament"
@@ -175,7 +215,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_TIME_INVALID
     }
 
     def "create tournament with 0 questions"(){
@@ -187,7 +228,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID
     }
 
     
@@ -197,7 +239,8 @@ class CreateTournamentTest extends Specification {
         when:
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NAME_INVALID
     } 
     
     def "tournament name is blank"(){
@@ -206,7 +249,18 @@ class CreateTournamentTest extends Specification {
         when:
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NAME_INVALID
+    }
+
+    @TestConfiguration
+    static class TournamentServiceImplTestContextConfiguration{
+
+        @Bean
+        TournamentService tournamentService(){
+            return new TournamentService()
+        }
+
     }
 
 }

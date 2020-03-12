@@ -41,6 +41,12 @@ public enum ErrorMessage {
     QUIZ_NO_LONGER_AVAILABLE("This quiz is no longer available"),
     QUIZ_NOT_YET_AVAILABLE("This quiz is not yet available"),
 
+    TOURNAMENT_CREATOR_NOT_STUDENT("The creator of the tournament is not a student"),
+    TOURNAMENT_CREATOR_NOT_ENROLLED("The creator of the tournament is not enrolled in the course execution of the tournament"),
+    TOURNAMENT_TIME_INVALID("The start and end time for the tournament are invalid"),
+    TOURNAMENT_NAME_INVALID("Tournament name is null or empty"),
+    TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID("Number of questions for the tournament is invalid"),
+
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"), // TODO check me
     QUESTION_MULTIPLE_CORRECT_OPTIONS("Questions can only have 1 correct option"),
