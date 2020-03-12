@@ -1,9 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto;
 
 import java.io.Serializable;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
@@ -19,11 +21,24 @@ public class TournamentDto implements Serializable {
     private int numberOfQuestions;
     private List<TopicDto> topics = new ArrayList<>();
     private QuizDto quiz;
+    private String status;
+
+    @Transient
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 
     public TournamentDto(){}
 
-    public TournamentDto(Tournament tournament){
+    public TournamentDto(QuizDto quizDto,List<TopicDto> topics,Tournament tournament){
+        this.id = tournament.getId();
+        this.key = tournament.getKey();
+        this.name = tournament.getName();
+        this.startDate = tournament.getStartDate().format(formatter);
+        this.endDate = tournament.getEndDate().format(formatter);
+        this.numberOfQuestions = tournament.getNumberOfQuestions();
+        this.status = tournament.getStatus().name();
+        this.quiz = quizDto;
+        this.topics = topics;
 
 
     }
@@ -83,4 +98,8 @@ public class TournamentDto implements Serializable {
     public QuizDto getQuiz() { return quiz; }
 
     public void setQuiz(QuizDto quiz) { this.quiz = quiz; }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
 }
