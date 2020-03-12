@@ -8,20 +8,18 @@ public class ProposedQuestionDto {
     private Integer id;
     private QuestionDto question;
     private UserDto student;
-    private String justification;
-    private UserDto teacher;
 
     public ProposedQuestionDto() {}
 
-    public ProposedQuestionDto(ProposedQuestion proposedQuestion) {}
-
-    public Integer getId() {
-        return id;
+    public ProposedQuestionDto(ProposedQuestion proposedQuestion) {
+        this.id = proposedQuestion.getId();
+        this.question = new QuestionDto(proposedQuestion.getQuestion());
+        this.student = new UserDto(proposedQuestion.getStudent());
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public Integer getId() { return id; }
+
+    public void setId(Integer id) { this.id = id; }
 
     public QuestionDto getQuestion() {
         return question;
@@ -37,21 +35,5 @@ public class ProposedQuestionDto {
 
     public void setStudent(UserDto student) {
         this.student = student;
-    }
-
-    public String getJustification() {
-        return justification;
-    }
-
-    public void setJustification(String justification) {
-        this.justification = justification;
-    }
-
-    public UserDto getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(UserDto teacher) {
-        this.teacher = teacher;
     }
 }
