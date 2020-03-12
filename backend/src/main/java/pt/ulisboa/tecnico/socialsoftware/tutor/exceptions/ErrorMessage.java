@@ -52,6 +52,11 @@ public enum ErrorMessage {
     AUTHENTICATION_ERROR("Authentication Error"),
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
+    QUESTION_CLARIFICATION_NOT_FOUND("Question clarification not found with id %d"),
+    RESPONSE_CONTENT("The response should have a valid content"),
+    USER_IS_NOT_A_TEACHER("The user is not a teacher"),
+    USER_ID_IS_NULL("The user id is null"),
+    CLARIFICATION_ID_IS_NULL("The clarification id is null"),
 
     ACCESS_DENIED("You do not have permission to view this resource");
 
