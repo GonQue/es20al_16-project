@@ -8,20 +8,10 @@ import java.time.format.DateTimeFormatter;
 
 public class QuestionClarificationDto implements Serializable {
 
-    public enum Status {
-        ANSWERED, NOT_ANSWERED
-    }
     private Integer id;
-    private Integer key;
-    private Integer questionId;
-    private Integer userId;
-    private Integer answerId;
     private String content;
     private String status;
     private String creationDate = null;
-    private Integer teacherId;
-    private String teacherResponse;
-    private String responseDate = null;
 
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -31,18 +21,11 @@ public class QuestionClarificationDto implements Serializable {
 
     public QuestionClarificationDto(QuestionClarification questionClarification) {
         this.id = questionClarification.getId();
-        this.key = questionClarification.getKey();
-        this.questionId = questionClarification.getQuestionId();
         this.content = questionClarification.getContent();
-        this.status = questionClarification.getStatus().name();
-        this.answerId = questionClarification.getAnswerId();
-        this.teacherId = questionClarification.getTeacherId();
-        this.userId = questionClarification.getUserId();
-        this.teacherResponse = questionClarification.getTeacherResponse();
+        this.status = QuestionClarification.Status.NOT_ANSWERED.name();
 
         if (questionClarification.getCreationDate() != null)
             this.creationDate = questionClarification.getCreationDate().format(formatter);
-
     }
 
     public Integer getId() {
@@ -51,22 +34,6 @@ public class QuestionClarificationDto implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getKey() {
-        return key;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
-    }
-
-    public Integer getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(Integer questionId) {
-        this.questionId = questionId;
     }
 
     public String getContent() {
@@ -93,52 +60,13 @@ public class QuestionClarificationDto implements Serializable {
         this.creationDate = creationDate;
     }
 
-
-    public Integer getAnswerId() {
-        return answerId;
-    }
-
-    public void setAnswerId(Integer answerId) {
-        this.answerId = answerId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getTeacherId() {
-        return teacherId;
-    }
-
-    public void setTeacherId(Integer teacherId) {
-        this.teacherId = teacherId;
-    }
-
-    public String getTeacherResponse() {
-        return teacherResponse;
-    }
-
-    public void setTeacherResponse(String teacherResponse) {
-        this.teacherResponse = teacherResponse;
-    }
-
-    public String getResponseDate() { return responseDate; }
-
-    public void setResponseDate(String responseDate) { this.responseDate = responseDate; }
-
     @Override
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
-                "questionId" + questionId +
-                ", content='" + content + '\'' +
-                ", status='" + status + '\'' +
+                ", content='" + content +
+                ", status='" + status +
+                ", creation date='" + creationDate +
                 '}';
     }
-
 }
-

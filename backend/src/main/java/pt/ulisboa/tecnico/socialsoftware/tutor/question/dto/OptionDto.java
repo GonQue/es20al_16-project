@@ -1,11 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class OptionDto implements Serializable {
@@ -13,7 +10,6 @@ public class OptionDto implements Serializable {
     private Integer sequence;
     private boolean correct;
     private String content;
-    private Set<QuestionAnswer> questionAnswers = new HashSet<>();
 
     public OptionDto() {
     }
@@ -55,14 +51,6 @@ public class OptionDto implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Set<QuestionAnswer> getQuestionAnswers() {
-        return questionAnswers;
-    }
-
-    public void addQuestionAnswer(QuestionAnswer questionAnswer) {
-        questionAnswers.add(questionAnswer);
     }
 
     @Override

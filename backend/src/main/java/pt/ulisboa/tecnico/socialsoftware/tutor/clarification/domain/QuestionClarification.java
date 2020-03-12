@@ -1,28 +1,37 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "clarifications")
 public class QuestionClarification {
-    public enum Status {
-        ANSWERED, NOT_ANSWERED
-    }
+    public enum Status { ANSWERED, NOT_ANSWERED }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique=true, nullable = false)
-    private Integer key;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    private Question question;
 
-    private Integer questionId;
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User student;
+
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "answer_id")
+    private QuestionAnswer answer;
+
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -30,15 +39,20 @@ public class QuestionClarification {
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate = null;
-    private Integer teacherId;
-    private String teacherResponse;
-    private Integer userId;
-    private Integer answerId;
 
-    @Column(name = "responseDate_date")
-    private LocalDateTime responseDate = null;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarificationQuestion", orphanRemoval=true)
+    private List<ClarificationResponse> responses = new ArrayList<>();
 
     public QuestionClarification() {
+    }
+
+    public QuestionClarification(Question q, User s, QuestionAnswer a, QuestionClarificationDto questionClarificationDto) {
+        question = q;
+        student = s;
+        answer = a;
+        //status
+        content = questionClarificationDto.getContent();
+        creationDate = LocalDateTime.now();
     }
 
     public Integer getId() {
@@ -49,21 +63,17 @@ public class QuestionClarification {
         this.id = id;
     }
 
-    public Integer getKey() {
-        return key;
-    }
+    public Question getQuestion() { return question; }
 
-    public void setKey(Integer key) {
-        this.key = key;
-    }
+    public void setQuestion(Question question) { this.question = question; }
 
-    public Integer getQuestionId() {
-        return questionId;
-    }
+    public User getStudent() { return student; }
 
-    public void setQuestionId(Integer questionId) {
-        this.questionId = questionId;
-    }
+    public void setStudent(User student) { this.student = student; }
+
+    public QuestionAnswer getAnswer() { return answer; }
+
+    public void setAnswer(QuestionAnswer answer) { this.answer = answer; }
 
     public String getContent() {
         return content;
@@ -72,7 +82,6 @@ public class QuestionClarification {
     public void setContent(String content) {
         this.content = content;
     }
-
 
     public Status getStatus() {
         return status;
@@ -90,66 +99,16 @@ public class QuestionClarification {
         this.creationDate = creationDate;
     }
 
+    public List<ClarificationResponse> getResponses() { return responses; }
 
-    public Integer getAnswerId() {
-        return answerId;
+    public void addResponse(ClarificationResponse clarificationResponse) {
+        responses.add(clarificationResponse);
     }
-
-    public void setAnswerId(Integer answerId) {
-        this.answerId = answerId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getTeacherId() {
-        return teacherId;
-    }
-
-    public void setTeacherId(Integer teacherId) {
-        this.teacherId = teacherId;
-    }
-
-    public String getTeacherResponse() {
-        return teacherResponse;
-    }
-
-    public void setTeacherResponse(String teacherResponse) {
-        this.teacherResponse = teacherResponse;
-    }
-
-    public LocalDateTime getResponseDate() {
-        return responseDate;
-    }
-
-    public void setResponseDate(LocalDateTime responseDate) {
-        this.responseDate = responseDate;
-    }
-
-    public void answerQuestionClarification(QuestionClarificationDto questionClarificationDto) {
-        if(getStatus() == Status.ANSWERED || questionClarificationDto.getTeacherId() == null || questionClarificationDto.getTeacherResponse() == null)
-            throw new TutorException(USER_NOT_FOUND, questionClarificationDto.getTeacherId());
-        setStatus(Status.ANSWERED);
-        setTeacherId(questionClarificationDto.getTeacherId());
-        setTeacherResponse(questionClarificationDto.getTeacherResponse());
-        // response date
-    }
-
 
     @Override
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
-                "questionId" + questionId +
-                ", content='" + content + '\'' +
-                ", status='" + status + '\'' +
                 '}';
     }
-
 }
-

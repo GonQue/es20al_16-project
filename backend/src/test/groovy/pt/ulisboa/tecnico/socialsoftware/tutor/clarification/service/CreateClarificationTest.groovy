@@ -1,205 +1,250 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.service
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuestionAnswerDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.QuestionClarificationService
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.QuestionClarificationRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
+@DataJpaTest
 class CreateClarificationTest extends Specification{
-    public static final String CONTENT_ONE = "Conteudo do pedido"
-    public static final String QUESTION_TITLE = "question title"
-    public static final String QUESTION_CONTENT = "question content"
-    public static final String OPTION_CONTENT = "optionId content"
+    public static final String CONTENT = "CONTENT"
+    public static final Integer UNEXISTENT_ID = 99999999
+    public static final Integer EXISTENT_ID = 1
 
-    def questionClarificationService
-    def questionDto
-    def optionDto
-    def options
-    def questionAnswer
+    @Autowired
+    ClarificationService clarificationService
+
+    @Autowired
+    UserRepository userRepository
+
+    @Autowired
+    QuestionRepository questionRepository;
+
+    @Autowired
+    QuestionAnswerRepository answerRepository;
+
+    @Autowired
+    QuestionClarificationRepository questionClarificationRepository;
+
+    @Autowired
+    OptionRepository optionRepository;
+
+    def questionClarification
+    def question
+    def student
+    def answer
     def quizAnswer
-    def user
+    def option
+
     def setup() {
-         questionClarificationService = new QuestionClarificationService()
+        student = new User()
+        student.setKey(1)
+        student.setRole(User.Role.STUDENT)
 
-        //create a questionDto
-        questionDto = new QuestionDto()
-        questionDto.setKey(1)
-        questionDto.setTitle(QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        question = new Question()
+        question.setKey(1)
+        question.setContent(CONTENT)
 
-        //create an optionDto
-        optionDto = new OptionDto()
-        optionDto.setContent(OPTION_CONTENT)
-        optionDto.setCorrect(true)
-        options = new ArrayList<OptionDto>()
-        options.add(optionDto)
-        questionDto.setOptions(options)
+        answer = new QuestionAnswer()
 
-        //create a questionAnswer
-        questionAnswer = new QuestionAnswer()
-        questionAnswer.setId(1)
-        optionDto.addQuestionAnswer(questionAnswer)
-
-        //create a QuizAnswer
         quizAnswer = new QuizAnswer()
-        quizAnswer.setId(1)
-        questionAnswer.setQuizAnswer(quizAnswer)
 
-        //create a Student
-        user = new User()
-        user.setId(1)
-        user.setRole(User.Role.STUDENT)
-        quizAnswer.setUser(user)
+        option = new Option()
+
+        option.setQuestion(question)
+        answer.setOption(option)
+        quizAnswer.addQuestionAnswer(answer)
+        student.addQuizAnswer(quizAnswer)
+
+        questionClarification = new QuestionClarification()
+        questionClarification.setQuestion(question)
+        questionClarification.setStudent(student)
+        questionClarification.setAnswer(answer)
+        questionClarification.setContent(CONTENT)
+
+        optionRepository.save(option)
+        questionRepository.save(question)
+        userRepository.save(student)
+        answerRepository.save(answer)
     }
 
-    def 'create a clarification request'(){
-        given: "a QuestionClarificationDto"
-        def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        def creationDate = LocalDateTime.now()
+    def 'create a clarification request'() {
+        given: "create questionClarificationDto"
         def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setId(1)
-        questionClarificationDto.setUserId(1)
-        questionClarificationDto.setQuestionId(1)
-        questionClarificationDto.setContent(CONTENT_ONE)
-        questionClarificationDto.setStatus("NOT_ANSWERED")
-        questionClarificationDto.setCreationDate(creationDate.format(formatter))
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
+
         when:
-        def result = questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
-        then:
-        result.getId() == 1
-        result.getUserId() == 1
-        result.getContent() == CONTENT_ONE
-        result.getQuestionId() == 1
-        result.getStatus() == "NOT_ANSWERED"
-        result.getCreationDate() == creationDate.format(formatter)
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), questionClarification.getStudent().getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
+
+        then: "the student is clarified"
+        questionClarificationRepository.count() == 1L
+        def result = questionClarificationRepository.findAll().get(0)
+        result.getContent() == CONTENT
+        result.getCreationDate() != null
     }
 
-    def 'create a clarification request with non-existing question'(){
-        given: "a QuestionClarificationDto"
-        def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        def creationDate = LocalDateTime.now()
+    def 'create a clarification request with non-existing question'() {
+        given: "create questionClarificationDto"
         def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setId(1)
-        questionClarificationDto.setUserId(1)
-        questionClarificationDto.setContent(CONTENT_ONE)
-        questionClarificationDto.setStatus("NOT_ANSWERED")
-        questionClarificationDto.setCreationDate(creationDate.format(formatter))
-        and: "no question"
-        questionClarificationDto.setQuestionId(null)
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
 
         when:
-        questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
-
-        then:
-        thrown(TutorException)
-    }
-
-    def 'create a clarification request for a question not answered by user'(){
-        given: "a QuestionClarificationDto"
-        def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        def creationDate = LocalDateTime.now()
-        def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setId(1)
-        questionClarificationDto.setUserId(1)
-        questionClarificationDto.setContent(CONTENT_ONE)
-        questionClarificationDto.setStatus("NOT_ANSWERED")
-        questionClarificationDto.setCreationDate(creationDate.format(formatter))
-
-        and: "a QuestionDto and answer for a different user"
-        questionDto = new QuestionDto()
-        questionDto.setKey(2)
-        questionDto.setTitle(QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.AVAILABLE.name())
-        optionDto = new OptionDto()
-        optionDto.setContent(OPTION_CONTENT)
-        optionDto.setCorrect(true)
-        options = new ArrayList<OptionDto>()
-        options.add(optionDto)
-        questionDto.setOptions(options)
-        questionAnswer = new QuestionAnswer()
-        questionAnswer.setId(2)
-        optionDto.addQuestionAnswer(questionAnswer)
-        quizAnswer = new QuizAnswer()
-        quizAnswer.setId(2)
-        questionAnswer.setQuizAnswer(quizAnswer)
-        user = new User()
-        user.setId(2)
-        user.setRole(User.Role.STUDENT)
-        quizAnswer.setUser(user)
-        questionClarificationDto.setQuestionId(2)
-
-        when:
-        questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
+        clarificationService.createClarification(UNEXISTENT_ID, questionClarification.getStudent().getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
 
         then:
         thrown(TutorException)
     }
 
-    def 'the user is not a student'(){
-        given: 'a teacher'
-        def user = new User()
-        user.setId(2)
-        user.setRole(User.Role.TEACHER)
-        and: 'a QuestionClarificationDto'
+    def 'create a clarification request for a question not answered by user'() {
+        given: "create questionClarificationDto"
         def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setUserId(1)
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
+        and: "new question, quizQuestion not answered"
+        def newQuestion = new Question()
+        newQuestion.setKey(2)
+        newQuestion.setContent(CONTENT)
+
+        questionRepository.save(newQuestion)
 
         when:
-        questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
+        clarificationService.createClarification(newQuestion.getId(), questionClarification.getStudent().getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
 
         then:
         thrown(TutorException)
     }
 
-    def 'the clarification content is null'(){
-        given: 'a QuestionClarificationDto'
+    def 'the user does not exist'() {
+        given: "create questionClarificationDto"
         def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setUserId(1)
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
+
+        when:
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), UNEXISTENT_ID, questionClarification.getAnswer().getId(), questionClarificationDto)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def 'the user is not a student'() {
+        given: "create questionClarificationDto"
+        def questionClarificationDto = new QuestionClarificationDto()
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
+        and: "user is a teacher"
+        def teacher = new User()
+        teacher.setKey(1)
+        teacher.setRole(User.Role.TEACHER)
+
+        when:
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), teacher.getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def 'the question does not exist'() {
+        given: "create questionClarificationDto"
+        def questionClarificationDto = new QuestionClarificationDto()
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
+
+        when:
+        clarificationService.createClarification(UNEXISTENT_ID, questionClarification.getStudent().getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def 'the answer does not exist'() {
+        given: "create questionClarificationDto"
+        def questionClarificationDto = new QuestionClarificationDto()
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
+
+        when:
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), questionClarification.getStudent().getId(), UNEXISTENT_ID, questionClarificationDto)
+
+        then:
+        thrown(TutorException)
+    }
+
+    def 'the clarification content is null'() {
+        given: "create questionClarificationDto"
+        def questionClarificationDto = new QuestionClarificationDto()
+        questionClarificationDto.setId(questionClarification.getId())
         questionClarificationDto.setContent(null)
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
 
         when:
-        questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), questionClarification.getStudent().getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
 
         then:
         thrown(TutorException)
     }
 
-    def 'the clarification content is blank'(){
-        given: 'a QuestionClarificationDto'
+    def 'the clarification content is blank'() {
+        given: "create questionClarificationDto"
         def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setUserId(1)
-        questionClarificationDto.setContent(' ')
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent("   ")
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
 
         when:
-        questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), questionClarification.getStudent().getId(), questionClarification.getAnswer().getId(), questionClarificationDto)
 
         then:
         thrown(TutorException)
     }
 
-    def 'the clarification userId is blank'(){
-        given: 'a QuestionClarificationDto'
+    def 'the clarification userId is null'() {
+        given: "create questionClarificationDto"
         def questionClarificationDto = new QuestionClarificationDto()
-        questionClarificationDto.setUserId(0)
-        questionClarificationDto.setContent(CONTENT_ONE)
+        questionClarificationDto.setId(questionClarification.getId())
+        questionClarificationDto.setContent(questionClarification.getContent())
+        questionClarificationDto.setStatus(QuestionClarification.Status.NOT_ANSWERED.name())
 
         when:
-        questionClarificationService.studentCreateClarificationRequest(questionClarificationDto)
+        clarificationService.createClarification(questionClarification.getQuestion().getId(), null, questionClarification.getAnswer().getId(), questionClarificationDto)
 
         then:
         thrown(TutorException)
+    }
+
+    @TestConfiguration
+    static class ClarificationServiceImplTestContextConfiguration {
+
+        @Bean
+        QuestionClarificationService() {
+            return new ClarificationService()
+        }
     }
 }
