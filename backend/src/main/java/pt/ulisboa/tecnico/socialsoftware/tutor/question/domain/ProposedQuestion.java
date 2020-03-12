@@ -1,28 +1,56 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
-
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
-public class ProposedQuestion extends Question {
+import javax.persistence.*;
 
+@Entity
+@Table(name = "proposed_questions")
+public class ProposedQuestion {
     public enum Evaluation {
         APPROVED, REJECTED, AWAITING
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "question_id")
+    private Question question;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "student_id")
     private User student;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "teacher_id")
     private User teacher;
+
     private String justification;
+
+    @Enumerated(EnumType.STRING)
     private Evaluation evaluation = Evaluation.AWAITING;
 
-    public ProposedQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
-        super(course, proposedQuestionDto);
+    public ProposedQuestion() {
     }
 
-    public User getStudent() {
-        return student;
+    public ProposedQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
     }
+
+    public Integer getId() { return id; }
+
+    public void setId(Integer id) { this.id = id;}
+
+    public Question getQuestion() { return question; }
+
+    public void setQuestion(Question question) { this.question = question; }
+
+    public User getStudent() { return student; }
 
     public void setStudent(User student) {
         this.student = student;
@@ -32,8 +60,29 @@ public class ProposedQuestion extends Question {
         return teacher;
     }
 
-    public void setTeacher(User teacher) {
-        this.teacher = teacher;
+    public void setTeacher(User teacher) { this.teacher = teacher; }
+
+    public void assignTeacher (User teacher, Course course) {
+        checkUser(teacher, course, User.Role.TEACHER);
+        this.setTeacher(teacher);
+    }
+
+    public void evaluate (String justification, Evaluation evaluation){
+        if (justification == null) {
+            throw new TutorException(ErrorMessage.JUSTIFICATION_IS_EMPTY);
+        }
+        if (evaluation == null) {
+            throw new TutorException(ErrorMessage.EVALUATION_IS_EMPTY);
+        }
+        if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
+            throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
+        }
+        if (this.evaluation != Evaluation.AWAITING && this.teacher != null){
+            throw new TutorException(ErrorMessage.PQ_ALREADY_EVALUATED);
+        }
+
+        setJustification(justification);
+        setEvaluation(evaluation);
     }
 
     public String getJustification() {
@@ -44,11 +93,19 @@ public class ProposedQuestion extends Question {
         this.justification = justification;
     }
 
-    public Evaluation getEvaluation() {
-        return evaluation;
-    }
+    public Evaluation getEvaluation() { return evaluation; }
 
     public void setEvaluation(Evaluation evaluation) {
         this.evaluation = evaluation;
+    }
+
+    public void checkUser(User user, Course course, User.Role role) {
+        if (user.getRole() != role) {
+            throw new TutorException(ErrorMessage.ACCESS_DENIED);
+        }
+        if (user.getCourseExecutions().stream()
+                .noneMatch(courseExecution -> courseExecution.getCourse().getId().equals(course.getId()))) {
+            throw new TutorException(ErrorMessage.USER_NOT_ENROLLED_COURSE);
+        }
     }
 }
