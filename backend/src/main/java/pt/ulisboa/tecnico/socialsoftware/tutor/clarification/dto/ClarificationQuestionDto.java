@@ -1,12 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto;
 
 import org.springframework.data.annotation.Transient;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 
-public class QuestionClarificationDto implements Serializable {
+public class ClarificationQuestionDto implements Serializable {
 
     private Integer id;
     private String content;
@@ -16,16 +16,16 @@ public class QuestionClarificationDto implements Serializable {
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public QuestionClarificationDto() {
+    public ClarificationQuestionDto() {
     }
 
-    public QuestionClarificationDto(QuestionClarification questionClarification) {
-        this.id = questionClarification.getId();
-        this.content = questionClarification.getContent();
-        this.status = QuestionClarification.Status.NOT_ANSWERED.name();
+    public ClarificationQuestionDto(ClarificationQuestion clarificationQuestion) {
+        this.id = clarificationQuestion.getId();
+        this.content = clarificationQuestion.getContent();
+        this.status = ClarificationQuestion.Status.NOT_ANSWERED.name();
 
-        if (questionClarification.getCreationDate() != null)
-            this.creationDate = questionClarification.getCreationDate().format(formatter);
+        if (clarificationQuestion.getCreationDate() != null)
+            this.creationDate = clarificationQuestion.getCreationDate().format(formatter);
     }
 
     public Integer getId() {
@@ -62,7 +62,7 @@ public class QuestionClarificationDto implements Serializable {
 
     @Override
     public String toString() {
-        return "QuestionDto{" +
+        return "ClarificationQuestionDto{" +
                 "id=" + id +
                 ", content='" + content +
                 ", status='" + status +

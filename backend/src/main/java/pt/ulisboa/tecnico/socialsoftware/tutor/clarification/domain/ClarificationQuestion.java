@@ -1,8 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "clarifications")
-public class QuestionClarification {
+public class ClarificationQuestion {
     public enum Status { ANSWERED, NOT_ANSWERED }
 
     @Id
@@ -43,15 +42,15 @@ public class QuestionClarification {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "clarificationQuestion", orphanRemoval=true)
     private List<ClarificationResponse> responses = new ArrayList<>();
 
-    public QuestionClarification() {
+    public ClarificationQuestion() {
     }
 
-    public QuestionClarification(Question q, User s, QuestionAnswer a, QuestionClarificationDto questionClarificationDto) {
+    public ClarificationQuestion(Question q, User s, QuestionAnswer a, ClarificationQuestionDto clarificationQuestionDto) {
         question = q;
         student = s;
         answer = a;
         //status
-        content = questionClarificationDto.getContent();
+        content = clarificationQuestionDto.getContent();
         creationDate = LocalDateTime.now();
     }
 

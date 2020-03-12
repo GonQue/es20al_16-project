@@ -5,10 +5,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationResponseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.QuestionClarificationRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
@@ -33,10 +33,10 @@ class AnswerClarificationTest extends Specification{
     ClarificationService clarificationService
 
     @Autowired
-    QuestionClarificationRepository clarificationQuestionRepository
+    ClarificationQuestionRepository clarificationQuestionRepository
 
     @Autowired
-    ClarificationResponseRepository clarificationResponseRepository;
+    ClarificationResponseRepository clarificationResponseRepository
 
     @Autowired
     UserRepository userRepository
@@ -50,8 +50,8 @@ class AnswerClarificationTest extends Specification{
         teacher.setKey(1)
         teacher.setRole(User.Role.TEACHER)
 
-        clarificationQuestion = new QuestionClarification()
-        clarificationQuestion.setStatus(QuestionClarification.Status.NOT_ANSWERED)
+        clarificationQuestion = new ClarificationQuestion()
+        clarificationQuestion.setStatus(ClarificationQuestion.Status.NOT_ANSWERED)
 
         clarificationResponse = new ClarificationResponse()
         clarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
@@ -77,7 +77,7 @@ class AnswerClarificationTest extends Specification{
         and: "the status of the question clarification was set to answered"
         clarificationQuestionRepository.count() == 1L
         def clarificationQuestionResult = clarificationQuestionRepository.findAll().get(0)
-        clarificationQuestionResult.getStatus().name() == QuestionClarification.Status.ANSWERED.name()
+        clarificationQuestionResult.getStatus().name() == ClarificationQuestion.Status.ANSWERED.name()
         clarificationQuestionResult.getResponses().size() == 1L
     }
 
@@ -107,7 +107,7 @@ class AnswerClarificationTest extends Specification{
         and: "the status of the question clarification was set to answered"
         clarificationQuestionRepository.count() == 1L
         def clarificationQuestionResult = clarificationQuestionRepository.findAll().get(0)
-        clarificationQuestionResult.getStatus().name() == QuestionClarification.Status.ANSWERED.name()
+        clarificationQuestionResult.getStatus().name() == ClarificationQuestion.Status.ANSWERED.name()
         clarificationQuestionResult.getResponses().size() == 2L
     }
 
