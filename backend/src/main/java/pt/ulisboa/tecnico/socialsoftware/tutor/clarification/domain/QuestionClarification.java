@@ -1,6 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,6 +23,15 @@ public class QuestionClarification {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
+
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User student;
+
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "answer_id")
+    private QuestionAnswer answer;
+
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +46,15 @@ public class QuestionClarification {
     public QuestionClarification() {
     }
 
+    public QuestionClarification(Question q, User s, QuestionAnswer a, QuestionClarificationDto questionClarificationDto) {
+        question = q;
+        student = s;
+        answer = a;
+        //status
+        content = questionClarificationDto.getContent();
+        creationDate = LocalDateTime.now();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -44,6 +66,14 @@ public class QuestionClarification {
     public Question getQuestion() { return question; }
 
     public void setQuestion(Question question) { this.question = question; }
+
+    public User getStudent() { return student; }
+
+    public void setStudent(User student) { this.student = student; }
+
+    public QuestionAnswer getAnswer() { return answer; }
+
+    public void setAnswer(QuestionAnswer answer) { this.answer = answer; }
 
     public String getContent() {
         return content;
