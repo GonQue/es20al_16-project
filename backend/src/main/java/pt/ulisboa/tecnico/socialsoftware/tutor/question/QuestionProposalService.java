@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
@@ -29,6 +30,9 @@ public class QuestionProposalService {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    @Autowired
+    private ProposedQuestionRepository pqRepository;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -82,4 +86,37 @@ public class QuestionProposalService {
         this.entityManager.persist(proposedQuestion);
         return new ProposedQuestionDto(proposedQuestion);
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestionDto teacherEvaluatesProposedQuestion(int courseId, ProposedQuestionDto pqDto) {
+
+        Course course = findCourse(courseId);
+        User teacher = findTeacher(pqDto);
+        ProposedQuestion pq = findProposedQuestion(pqDto);
+
+        String justification = pqDto.getJustification();
+        String evaluation = pqDto.getEvaluation();
+        pq.evaluate(justification, ProposedQuestion.Evaluation.valueOf(evaluation));
+
+        pq.assignTeacher(teacher, course);
+
+        return new ProposedQuestionDto(pq);
+    }
+
+    private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
+        return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    }
+
+    private User findTeacher(ProposedQuestionDto pqDto) {
+        if (pqDto.getTeacher() == null) {
+            throw new TutorException(ErrorMessage.USER_IS_EMPTY);
+        }
+        int teacherId = pqDto.getTeacher().getId();
+        return userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
+    }
+
+    private Course findCourse(int courseId) {
+        return courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
+    }
+
 }

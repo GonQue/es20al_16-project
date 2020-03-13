@@ -1,10 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
-
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -12,12 +10,14 @@ import javax.persistence.*;
 @Entity
 @Table(name = "proposed_questions")
 public class ProposedQuestion {
+    public enum Evaluation {
+        APPROVED, REJECTED, AWAITING
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    // EAGER -> when it reads a PQ, loads a question too
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private Question question;
@@ -26,11 +26,20 @@ public class ProposedQuestion {
     @JoinColumn(name = "student_id")
     private User student;
 
-    public ProposedQuestion() {
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "teacher_id")
+    private User teacher;
 
+    private String justification;
+
+    @Enumerated(EnumType.STRING)
+    private Evaluation evaluation = Evaluation.AWAITING;
+
+    public ProposedQuestion() {
+
+    }
     public ProposedQuestion(User student, Course course) {
-        checkStudent(student, course);
+        checkUserPermission(student, course, User.Role.STUDENT);
         this.student = student;
     }
 
@@ -46,11 +55,47 @@ public class ProposedQuestion {
 
     public void setStudent(User student) { this.student = student; }
 
-    public void checkStudent(User student, Course course) {
-        if (student.getRole() != User.Role.STUDENT) {
+    public User getTeacher() { return teacher; }
+
+    public void setTeacher(User teacher) { this.teacher = teacher; }
+
+    public void assignTeacher (User teacher, Course course) {
+        checkUserPermission(teacher, course, User.Role.TEACHER);
+        this.setTeacher(teacher);
+    }
+
+    public void evaluate (String justification, Evaluation evaluation){
+        if (justification == null) {
+            throw new TutorException(ErrorMessage.JUSTIFICATION_IS_EMPTY);
+        }
+        if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
+            throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
+        }
+        if (this.evaluation != Evaluation.AWAITING && this.teacher != null){
+            throw new TutorException(ErrorMessage.PQ_ALREADY_EVALUATED);
+        }
+
+        setJustification(justification);
+        setEvaluation(evaluation);
+    }
+
+    public String getJustification() {
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
+    }
+
+    public Evaluation getEvaluation() { return evaluation; }
+
+    public void setEvaluation(Evaluation evaluation) { this.evaluation = evaluation; }
+
+    public void checkUserPermission(User user, Course course, User.Role role) {
+        if (user.getRole() != role) {
             throw new TutorException(ErrorMessage.ACCESS_DENIED);
         }
-        if (student.getCourseExecutions().stream()
+        if (user.getCourseExecutions().stream()
                 .noneMatch(courseExecution -> courseExecution.getCourse().getId().equals(course.getId()))) {
             throw new TutorException(ErrorMessage.USER_NOT_ENROLLED_COURSE);
         }
