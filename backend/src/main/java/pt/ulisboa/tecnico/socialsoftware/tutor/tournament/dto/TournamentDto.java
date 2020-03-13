@@ -21,6 +21,7 @@ public class TournamentDto implements Serializable {
     private int numberOfQuestions;
     private List<TopicDto> topics = new ArrayList<>();
     private List<UserDto> enrolled = new ArrayList<>();
+
     private QuizDto quiz;
     private String status;
 
@@ -43,6 +44,7 @@ public class TournamentDto implements Serializable {
 
 
     }
+
     public TournamentDto(Tournament tournament){
         this.id = tournament.getId();
         this.key = tournament.getKey();
@@ -115,4 +117,5 @@ public class TournamentDto implements Serializable {
 
     public void setEnrolled(List<UserDto> enrolled) {this.enrolled = enrolled;    }
 
+    public void setStatus(String status) { this.status = status; }
 }

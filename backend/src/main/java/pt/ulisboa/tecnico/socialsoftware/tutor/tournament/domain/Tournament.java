@@ -68,10 +68,12 @@ public class Tournament {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Set<User> enrolled = new HashSet<>();
+  
 
     public Tournament(){}
 
-    public Tournament(User creator, TournamentDto tournamentDto){
+    public Tournament(User creator, CourseExecution courseExecution, Quiz quiz, TournamentDto tournamentDto){
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         if(tournamentDto.getName() == null || tournamentDto.getName().trim().isEmpty()){
@@ -104,6 +106,8 @@ public class Tournament {
         this.name = tournamentDto.getName();
         this.creator = creator;
         this.numberOfQuestions = tournamentDto.getNumberOfQuestions();
+        this.courseExecution = courseExecution;
+        this.quiz = quiz;
         this.status = Status.CREATED;
 
 
@@ -161,6 +165,7 @@ public class Tournament {
     public Set<Topic> getTopics() { return topics; }
 
     public void setTopics(Set<Topic> topics) { this.topics = topics; }
+
 
     public Set<User> getEnrolled() {
         return enrolled;

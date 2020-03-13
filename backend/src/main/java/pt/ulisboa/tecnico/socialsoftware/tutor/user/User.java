@@ -64,6 +64,7 @@ public class User implements UserDetails, Importable {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="enrolled")
     private Set<Tournament> tournamentsEnrolled = new HashSet<>();
 
+
     public User() {
     }
 
@@ -84,8 +85,13 @@ public class User implements UserDetails, Importable {
         this.numberOfCorrectStudentAnswers = 0;
     }
 
+
+    public void addTournament(Tournament tournament){
+        tournamentsCreated.add(tournament);
+
     public void enrollTournament(Tournament tournament){
         tournamentsEnrolled.add(tournament);
+
     }
 
     public Integer getId() {
