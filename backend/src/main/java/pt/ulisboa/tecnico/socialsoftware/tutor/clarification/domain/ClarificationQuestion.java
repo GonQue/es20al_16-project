@@ -23,11 +23,11 @@ public class ClarificationQuestion {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User student;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "answer_id")
     private QuestionAnswer answer;
 

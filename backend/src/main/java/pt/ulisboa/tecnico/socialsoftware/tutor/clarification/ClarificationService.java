@@ -127,6 +127,11 @@ public class ClarificationService {
         ClarificationQuestion clarificationQuestion = new ClarificationQuestion(question, student, answer, clarificationQuestionDto);
 
         clarificationQuestionRepository.save(clarificationQuestion);
+
+        question.addClarificationQuestion(clarificationQuestion);
+        student.addClarificationQuestion(clarificationQuestion);
+        answer.addClarificationQuestion(clarificationQuestion);
+
         return clarificationQuestion;
     }
 
@@ -187,6 +192,8 @@ public class ClarificationService {
         clarificationResponseRepository.save(clarificationResponse);
 
         clarificationQuestion.addResponse(clarificationResponse);
+        teacher.addClarificationResponse(clarificationResponse);
+
         return clarificationResponse;
     }
 }

@@ -22,11 +22,13 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CLARIFICATION_CONTENT
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_ANSWERS_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_ANSWER_ID_IS_NULL
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_ANSWER_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_ID_IS_NULL
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_ID_IS_NULL
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_NOT_A_STUDENT
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND
 
 @DataJpaTest
@@ -107,6 +109,10 @@ class CreateClarificationTest extends Specification{
         def result = clarificationQuestionRepository.findAll().get(0)
         result.getContent() == CONTENT
         result.getCreationDate() != null
+        and: "clarification questions list of the student, question and answer"
+        student.getClarification_questions().size() == 1L
+        question.getClarification_questions().size() == 1L
+        answer.getClarification_questions().size() == 1L
     }
 
     def 'create a clarification request with non-existing question'() {
@@ -120,7 +126,8 @@ class CreateClarificationTest extends Specification{
         clarificationService.createClarification(UNEXISTENT_ID, clarificationQuestion.getStudent().getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == QUESTION_NOT_FOUND
     }
 
     def 'create a clarification request for a question not answered by user'() {
@@ -140,7 +147,8 @@ class CreateClarificationTest extends Specification{
         clarificationService.createClarification(newQuestion.getId(), clarificationQuestion.getStudent().getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == QUESTION_ANSWERS_NOT_FOUND
     }
 
     def 'the user is not a student'() {
@@ -151,14 +159,16 @@ class CreateClarificationTest extends Specification{
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
         and: "user is a teacher"
         def teacher = new User()
-        teacher.setKey(1)
+        teacher.setKey(2)
         teacher.setRole(User.Role.TEACHER)
+        userRepository.save(teacher)
 
         when:
         clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), teacher.getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
 
         then:
-        thrown(TutorException)
+        def error = thrown(TutorException)
+        error.errorMessage == USER_IS_NOT_A_STUDENT
     }
 
     @Unroll("nonexistent objects: #userId | #questionId | #answerId || errorMessage")
