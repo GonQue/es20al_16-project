@@ -118,7 +118,7 @@ public class TournamentService {
       }
       return creatorUser;
    }
-   
+
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto enrollStudent(TournamentDto tournamentDto, UserDto studentDto) {
