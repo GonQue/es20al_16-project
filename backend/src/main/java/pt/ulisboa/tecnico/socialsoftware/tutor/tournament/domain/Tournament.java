@@ -82,14 +82,11 @@ public class Tournament {
 
         this.endDate = LocalDateTime.parse(tournamentDto.getEndDate(), formatter);
 
-        if(tournamentDto.getStartDate()==null){
+        if(tournamentDto.getStartDate()==null || tournamentDto.getEndDate()==null){
             startDate = LocalDateTime.now().plusHours(1);
+            endDate = LocalDateTime.now().plusHours(2);
         } else {
             this.startDate = LocalDateTime.parse(tournamentDto.getStartDate(), formatter);
-        }
-        if(tournamentDto.getEndDate()==null){
-            endDate = LocalDateTime.now().plusHours(1);
-        } else {
             this.endDate = LocalDateTime.parse(tournamentDto.getEndDate(), formatter);
         }
 
@@ -109,13 +106,10 @@ public class Tournament {
         this.courseExecution = courseExecution;
         this.quiz = quiz;
         this.status = Status.CREATED;
-
-
     }
 
     public void addStudent(User user){
         enrolled.add(user);
-
     }
 
     public CourseExecution getCourseExecution() {
@@ -165,7 +159,6 @@ public class Tournament {
     public Set<Topic> getTopics() { return topics; }
 
     public void setTopics(Set<Topic> topics) { this.topics = topics; }
-
 
     public Set<User> getEnrolled() {
         return enrolled;

@@ -41,8 +41,6 @@ public class TournamentDto implements Serializable {
         this.status = tournament.getStatus().name();
         this.quiz = quizDto;
         this.topics = topics;
-
-
     }
 
     public TournamentDto(Tournament tournament){
@@ -117,5 +115,4 @@ public class TournamentDto implements Serializable {
 
     public void setEnrolled(List<UserDto> enrolled) {this.enrolled = enrolled;    }
 
-    public void setStatus(String status) { this.status = status; }
 }

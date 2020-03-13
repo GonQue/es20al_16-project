@@ -86,9 +86,9 @@ public class User implements UserDetails, Importable {
     }
 
 
-    public void addTournament(Tournament tournament){
+    public void addTournament(Tournament tournament) {
         tournamentsCreated.add(tournament);
-
+    }
     public void enrollTournament(Tournament tournament){
         tournamentsEnrolled.add(tournament);
 

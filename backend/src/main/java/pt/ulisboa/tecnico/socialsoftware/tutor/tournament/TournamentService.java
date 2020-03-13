@@ -67,6 +67,9 @@ public class TournamentService {
 
       Tournament tournament = createTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
       creatorUser.addTournament(tournament);
+      quiz.addTournament(tournament);
+      courseExecution.addTournament(tournament);
+
       return new TournamentDto(tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
@@ -115,7 +118,7 @@ public class TournamentService {
       }
       return creatorUser;
    }
-}
+
 
 
       /*Tournament tournament = new Tournament(user, tournamentDto);

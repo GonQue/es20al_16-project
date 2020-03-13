@@ -26,6 +26,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
                 @Index(name = "quizzes_indx_0", columnList = "key")
         })
 public class Quiz {
+
     public enum QuizType {
         EXAM, TEST, GENERATED, PROPOSED, IN_CLASS
     }
@@ -86,6 +87,10 @@ public class Quiz {
         setConclusionDate(quizDto.getConclusionDateDate());
         this.series = quizDto.getSeries();
         this.version = quizDto.getVersion();
+    }
+
+    public void addTournament(Tournament tournament) {
+        tournaments.add(tournament);
     }
 
     public Integer getId() {

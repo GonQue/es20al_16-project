@@ -8,4 +8,5 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 @Repository
 @Transactional
 public interface TournamentRepository extends JpaRepository<Tournament, Integer> {
+
 }

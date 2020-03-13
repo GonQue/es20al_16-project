@@ -15,6 +15,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @Table(name = "course_executions")
 public class CourseExecution {
+
     public enum Status {ACTIVE, INACTIVE, HISTORIC}
 
     @Id
@@ -69,6 +70,10 @@ public class CourseExecution {
         this.academicTerm = academicTerm;
         this.status = Status.ACTIVE;
         course.addCourseExecution(this);
+    }
+
+    public void addTournament(Tournament tournament) {
+        tournaments.add(tournament);
     }
 
     public Integer getId() {
