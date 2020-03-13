@@ -58,8 +58,6 @@ public enum ErrorMessage {
     PQ_ALREADY_EVALUATED("The Proposed Question is already evaluated"),
     JUSTIFICATION_IS_EMPTY("The justification is empty"),
     JUSTIFICATION_IS_BLANK("The justification is blank"),
-    EVALUATION_IS_EMPTY("The evaluation is empty"),
-    EVALUATION_IS_BLANK("The evaluation is blank"),
 
     ACCESS_DENIED("You do not have permission to view this resource");
 

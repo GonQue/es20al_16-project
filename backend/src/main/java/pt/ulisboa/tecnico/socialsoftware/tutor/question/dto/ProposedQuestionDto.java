@@ -16,43 +16,31 @@ public class ProposedQuestionDto {
     public ProposedQuestionDto(ProposedQuestion proposedQuestion) {
         this.id = proposedQuestion.getId();
         if (proposedQuestion.getTeacher() != null) {
-            this.teacher = new UserDto(proposedQuestion.getTeacher());
-            this.justification = proposedQuestion.getJustification();
-            this.evaluation = proposedQuestion.getEvaluation().name();
+            evaluate(proposedQuestion);
         }
+    }
+
+    private void evaluate(ProposedQuestion proposedQuestion) {
+        this.teacher = new UserDto(proposedQuestion.getTeacher());
+        this.justification = proposedQuestion.getJustification();
+        this.evaluation = proposedQuestion.getEvaluation().name();
     }
 
     public Integer getId() { return id; }
 
-    public UserDto getStudent() {
-        return student;
-    }
+    public UserDto getStudent() { return student; }
 
-    public void setStudent(UserDto student) {
-        this.student = student;
-    }
+    public void setStudent(UserDto student) { this.student = student; }
 
-    public UserDto getTeacher() {
-        return teacher;
-    }
+    public UserDto getTeacher() { return teacher; }
 
-    public void setTeacher(UserDto teacher) {
-        this.teacher = teacher;
-    }
+    public void setTeacher(UserDto teacher) { this.teacher = teacher; }
 
-    public String getJustification() {
-        return justification;
-    }
+    public String getJustification() { return justification; }
 
-    public void setJustification(String justification) {
-        this.justification = justification;
-    }
+    public void setJustification(String justification) { this.justification = justification; }
 
-    public String getEvaluation() {
-        return evaluation;
-    }
+    public String getEvaluation() { return evaluation; }
 
-    public void setEvaluation(String evaluation) {
-        this.evaluation = evaluation;
-    }
+    public void setEvaluation(String evaluation) { this.evaluation = evaluation; }
 }

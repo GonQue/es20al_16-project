@@ -1,5 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
+import spock.lang.Unroll
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_BLANK
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_EMPTY
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_EMPTY
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -11,7 +16,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository
@@ -20,8 +24,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
+
 @DataJpaTest
 class TeacherEvaluatesSubmittedQuestionTest extends Specification {
+
+    static final String JUSTIFICATION = "JUSTIFICATION"
 
     @Autowired
     QuestionProposalService questionProposalService
@@ -42,10 +49,11 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     def teacherDto
     def course
     def courseExecution
-    def pq
+    def proposedQuestion
+    def proposedQuestionDto
 
     def setup() {
-        teacher = new User("name", "username", 1, User.Role.TEACHER)
+        teacher = new User("teacher", "teacher", 1, User.Role.TEACHER)
         userRepository.save(teacher)
 
         course = new Course("course", Course.Type.TECNICO)
@@ -61,26 +69,25 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
         teacherDto = new UserDto(teacher)
 
-        pq = new ProposedQuestion()
-        proposedQuestionRepository.save(pq)
-
+        proposedQuestion = new ProposedQuestion()
+        proposedQuestionRepository.save(proposedQuestion)
     }
 
 
     def 'the user is not a teacher'() {
         given: "a admin"
-        def user = new User("name2", "username2", 2, User.Role.ADMIN)
-        userRepository.save(user)
-        def userDto = new UserDto(user)
+        def admin = new User("admin", "admin", 2, User.Role.ADMIN)
+        userRepository.save(admin)
+        def adminDto = new UserDto(admin)
 
         and: "a proposed question"
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setTeacher(userDto)
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
-        proposedQuestion.setJustification(" ")
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.setTeacher(adminDto)
+        proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
+        proposedQuestionDto.setJustification(" ")
 
         when:
-        questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -90,43 +97,27 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
     def 'the teacher is empty'(){
         given: "a proposed question"
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setTeacher(null)
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.setTeacher(null)
+        proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
 
         when:
-        questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.USER_IS_EMPTY
     }
 
-
     def 'the teacher teaches the course'() {
-        given: "a course"
-        def course = new Course("course", Course.Type.TECNICO)
-        courseRepository.save(course)
-
-        and: "a course execution"
-        def courseExecution = new CourseExecution(course, "ES", "2S", Course.Type.TECNICO)
-        course.addCourseExecution(courseExecution)
-
-        Set<CourseExecution> courseExecSet = new HashSet<>()
-        courseExecSet.add(courseExecution)
-        teacher.setCourseExecutions(courseExecSet)
-
-        courseRepository.save(course)
-        courseExecutionRepository.save(courseExecution)
-
-        and: "a proposed question"
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
-        proposedQuestion.setJustification("JUSTIFICATION")
-        proposedQuestion.setTeacher(teacherDto)
+        given: "a proposed question"
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.setTeacher(teacherDto)
+        proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
+        proposedQuestionDto.setJustification("JUSTIFICATION")
 
         when:
-        def result = questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        def result = questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
 
         then:
         result.getTeacher().getUsername() == teacher.getUsername()
@@ -137,15 +128,13 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
     def 'the justification is empty'() {
         given: "a proposed question"
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setTeacher(teacherDto)
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
-
-        and: "empty justification"
-        proposedQuestion.setJustification(null)
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.setTeacher(teacherDto)
+        proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
+        proposedQuestionDto.setJustification(null)
 
         when:
-        questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -155,13 +144,13 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
     def 'the question is approved'() {
         given: "a proposed question"
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
-        proposedQuestion.setJustification(" ")
-        proposedQuestion.setTeacher(teacherDto)
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.setTeacher(teacherDto)
+        proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
+        proposedQuestionDto.setJustification(" ")
 
         when:
-        def result = questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        def result = questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
 
         then:
         result.getEvaluation() == ProposedQuestion.Evaluation.APPROVED.name()
@@ -170,36 +159,73 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
     def 'the question is rejected and the justification is blank' (){
         given: "a proposed question"
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setTeacher(teacherDto)
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.REJECTED.name())
-        proposedQuestion.setJustification(" ")
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.setTeacher(teacherDto)
+        proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.REJECTED.name())
+        proposedQuestionDto.setJustification(" ")
 
         when:
-        questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.JUSTIFICATION_IS_BLANK
     }
 
+
     def 'the proposed question was already approved' (){
-        given: "a question"
-        pq.setTeacher(teacher)
-        pq.setEvaluation(ProposedQuestion.Evaluation.APPROVED)
-        def proposedQuestion = new ProposedQuestionDto(pq)
-        proposedQuestion.setJustification(" ")
+        given: "an approved question"
+        proposedQuestion.setTeacher(teacher)
+        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.APPROVED)
+
+        def approvedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        approvedQuestionDto.setJustification(" ")
 
         and: "a repeated evaluation"
-        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
-        proposedQuestion.setTeacher(teacherDto)
+        approvedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
+        approvedQuestionDto.setTeacher(teacherDto)
 
         when:
-        questionProposalService.teacherEvaluatesSubmittedQuestion(course.getId(), proposedQuestion)
+        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), approvedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.PQ_ALREADY_EVALUATED
+    }
+
+
+    @Unroll("invalid input: #hasTeacher|#justification|#evaluation|errorMessage")
+    def 'invalid input'(){
+        given: "a proposed question"
+        proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        addTeacher(hasTeacher)
+        proposedQuestionDto.setJustification(justification)
+        proposedQuestionDto.setEvaluation(evaluation.name())
+
+        when:
+        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.errorMessage == errorMessage
+
+        where:
+        hasTeacher | justification | evaluation                             || errorMessage
+        false      | JUSTIFICATION | ProposedQuestion.Evaluation.AWAITING   || USER_IS_EMPTY
+        true       | "           " | ProposedQuestion.Evaluation.REJECTED   || JUSTIFICATION_IS_BLANK
+        true       | null          | ProposedQuestion.Evaluation.AWAITING   || JUSTIFICATION_IS_EMPTY
+    }
+
+    def addTeacher(Boolean hasTeacher) {
+        if (hasTeacher) {
+            def courseExecution = new CourseExecution(course, "ES", "1S", Course.Type.TECNICO)
+            courseExecution.addUser(teacher)
+            teacher.addCourse(courseExecution)
+            proposedQuestionDto.setTeacher(teacherDto)
+        }
+        else {
+            proposedQuestionDto.setTeacher(null)
+        }
     }
 
     @TestConfiguration

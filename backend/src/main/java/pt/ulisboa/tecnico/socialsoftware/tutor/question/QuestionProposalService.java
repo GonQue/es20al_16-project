@@ -25,22 +25,16 @@ public class QuestionProposalService {
     @Autowired
     private ProposedQuestionRepository pqRepository;
 
-
     public ProposedQuestionDto studentSubmitQuestion(ProposedQuestionDto proposedQuestionDto) {
         return null;
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ProposedQuestionDto teacherEvaluatesSubmittedQuestion(int courseId, ProposedQuestionDto pqDto) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
+    public ProposedQuestionDto teacherEvaluatesProposedQuestion(int courseId, ProposedQuestionDto pqDto) {
 
-        if (pqDto.getTeacher() == null) {
-            throw new TutorException(ErrorMessage.USER_IS_EMPTY);
-        }
-        Integer teacherId = pqDto.getTeacher().getId();
-        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
-
-        ProposedQuestion pq = pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+        Course course = findCourse(courseId);
+        User teacher = findTeacher(pqDto);
+        ProposedQuestion pq = findProposedQuestion(pqDto);
 
         String justification = pqDto.getJustification();
         String evaluation = pqDto.getEvaluation();
@@ -49,6 +43,22 @@ public class QuestionProposalService {
         pq.assignTeacher(teacher, course);
 
         return new ProposedQuestionDto(pq);
+    }
+
+    private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
+        return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    }
+
+    private User findTeacher(ProposedQuestionDto pqDto) {
+        if (pqDto.getTeacher() == null) {
+            throw new TutorException(ErrorMessage.USER_IS_EMPTY);
+        }
+        int teacherId = pqDto.getTeacher().getId();
+        return userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
+    }
+
+    private Course findCourse(int courseId) {
+        return courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
     }
 
 }

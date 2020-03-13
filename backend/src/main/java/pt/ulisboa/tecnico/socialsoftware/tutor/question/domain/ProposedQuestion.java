@@ -39,9 +39,6 @@ public class ProposedQuestion {
     public ProposedQuestion() {
     }
 
-    public ProposedQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
-    }
-
     public Integer getId() { return id; }
 
     public void setId(Integer id) { this.id = id;}
@@ -63,16 +60,13 @@ public class ProposedQuestion {
     public void setTeacher(User teacher) { this.teacher = teacher; }
 
     public void assignTeacher (User teacher, Course course) {
-        checkUser(teacher, course, User.Role.TEACHER);
+        checkUserPermission(teacher, course, User.Role.TEACHER);
         this.setTeacher(teacher);
     }
 
     public void evaluate (String justification, Evaluation evaluation){
         if (justification == null) {
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_EMPTY);
-        }
-        if (evaluation == null) {
-            throw new TutorException(ErrorMessage.EVALUATION_IS_EMPTY);
         }
         if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
@@ -95,11 +89,9 @@ public class ProposedQuestion {
 
     public Evaluation getEvaluation() { return evaluation; }
 
-    public void setEvaluation(Evaluation evaluation) {
-        this.evaluation = evaluation;
-    }
+    public void setEvaluation(Evaluation evaluation) { this.evaluation = evaluation; }
 
-    public void checkUser(User user, Course course, User.Role role) {
+    public void checkUserPermission(User user, Course course, User.Role role) {
         if (user.getRole() != role) {
             throw new TutorException(ErrorMessage.ACCESS_DENIED);
         }

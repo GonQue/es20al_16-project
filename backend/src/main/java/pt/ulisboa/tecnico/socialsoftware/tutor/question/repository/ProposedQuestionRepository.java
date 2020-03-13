@@ -11,8 +11,4 @@ import java.util.Optional;
 
 @Repository
 @Transactional
-public interface ProposedQuestionRepository extends JpaRepository<ProposedQuestion, Integer> {
-    @Query(value = "SELECT * FROM proposed_questions q WHERE q.id = :id", nativeQuery = true)
-    Optional<ProposedQuestion> findById(Integer id);
-
-}
+public interface ProposedQuestionRepository extends JpaRepository<ProposedQuestion, Integer> {}
