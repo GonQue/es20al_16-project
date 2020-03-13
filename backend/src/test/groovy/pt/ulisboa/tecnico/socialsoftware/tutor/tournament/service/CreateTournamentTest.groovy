@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
@@ -91,7 +92,6 @@ class CreateTournamentTest extends Specification {
         courseRepository.save(course)
 
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
-
         courseExecutionRepository.save(courseExecution)
 
         user = new User('name', "username", 1, User.Role.STUDENT)
@@ -180,9 +180,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
-        //def exception = thrown(TutorException)
-        //exception.getErrorMessage() == QUESTION_MISSING_DATA
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_CREATOR_NOT_STUDENT
     }
 
     def "student is not in course execution of tournament"(){
@@ -190,9 +189,8 @@ class CreateTournamentTest extends Specification {
         given:"a tournament"
         tournamentDto.setName(TOURNAMENT_NAME)
         and:"a student not in the course execution"
-        def user2 = new User()
-        user2.setId(2)
-        user2.setRole(User.Role.STUDENT)
+        def user2 = new User('name2', "username2", 2, User.Role.STUDENT)
+        userRepository.save(user2)
         def userDto2 = new UserDto(user2)
         tournamentDto.setCreator(userDto2)
 
@@ -200,7 +198,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_CREATOR_NOT_ENROLLED
     }
 
 
@@ -216,7 +215,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_TIME_INVALID
     }
 
     def "create tournament with 0 questions"(){
@@ -228,7 +228,8 @@ class CreateTournamentTest extends Specification {
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID
     }
 
     
@@ -238,7 +239,8 @@ class CreateTournamentTest extends Specification {
         when:
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NAME_INVALID
     } 
     
     def "tournament name is blank"(){
@@ -247,7 +249,8 @@ class CreateTournamentTest extends Specification {
         when:
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NAME_INVALID
     }
 
     @TestConfiguration

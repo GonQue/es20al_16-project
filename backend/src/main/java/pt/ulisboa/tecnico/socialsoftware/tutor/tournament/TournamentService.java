@@ -47,14 +47,19 @@ public class TournamentService {
    public TournamentDto createTournament(int executionId, TournamentDto tournamentDto){
 
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
-      User user = userRepository.findById(tournamentDto.getCreator().getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+      User creatorUser = userRepository.findById(tournamentDto.getCreator().getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
       Quiz quiz = quizRepository.findById(tournamentDto.getQuiz().getId()).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, tournamentDto.getQuiz().getId()));
 
-      if(user.getRole() != User.Role.STUDENT){
+      if(creatorUser.getRole() != User.Role.STUDENT){
          throw new TutorException(TOURNAMENT_CREATOR_NOT_STUDENT);
       }
 
-      if (!user.getCourseExecutions().stream()
+      if (!creatorUser.getCourseExecutions().stream()
+              .anyMatch(ce -> ce.getId().equals(courseExecution.getId()))) {
+         throw new TutorException(TOURNAMENT_CREATOR_NOT_ENROLLED);
+      }
+
+      if (!creatorUser.getCourseExecutions().stream()
               .anyMatch(ce -> ce.getId().equals(courseExecution.getId()))) {
          throw new TutorException(TOURNAMENT_CREATOR_NOT_ENROLLED);
       }
@@ -71,10 +76,8 @@ public class TournamentService {
          topics.add(topic);
       }
 
-      Tournament tournament = new Tournament(user, tournamentDto);
-      tournament.setCourseExecution(courseExecution);
+      Tournament tournament = new Tournament(creatorUser, courseExecution, quiz, tournamentDto);
       tournament.setTopics(topics);
-      tournament.setQuiz(quiz);
 
       entityManager.persist(tournament);
 
