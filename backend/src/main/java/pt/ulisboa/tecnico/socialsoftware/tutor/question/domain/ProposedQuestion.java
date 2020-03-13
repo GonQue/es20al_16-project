@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -19,7 +18,7 @@ public class ProposedQuestion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private Question question;
 
@@ -37,6 +36,11 @@ public class ProposedQuestion {
     private Evaluation evaluation = Evaluation.AWAITING;
 
     public ProposedQuestion() {
+
+    }
+    public ProposedQuestion(User student, Course course) {
+        checkUserPermission(student, course, User.Role.STUDENT);
+        this.student = student;
     }
 
     public Integer getId() { return id; }
@@ -49,13 +53,9 @@ public class ProposedQuestion {
 
     public User getStudent() { return student; }
 
-    public void setStudent(User student) {
-        this.student = student;
-    }
+    public void setStudent(User student) { this.student = student; }
 
-    public User getTeacher() {
-        return teacher;
-    }
+    public User getTeacher() { return teacher; }
 
     public void setTeacher(User teacher) { this.teacher = teacher; }
 
@@ -99,5 +99,16 @@ public class ProposedQuestion {
                 .noneMatch(courseExecution -> courseExecution.getCourse().getId().equals(course.getId()))) {
             throw new TutorException(ErrorMessage.USER_NOT_ENROLLED_COURSE);
         }
+    }
+
+    public void addQuestion(Question question) {
+
+        // If it has a topic, has to belong to the course's topics
+        if (!question.getTopics().isEmpty() && !question.getTopics().stream()
+                .allMatch(topic -> question.getCourse().getTopics().contains(topic))) {
+            throw new TutorException(ErrorMessage.TOPIC_NOT_BELONGING_TO_COURSE);
+        }
+
+        this.question = question;
     }
 }

@@ -58,6 +58,8 @@ public enum ErrorMessage {
     PQ_ALREADY_EVALUATED("The Proposed Question is already evaluated"),
     JUSTIFICATION_IS_EMPTY("The justification is empty"),
     JUSTIFICATION_IS_BLANK("The justification is blank"),
+    PROPQUESTION_MISSING_QUESTION("Proposed Question have empty question"),
+    TOPIC_NOT_BELONGING_TO_COURSE("Topic does not belong to the course"),
 
     ACCESS_DENIED("You do not have permission to view this resource");
 
