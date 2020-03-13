@@ -1,20 +1,19 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 public class ProposedQuestionDto {
 
     private Integer id;
     private QuestionDto question;
-    private UserDto student;
+    private Integer studentId;
 
     public ProposedQuestionDto() {}
 
     public ProposedQuestionDto(ProposedQuestion proposedQuestion) {
         this.id = proposedQuestion.getId();
         this.question = new QuestionDto(proposedQuestion.getQuestion());
-        this.student = new UserDto(proposedQuestion.getStudent());
+        this.studentId = proposedQuestion.getStudent().getId();
     }
 
     public Integer getId() { return id; }
@@ -29,11 +28,7 @@ public class ProposedQuestionDto {
         this.question = question;
     }
 
-    public UserDto getStudent() {
-        return student;
-    }
+    public Integer getStudentId() { return studentId; }
 
-    public void setStudent(UserDto student) {
-        this.student = student;
-    }
+    public void setStudentId(Integer studentId) { this.studentId = studentId; }
 }

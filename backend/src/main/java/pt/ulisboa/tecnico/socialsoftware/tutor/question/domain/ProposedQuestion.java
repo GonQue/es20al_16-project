@@ -18,7 +18,7 @@ public class ProposedQuestion {
     private Integer id;
 
     // EAGER -> when it reads a PQ, loads a question too
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private Question question;
 
@@ -29,16 +29,8 @@ public class ProposedQuestion {
     public ProposedQuestion() {
     }
 
-    public ProposedQuestion(User student, Course course, ProposedQuestionDto proposedQuestionDto) {
+    public ProposedQuestion(User student, Course course) {
         checkStudent(student, course);
-        if (proposedQuestionDto.getQuestion() == null) {
-            throw new TutorException(ErrorMessage.PROPQUESTION_MISSING_QUESTION);
-        }
-       /*if (!proposedQuestionDto.getQuestion().getTopics().isEmpty() &&
-                !proposedQuestionDto.getQuestion().getTopics().stream()
-                .allMatch(topic -> topic.getCourseId().equals(question.getCourse().getId()))) {
-            throw new TutorException(ErrorMessage.TOPIC_NOT_BELONGING_TO_COURSE);
-        }*/
         this.student = student;
     }
 
@@ -62,5 +54,16 @@ public class ProposedQuestion {
                 .noneMatch(courseExecution -> courseExecution.getCourse().getId().equals(course.getId()))) {
             throw new TutorException(ErrorMessage.USER_NOT_ENROLLED_COURSE);
         }
+    }
+
+    public void addQuestion(Question question) {
+
+        // If it has a topic, has to belong to the course's topics
+        if (!question.getTopics().isEmpty() && !question.getTopics().stream()
+                .allMatch(topic -> question.getCourse().getTopics().contains(topic))) {
+            throw new TutorException(ErrorMessage.TOPIC_NOT_BELONGING_TO_COURSE);
+        }
+
+        this.question = question;
     }
 }
