@@ -4,6 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
@@ -56,6 +58,12 @@ public class User implements UserDetails, Importable {
 
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
+    private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true)
+    private List<ClarificationResponse> clarification_responses = new ArrayList<>();
 
     public User() {
     }
@@ -341,6 +349,18 @@ public class User implements UserDetails, Importable {
     public void addCourse(CourseExecution course) {
         this.courseExecutions.add(course);
     }
+
+    public List<ClarificationQuestion> getClarification_questions() { return clarification_questions; }
+
+    public void setClarification_questions(List<ClarificationQuestion> clarification_questions) { this.clarification_questions = clarification_questions; }
+
+    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarification_questions.add(clarificationQuestion); }
+
+    public List<ClarificationResponse> getClarification_responses() { return clarification_responses; }
+
+    public void setClarification_responses(List<ClarificationResponse> clarification_responses) { this.clarification_responses = clarification_responses; }
+
+    public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarification_responses.add(clarificationResponse); }
 
     @Override
     public String toString() {
