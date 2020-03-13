@@ -9,7 +9,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
@@ -30,9 +32,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_DATA
+
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NO_CREATOR
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_QUIZ_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NAME_INVALID
+
 
 @DataJpaTest
 class CreateTournamentTest extends Specification {
@@ -96,6 +100,7 @@ class CreateTournamentTest extends Specification {
         courseRepository.save(course)
 
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
+
         courseExecutionRepository.save(courseExecution)
 
         user = new User('name', "username", 1, User.Role.STUDENT)
@@ -138,6 +143,7 @@ class CreateTournamentTest extends Specification {
     def "create a tournament with 2 topics"(){
         given:"a tournament"
         tournamentDto.setName(TOURNAMENT_NAME)
+
 
         when:
         def result = tournamentService.createTournament(courseExecution.getId(), tournamentDto)
@@ -221,6 +227,7 @@ class CreateTournamentTest extends Specification {
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_TIME_INVALID
     }
+
 
     def "create tournament with 0 questions"(){
         given:"a tournament with 0 questions"
