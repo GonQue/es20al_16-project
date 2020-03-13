@@ -110,15 +110,8 @@ public class Tournament {
     }
 
     public void addStudent(User user){
-        //if (enrolled.contains(user)){
-         //   throw new TutorException(STUDENT_ALREADY_ENROLLED);
-        //
-
-        if(enrolled.stream().anyMatch(u -> u.getId().equals(user.getId()))){
-            throw new TutorException(STUDENT_ALREADY_ENROLLED);
-        }
-
         enrolled.add(user);
+
     }
 
     public CourseExecution getCourseExecution() {

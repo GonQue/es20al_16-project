@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament
@@ -17,6 +18,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
+import spock.lang.Unroll
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.INVALID_USERNAME
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_CLOSED
 
 @DataJpaTest
 class StudentEnrollTournamentTest extends Specification {
@@ -76,12 +81,9 @@ class StudentEnrollTournamentTest extends Specification {
 
         userDto = new UserDto(user)
 
-        //tournamentDto.setEnrolled(new ArrayList<>(Arrays.asList(userDto)))
-
     }
 
     def "enroll student in the tournament"(){
-        // a student, with name and course, enrolls on a open tournament
         given:"a tournament"
         tournamentDto.setName(TOURNAMENT_NAME)
         and:"a student in a course execution"
@@ -92,9 +94,9 @@ class StudentEnrollTournamentTest extends Specification {
 
         then:
         result.getKey() == 1
+        result.getName()==TOURNAMENT_NAME
         result.getEnrolled()!=null
         result.getEnrolled().size()==1
-        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(userDto.getId()) })
         result.getEnrolled().get(0).getUsername()==USERNAME
 
     }
@@ -105,6 +107,7 @@ class StudentEnrollTournamentTest extends Specification {
 
         and:"a student in a course execution"
         user.addCourse(courseExecution1)
+        userDto = new UserDto(user)
 
         and: "another student enrolled in the tournament"
         user2 = new User()
@@ -138,7 +141,8 @@ class StudentEnrollTournamentTest extends Specification {
         when:
         tournamentService.enrollStudent(tournamentDto, userDto)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_ENROLLED_NOT_STUDENT
     }
 
     def "student already in tournament"(){
@@ -148,12 +152,12 @@ class StudentEnrollTournamentTest extends Specification {
         user.addCourse(courseExecution1)
         tournament.getEnrolled().add(user)
         tournamentDto.setEnrolled(new ArrayList<>(Arrays.asList(userDto)))
-        tournamentRepository.save(tournament)
 
         when:
         tournamentService.enrollStudent(tournamentDto, userDto)
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.STUDENT_ALREADY_ENROLLED
     }
 
     def "student not in course execution of tournament"(){
@@ -165,31 +169,54 @@ class StudentEnrollTournamentTest extends Specification {
         CourseExecution courseExecution2 = new CourseExecution(course2, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution2)
         user.addCourse(courseExecution2)
-        userRepository.save(user)
 
         when:
         tournamentService.enrollStudent(tournamentDto, userDto)
 
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.USER_NOT_IN_COURSE_EXECUTION
     }
 
     def "tournament is closed"(){
         given:"a closed tournament"
         tournament.setStatus(Tournament.Status.CLOSED)
         tournamentDto = new TournamentDto(tournament)
-        tournamentRepository.save(tournament)
+
 
         and:"a student in a course execution"
         user.addCourse(courseExecution1)
 
         when:
         tournamentService.enrollStudent(tournamentDto, userDto)
-
         then:
-        thrown(TutorException)
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_CLOSED
+
 
     }
+
+    @Unroll("Invalid arguments: #username || errorMessage")
+    def "invalid input values"(){
+        given: "a tournament"
+        tournamentDto.setName(TOURNAMENT_NAME)
+        and: "a user"
+        user.addCourse(courseExecution1)
+        user.setUsername(username)
+
+        when:
+        tournamentService.enrollStudent(tournamentDto, userDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.errorMessage == errorMessage
+
+        where:
+        username        || errorMessage
+        null            || INVALID_USERNAME
+        "   "           || INVALID_USERNAME
+    }
+
 
     @TestConfiguration
     static class TournamentServiceImplTestContextConfiguration{

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
@@ -59,10 +60,7 @@ public class TournamentService {
          throw new TutorException(TOURNAMENT_CREATOR_NOT_STUDENT);
       }
 
-      if (!user.getCourseExecutions().stream()
-              .anyMatch(ce -> ce.getId().equals(courseExecution.getId()))) {
-         throw new TutorException(TOURNAMENT_CREATOR_NOT_ENROLLED);
-      }
+      checkUserInCourseExecution(user, courseExecution, TOURNAMENT_CREATOR_NOT_ENROLLED);
 
 
       if(tournamentDto.getTopics() == null){
@@ -88,39 +86,58 @@ public class TournamentService {
 
    }
 
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto enrollStudent(TournamentDto tournamentDto, UserDto studentDto) {
       Tournament tournament = tournamentRepository.findById(tournamentDto.getId()).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentDto.getId()));
-      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+      User user = getUser(tournamentDto, studentDto);
 
-      if (user.getRole() != User.Role.STUDENT) {
-         throw new TutorException(TOURNAMENT_ENROLLED_NOT_STUDENT);
-      }
+      checkUserInCourseExecution(user, tournament.getCourseExecution(), USER_NOT_IN_COURSE_EXECUTION);
+      if (tournament.getStatus() == Tournament.Status.CLOSED) { throw new TutorException(TOURNAMENT_CLOSED); }
 
-      if (!user.getCourseExecutions().stream()
-              .anyMatch(t -> t.getId().equals(tournament.getCourseExecution().getId()))) {
-         throw new TutorException(USER_NOT_IN_COURSE_EXECUTION);
-      }
+      enrollStud(tournament, user);
 
-      if (tournament.getStatus() == Tournament.Status.CLOSED) {
-         throw new TutorException(TOURNAMENT_CLOSED);
+      List<UserDto> enrolled = getUserDtos(tournament);
+      TournamentDto tDto = new TournamentDto(tournament);
+      tDto.setEnrolled(enrolled);
+
+      return tDto;
+
+   }
+
+   private void enrollStud(Tournament tournament, User user) {
+      if(tournament.getEnrolled().stream().anyMatch(u -> u.getId().equals(user.getId()))){
+         throw new TutorException(STUDENT_ALREADY_ENROLLED);
       }
       tournament.addStudent(user);
+      user.enrollTournament(tournament);
+   }
 
+   private void checkUserInCourseExecution(User user, CourseExecution courseExecution, ErrorMessage em) {
+      if (!user.getCourseExecutions().stream()
+              .anyMatch(t -> t.getId().equals(courseExecution.getId()))) {
+         throw new TutorException(em);
+      }
+   }
 
-      tournamentRepository.save(tournament);
-
+   private List<UserDto> getUserDtos(Tournament tournament) {
       List<UserDto> enrolled = new ArrayList<>();
       Set<User> users = tournament.getEnrolled();
       for(User u: users){
          UserDto userDto = new UserDto(u);
          enrolled.add(userDto);
       }
+      return enrolled;
+   }
 
-      TournamentDto tDto = new TournamentDto(tournament);
-      tDto.setEnrolled(enrolled);
-
-      
-      return tDto;
-
+   private User getUser(TournamentDto tournamentDto, UserDto studentDto) {
+      if(studentDto==null){ throw new TutorException(TOURNAMENT_NO_STUDENT_TO_ENROLL);}
+      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+      if (user.getRole() != User.Role.STUDENT) {
+         throw new TutorException(TOURNAMENT_ENROLLED_NOT_STUDENT);
+      }
+      if(user.getUsername() == null || user.getUsername().trim().isEmpty()){
+         throw new TutorException(INVALID_USERNAME);
+      }
+      return user;
    }
 }

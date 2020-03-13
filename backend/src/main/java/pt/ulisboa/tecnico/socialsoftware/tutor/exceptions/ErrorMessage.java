@@ -48,9 +48,11 @@ public enum ErrorMessage {
     TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID("Number of questions for the tournament is invalid"),
     TOURNAMENT_ENROLLED_NOT_STUDENT("The user enrolled in the tournament is not a student"),
     TOURNAMENT_NOT_FOUND("The tournament does not exists"),
-    USER_NOT_IN_COURSE_EXECUTION("the student is not enrolled in the course of the tournament he wants to enroll"),
-    STUDENT_ALREADY_ENROLLED("the student tries to enroll in a tournament that he is already enrolled"),
-    TOURNAMENT_CLOSED("student try to enroll in a closed tournament"),
+    USER_NOT_IN_COURSE_EXECUTION("The student is not enrolled in the course of the tournament he wants to enroll"),
+    STUDENT_ALREADY_ENROLLED("The student tries to enroll in a tournament that he is already enrolled"),
+    TOURNAMENT_CLOSED("Student cant enroll in a closed tournament"),
+    TOURNAMENT_NO_STUDENT_TO_ENROLL("Missing student to enroll tournament"),
+    INVALID_USERNAME("Username is null or empty"),
 
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"), // TODO check me
