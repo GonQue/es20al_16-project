@@ -51,6 +51,7 @@ public class TournamentService {
       Set<Topic> topics = getTopics(tournamentDto);
 
       Tournament tournament = createTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
+      creatorUser.addTournament(tournament);
       return new TournamentDto(tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }

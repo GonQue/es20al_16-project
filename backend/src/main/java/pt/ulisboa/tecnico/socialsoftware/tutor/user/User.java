@@ -82,6 +82,10 @@ public class User implements UserDetails, Importable {
         this.numberOfCorrectStudentAnswers = 0;
     }
 
+    public void addTournament(Tournament tournament){
+        tournamentsCreated.add(tournament);
+    }
+
     public Integer getId() {
         return id;
     }
