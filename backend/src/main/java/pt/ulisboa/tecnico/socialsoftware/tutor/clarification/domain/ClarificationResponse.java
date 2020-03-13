@@ -15,7 +15,7 @@ public class ClarificationResponse {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "clarification_id")
-    private QuestionClarification clarificationQuestion;
+    private ClarificationQuestion clarificationQuestion;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "teacher_id")
@@ -29,7 +29,7 @@ public class ClarificationResponse {
     public ClarificationResponse() {
     }
 
-    public ClarificationResponse(QuestionClarification c, User t, ClarificationResponseDto questionClarificationDto) {
+    public ClarificationResponse(ClarificationQuestion c, User t, ClarificationResponseDto questionClarificationDto) {
         clarificationQuestion = c;
         teacher = t;
         teacherResponse = questionClarificationDto.getTeacherResponse();
@@ -44,9 +44,9 @@ public class ClarificationResponse {
         this.id = id;
     }
 
-    public QuestionClarification getClarificationQuestion() { return clarificationQuestion; }
+    public ClarificationQuestion getClarificationQuestion() { return clarificationQuestion; }
 
-    public void setClarificationQuestion(QuestionClarification clarificationQuestion) { this.clarificationQuestion = clarificationQuestion; }
+    public void setClarificationQuestion(ClarificationQuestion clarificationQuestion) { this.clarificationQuestion = clarificationQuestion; }
 
     public User getTeacher() { return teacher; }
 

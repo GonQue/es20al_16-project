@@ -10,9 +10,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.QuestionClarification;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.QuestionClarificationDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
@@ -31,7 +31,7 @@ public class ClarificationService {
     private UserRepository userRepository;
 
     @Autowired
-    QuestionClarificationRepository clarificationQuestionRepository;
+    ClarificationQuestionRepository clarificationQuestionRepository;
 
     @Autowired
     ClarificationResponseRepository clarificationResponseRepository;
@@ -46,25 +46,66 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public QuestionClarificationDto createClarification(Integer questionId, Integer studentId, Integer answerId, QuestionClarificationDto questionClarificationDto) {
-        if(questionClarificationDto.getContent() == null || questionClarificationDto.getContent().trim().isEmpty())
-            throw new TutorException(USER_IS_NOT_A_TEACHER);
+    public ClarificationQuestionDto createClarification(Integer questionId, Integer studentId, Integer answerId, ClarificationQuestionDto clarificationQuestionDto) {
 
+        checkClarificationContent(clarificationQuestionDto);
+
+        checkStudentId(studentId);
+
+        checkQuestionId(questionId);
+
+        checkAnswerId(answerId);
+
+        Question question = getQuestion(questionId);
+
+        User student = getStudent(studentId);
+
+        checkQuestionAnswers(questionId, student);
+
+        QuestionAnswer answer = getAnswer(answerId);
+
+        ClarificationQuestion clarificationQuestion = createClarificationQuestion(clarificationQuestionDto, question, student, answer);
+
+        return new ClarificationQuestionDto(clarificationQuestion);
+    }
+
+    private void checkClarificationContent(ClarificationQuestionDto clarificationQuestionDto) {
+        if(clarificationQuestionDto.getContent() == null || clarificationQuestionDto.getContent().trim().isEmpty())
+            throw new TutorException(CLARIFICATION_CONTENT);
+    }
+
+    private void checkStudentId(Integer studentId) {
         if(studentId == null)
             throw new TutorException(USER_ID_IS_NULL);
+    }
 
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, questionId));
+    private void checkQuestionId(Integer questionId) {
+        if(questionId == null)
+            throw new TutorException(QUESTION_ID_IS_NULL);
+    }
 
+    private void checkAnswerId(Integer answerId) {
+        if(answerId == null)
+            throw new TutorException(QUESTION_ANSWER_ID_IS_NULL);
+    }
+
+    private Question getQuestion(Integer questionId) {
+        return questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+    }
+
+    private User getStudent(Integer studentId) {
         User student = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, studentId));
         if(student.getRole() != User.Role.STUDENT)
-            throw new TutorException(USER_IS_NOT_A_TEACHER);
+            throw new TutorException(USER_IS_NOT_A_STUDENT);
+        return student;
+    }
 
+    private void checkQuestionAnswers(Integer questionId, User student) {
         boolean valid = false;
         Set<QuizAnswer> quizAnswers = student.getQuizAnswers();
         if(!quizAnswers.isEmpty())
             for (QuizAnswer iQuizAnswer : quizAnswers) {
                 List<QuestionAnswer> questionAnswers = iQuizAnswer.getQuestionAnswers();
-                System.out.println(questionAnswers.size());
                 if(!questionAnswers.isEmpty())
                     for (QuestionAnswer iAnswer: questionAnswers) {
                         if(iAnswer.getOption().getQuestion().getId() == questionId) {
@@ -75,33 +116,18 @@ public class ClarificationService {
                 if(valid) break;
             }
 
-        if(!valid) throw new TutorException(USER_IS_NOT_A_TEACHER);
+        if(!valid) throw new TutorException(QUESTION_ANSWERS_NOT_FOUND);
+    }
 
+    private QuestionAnswer getAnswer(Integer answerId) {
+        return answerRepository.findById(answerId).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, answerId));
+    }
 
-        QuestionAnswer answer = answerRepository.findById(answerId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, answerId));
+    private ClarificationQuestion createClarificationQuestion(ClarificationQuestionDto clarificationQuestionDto, Question question, User student, QuestionAnswer answer) {
+        ClarificationQuestion clarificationQuestion = new ClarificationQuestion(question, student, answer, clarificationQuestionDto);
 
-        QuestionClarification questionClarification = new QuestionClarification(question, student, answer, questionClarificationDto);
-
-        clarificationQuestionRepository.save(questionClarification);
-
-        System.out.println(clarificationQuestionRepository.count());
-        System.out.println(clarificationQuestionRepository.findAll().get(0).getId());
-
-        /*checkClarificationId(clarificationQuestionId);
-
-        checkTeacherId(teacherId);
-
-        checkTeacherResponse(clarificationResponseDto);
-
-        User teacher = getTeacher(teacherId);
-
-        checkTeacherRole(teacher);
-
-        QuestionClarification clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
-
-        ClarificationResponse clarificationResponse = createClarificationResponse(clarificationResponseDto, teacher, clarificationQuestion);*/
-
-        return new QuestionClarificationDto(questionClarification);
+        clarificationQuestionRepository.save(clarificationQuestion);
+        return clarificationQuestion;
     }
 
     @Retryable(
@@ -119,7 +145,7 @@ public class ClarificationService {
 
         checkTeacherRole(teacher);
 
-        QuestionClarification clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
 
         ClarificationResponse clarificationResponse = createClarificationResponse(clarificationResponseDto, teacher, clarificationQuestion);
 
@@ -150,12 +176,12 @@ public class ClarificationService {
             throw new TutorException(USER_IS_NOT_A_TEACHER);
     }
 
-    private QuestionClarification getClarificationQuestion(Integer clarificationQuestionId) {
+    private ClarificationQuestion getClarificationQuestion(Integer clarificationQuestionId) {
         return clarificationQuestionRepository.findById(clarificationQuestionId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_NOT_FOUND, clarificationQuestionId));
     }
 
-    private ClarificationResponse createClarificationResponse(ClarificationResponseDto clarificationResponseDto, User teacher, QuestionClarification clarificationQuestion) {
-        clarificationQuestion.setStatus(QuestionClarification.Status.ANSWERED);
+    private ClarificationResponse createClarificationResponse(ClarificationResponseDto clarificationResponseDto, User teacher, ClarificationQuestion clarificationQuestion) {
+        clarificationQuestion.setStatus(ClarificationQuestion.Status.ANSWERED);
 
         ClarificationResponse clarificationResponse = new ClarificationResponse(clarificationQuestion, teacher, clarificationResponseDto);
         clarificationResponseRepository.save(clarificationResponse);
