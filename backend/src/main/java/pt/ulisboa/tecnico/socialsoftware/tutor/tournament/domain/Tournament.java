@@ -65,6 +65,10 @@ public class Tournament {
     @JoinColumn(name = "topic_id")
     private Set<Topic> topics = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Set<User> enrolled = new HashSet<>();
+
     public Tournament(){}
 
     public Tournament(User creator, TournamentDto tournamentDto){
@@ -105,6 +109,17 @@ public class Tournament {
 
     }
 
+    public void addStudent(User user){
+        //if (enrolled.contains(user)){
+         //   throw new TutorException(STUDENT_ALREADY_ENROLLED);
+        //
+
+        if(enrolled.stream().anyMatch(u -> u.getId().equals(user.getId()))){
+            throw new TutorException(STUDENT_ALREADY_ENROLLED);
+        }
+
+        enrolled.add(user);
+    }
 
     public CourseExecution getCourseExecution() {
         return courseExecution;
@@ -154,5 +169,11 @@ public class Tournament {
 
     public void setTopics(Set<Topic> topics) { this.topics = topics; }
 
+    public Set<User> getEnrolled() {
+        return enrolled;
+    }
 
+    public void setEnrolled(Set<User> enrolled) {
+        this.enrolled = enrolled;
+    }
 }

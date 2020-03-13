@@ -1,15 +1,24 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.service
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
+@DataJpaTest
 class StudentEnrollTournamentTest extends Specification {
 
     public static final String COURSE_NAME1 = "Course name 1"
@@ -17,10 +26,23 @@ class StudentEnrollTournamentTest extends Specification {
     public static final String TOURNAMENT_NAME = "Tournament name"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
+    public static final String USERNAME = "username"
 
+    @Autowired
+    TournamentService tournamentService
 
+    @Autowired
+    TournamentRepository tournamentRepository
 
-    def tournamentService
+    @Autowired
+    CourseRepository courseRepository
+
+    @Autowired
+    CourseExecutionRepository courseExecutionRepository
+
+    @Autowired
+    UserRepository userRepository
+
     def tournament
     def tournamentDto
     def course1
@@ -31,21 +53,26 @@ class StudentEnrollTournamentTest extends Specification {
     def user2Dto
 
     def setup(){
-        tournamentService = new TournamentService()
-
         course1 = new Course(COURSE_NAME1, Course.Type.TECNICO)
+        courseRepository.save(course1)
+
         courseExecution1 = new CourseExecution(course1, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
-        courseExecution1.setId(1)
+        courseRepository.save(courseExecution1)
 
         tournament = new Tournament()
+        tournament.setKey(1)
+        tournament.setName(TOURNAMENT_NAME)
+        tournament.setStatus(Tournament.Status.CREATED)
         tournament.setCourseExecution(courseExecution1)
-        tournamentDto = new TournamentDto()
-        tournamentDto.setId(1)
+        tournamentRepository.save(tournament)
+
+        tournamentDto = new TournamentDto(tournament)
+
         user = new User()
-        user.setId(1)
         user.setKey(1)
         user.setRole(User.Role.STUDENT)
-
+        user.setUsername(USERNAME)
+        userRepository.save(user)
 
         userDto = new UserDto(user)
 
@@ -64,11 +91,11 @@ class StudentEnrollTournamentTest extends Specification {
         def result = tournamentService.enrollStudent(tournamentDto, userDto)
 
         then:
-        result.getId() == 1
+        result.getKey() == 1
         result.getEnrolled()!=null
         result.getEnrolled().size()==1
-        result.getEnrolled().contains(userDto)
-        result.getEnrolled().get(0).getId()==1
+        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(userDto.getId()) })
+        result.getEnrolled().get(0).getUsername()==USERNAME
 
     }
 
@@ -81,22 +108,24 @@ class StudentEnrollTournamentTest extends Specification {
 
         and: "another student enrolled in the tournament"
         user2 = new User()
-        user2.setId(2)
         user2.setKey(2)
         user2.setRole(User.Role.STUDENT)
         user2.addCourse(courseExecution1)
+        userRepository.save(user2)
         user2Dto = new UserDto(user2)
+        tournament.getEnrolled().add(user2)
         tournamentDto.setEnrolled(new ArrayList<>(Arrays.asList(user2Dto)))
+        tournamentRepository.save(tournament)
 
         when:
         def result = tournamentService.enrollStudent(tournamentDto, userDto)
 
         then:
-        result.getId() == 1
+        result.getKey() == 1
         result.getEnrolled()!=null
         result.getEnrolled().size()==2
-        result.getEnrolled().contains(userDto)
-        result.getEnrolled().contains(user2Dto)
+        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(userDto.getId()) })
+        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(user2Dto.getId()) })
 
     }
 
@@ -117,7 +146,10 @@ class StudentEnrollTournamentTest extends Specification {
         tournamentDto.setName(TOURNAMENT_NAME)
         and:"student enrolled in the tournament"
         user.addCourse(courseExecution1)
+        tournament.getEnrolled().add(user)
         tournamentDto.setEnrolled(new ArrayList<>(Arrays.asList(userDto)))
+        tournamentRepository.save(tournament)
+
         when:
         tournamentService.enrollStudent(tournamentDto, userDto)
         then:
@@ -129,9 +161,11 @@ class StudentEnrollTournamentTest extends Specification {
         tournamentDto.setName(TOURNAMENT_NAME)
         and:"a student not in the same course execution"
         Course course2 = new Course(COURSE_NAME2, Course.Type.TECNICO)
+        courseRepository.save(course2)
         CourseExecution courseExecution2 = new CourseExecution(course2, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
-        courseExecution2.setId(2)
+        courseExecutionRepository.save(courseExecution2)
         user.addCourse(courseExecution2)
+        userRepository.save(user)
 
         when:
         tournamentService.enrollStudent(tournamentDto, userDto)
@@ -142,8 +176,9 @@ class StudentEnrollTournamentTest extends Specification {
 
     def "tournament is closed"(){
         given:"a closed tournament"
-        tournamentDto.setName(TOURNAMENT_NAME)
-        tournamentDto.setStatus(Tournament.Status.CLOSED.name())
+        tournament.setStatus(Tournament.Status.CLOSED)
+        tournamentDto = new TournamentDto(tournament)
+        tournamentRepository.save(tournament)
 
         and:"a student in a course execution"
         user.addCourse(courseExecution1)
@@ -153,6 +188,16 @@ class StudentEnrollTournamentTest extends Specification {
 
         then:
         thrown(TutorException)
+
+    }
+
+    @TestConfiguration
+    static class TournamentServiceImplTestContextConfiguration{
+
+        @Bean
+        TournamentService tournamentService(){
+            return new TournamentService()
+        }
 
     }
 }

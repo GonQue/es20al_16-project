@@ -15,8 +15,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,6 +35,9 @@ public class TournamentService {
 
    @Autowired
    private UserRepository userRepository;
+
+   @Autowired
+   private TournamentRepository tournamentRepository;
 
    @Autowired
    private TopicRepository topicRepository;
@@ -79,6 +84,43 @@ public class TournamentService {
       entityManager.persist(tournament);
 
       return new TournamentDto(tournamentDto.getQuiz(), topicsDto, tournament);
+
+
+   }
+
+   public TournamentDto enrollStudent(TournamentDto tournamentDto, UserDto studentDto) {
+      Tournament tournament = tournamentRepository.findById(tournamentDto.getId()).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentDto.getId()));
+      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+
+      if (user.getRole() != User.Role.STUDENT) {
+         throw new TutorException(TOURNAMENT_ENROLLED_NOT_STUDENT);
+      }
+
+      if (!user.getCourseExecutions().stream()
+              .anyMatch(t -> t.getId().equals(tournament.getCourseExecution().getId()))) {
+         throw new TutorException(USER_NOT_IN_COURSE_EXECUTION);
+      }
+
+      if (tournament.getStatus() == Tournament.Status.CLOSED) {
+         throw new TutorException(TOURNAMENT_CLOSED);
+      }
+      tournament.addStudent(user);
+
+
+      tournamentRepository.save(tournament);
+
+      List<UserDto> enrolled = new ArrayList<>();
+      Set<User> users = tournament.getEnrolled();
+      for(User u: users){
+         UserDto userDto = new UserDto(u);
+         enrolled.add(userDto);
+      }
+
+      TournamentDto tDto = new TournamentDto(tournament);
+      tDto.setEnrolled(enrolled);
+
+      
+      return tDto;
 
    }
 }
