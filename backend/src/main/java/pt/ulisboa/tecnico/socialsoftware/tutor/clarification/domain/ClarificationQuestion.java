@@ -49,7 +49,6 @@ public class ClarificationQuestion {
         question = q;
         student = s;
         answer = a;
-        //status
         content = clarificationQuestionDto.getContent();
         creationDate = LocalDateTime.now();
     }
