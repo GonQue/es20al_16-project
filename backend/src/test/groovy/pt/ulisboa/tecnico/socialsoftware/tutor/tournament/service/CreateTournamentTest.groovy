@@ -24,11 +24,15 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_DATA
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NO_CREATOR
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_QUIZ_NOT_FOUND
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NAME_INVALID
 
 @DataJpaTest
 class CreateTournamentTest extends Specification {
@@ -132,7 +136,6 @@ class CreateTournamentTest extends Specification {
     }
 
     def "create a tournament with 2 topics"(){
-        // create a tournament with a name, creator, start and end time, 2 topics, 5 questions,
         given:"a tournament"
         tournamentDto.setName(TOURNAMENT_NAME)
 
@@ -232,26 +235,40 @@ class CreateTournamentTest extends Specification {
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID
     }
 
-    
-    def "tournament name is empty"(){
-        given:"a tournament with empty name"
-        tournamentDto.setName(null)
+    @Unroll("Invalid arguments: #name | #hasCreator | #hasQuiz || errorMessage")
+    def "invalid input values"(){
+        given: "a tournament"
+        tournamentDto = new TournamentDto()
+        tournamentDto.setName(name)
+        tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
+        createUserCreator(hasCreator)
+        createQuiz(hasQuiz)
+
         when:
         tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+
         then:
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NAME_INVALID
-    } 
-    
-    def "tournament name is blank"(){
-        given:"a tournament with blank name"
-        tournamentDto.setName("  ")
-        when:
-        tournamentService.createTournament(courseExecution.getId(), tournamentDto)
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NAME_INVALID
+        exception.errorMessage == errorMessage
+
+        where:
+        name            | hasCreator| hasQuiz      || errorMessage
+        null            | true      | true      || TOURNAMENT_NAME_INVALID
+        "  "            | true      | true      || TOURNAMENT_NAME_INVALID
+        TOURNAMENT_NAME | false     | true      || TOURNAMENT_NO_CREATOR
+        TOURNAMENT_NAME | true      | false     || TOURNAMENT_QUIZ_NOT_FOUND
+
     }
+
+    def createUserCreator(hasCreator){
+        if(hasCreator){  tournamentDto.setCreator(userDto) }
+        else {  tournamentDto.setCreator(null)}
+    }
+    def createQuiz(hasQuiz){
+        if(hasQuiz){ tournamentDto.setQuiz(quizDto) }
+        else{ tournamentDto.setQuiz(null) }
+    }
+
 
     @TestConfiguration
     static class TournamentServiceImplTestContextConfiguration{

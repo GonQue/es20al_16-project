@@ -46,6 +46,8 @@ public enum ErrorMessage {
     TOURNAMENT_TIME_INVALID("The start and end time for the tournament are invalid"),
     TOURNAMENT_NAME_INVALID("Tournament name is null or empty"),
     TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID("Number of questions for the tournament is invalid"),
+    TOURNAMENT_QUIZ_NOT_FOUND("Tournament cant be created without a quiz"),
+    TOURNAMENT_NO_CREATOR("Tournament cant be created without a creator"),
 
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"), // TODO check me
