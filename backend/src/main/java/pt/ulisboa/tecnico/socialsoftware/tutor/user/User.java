@@ -72,7 +72,6 @@ public class User implements UserDetails, Importable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true)
     private List<ClarificationResponse> clarification_responses = new ArrayList<>();
 
-
     public User() {
     }
 
