@@ -38,6 +38,7 @@ public enum ErrorMessage {
     QUESTION_IS_USED_IN_QUIZ("Question is used in quiz %s"),
     QUIZ_NOT_CONSISTENT("Field %s of quiz is not consistent"),
     USER_NOT_ENROLLED("%s - Not enrolled in any available course"),
+    USER_NOT_ENROLLED_COURSE("User is not enrolled in the question's course"),
     QUIZ_NO_LONGER_AVAILABLE("This quiz is no longer available"),
     QUIZ_NOT_YET_AVAILABLE("This quiz is not yet available"),
 
@@ -69,6 +70,24 @@ public enum ErrorMessage {
     AUTHENTICATION_ERROR("Authentication Error"),
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
+    QUESTION_CLARIFICATION_NOT_FOUND("Question clarification not found with id %d"),
+    RESPONSE_CONTENT("The response should have a valid content"),
+    CLARIFICATION_CONTENT("The clarification should have a valid content"),
+    USER_IS_NOT_A_TEACHER("The user is not a teacher"),
+    USER_IS_NOT_A_STUDENT("The user is not a student"),
+    QUESTION_ANSWERS_NOT_FOUND("The student does not have an answer for that question"),
+    USER_ID_IS_NULL("The user id is null"),
+    CLARIFICATION_ID_IS_NULL("The clarification id is null"),
+    QUESTION_ID_IS_NULL( "The question id is null"),
+    QUESTION_ANSWER_ID_IS_NULL( "The answer id is null"),
+
+    USER_IS_EMPTY("User doesn't exist."),
+    PQ_NOT_FOUND("Proposed Question not found"),
+    PQ_ALREADY_EVALUATED("The Proposed Question is already evaluated"),
+    JUSTIFICATION_IS_EMPTY("The justification is empty"),
+    JUSTIFICATION_IS_BLANK("The justification is blank"),
+    PROPQUESTION_MISSING_QUESTION("Proposed Question have empty question"),
+    TOPIC_NOT_BELONGING_TO_COURSE("Topic does not belong to the course"),
 
     ACCESS_DENIED("You do not have permission to view this resource");
 
