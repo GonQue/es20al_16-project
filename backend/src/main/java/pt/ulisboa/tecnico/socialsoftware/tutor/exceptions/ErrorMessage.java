@@ -52,8 +52,12 @@ public enum ErrorMessage {
     AUTHENTICATION_ERROR("Authentication Error"),
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
+    ACCESS_DENIED("You do not have permission to view this resource"),
 
-    ACCESS_DENIED("You do not have permission to view this resource");
+    PROPQUESTION_MISSING_QUESTION("Proposed Question have empty question"),
+    TOPIC_NOT_BELONGING_TO_COURSE("Topic does not belong to the course"),
+    USER_NOT_ENROLLED_COURSE("%s - Not enrolled in the question's course"),
+    USER_IS_EMPTY("User doesn't exist");
 
     public final String label;
 
