@@ -81,7 +81,7 @@ public class Quiz {
         this.key = quizDto.getKey();
         setTitle(quizDto.getTitle());
         this.type = quizDto.getType();
-        this.scramble = quizDto.getScramble();
+        this.scramble = quizDto.isScramble();
         this.creationDate = quizDto.getCreationDateDate();
         setAvailableDate(quizDto.getAvailableDateDate());
         setConclusionDate(quizDto.getConclusionDateDate());
@@ -184,10 +184,6 @@ public class Quiz {
         return quizAnswers;
     }
 
-    public boolean isScramble() {
-        return scramble;
-    }
-
     public CourseExecution getCourseExecution() {
         return courseExecution;
     }
@@ -231,7 +227,7 @@ public class Quiz {
         if (this.type.equals(QuizType.PROPOSED) && availableDate == null) {
             throw new TutorException(QUIZ_NOT_CONSISTENT, "Available date");
         }
-        if (this.type.equals(QuizType.PROPOSED) && this.conclusionDate != null && conclusionDate.isBefore(availableDate)) {
+        if (this.type.equals(QuizType.PROPOSED) && this.availableDate != null && this.conclusionDate != null && conclusionDate.isBefore(availableDate)) {
             throw new TutorException(QUIZ_NOT_CONSISTENT, "Available date");
         }
     }
