@@ -198,7 +198,7 @@ public class ClarificationService {
         return clarificationResponse;
     }
 
-    public void listResponses(int clarificationQuestionId) {
+    public void listResponses(int clarificationQuestionId, int studentId) {
         // TODO
     }
 }
