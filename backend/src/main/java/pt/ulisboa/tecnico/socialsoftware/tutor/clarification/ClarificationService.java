@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationRe
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
@@ -195,5 +196,9 @@ public class ClarificationService {
         teacher.addClarificationResponse(clarificationResponse);
 
         return clarificationResponse;
+    }
+
+    public void listResponses(int clarificationQuestionId) {
+        // TODO
     }
 }
