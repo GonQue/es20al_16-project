@@ -23,6 +23,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -198,7 +199,16 @@ public class ClarificationService {
         return clarificationResponse;
     }
 
-    public void listResponses(int clarificationQuestionId, int studentId) {
-        // TODO
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationResponseDto> listResponses(Integer clarificationQuestionId) {
+
+        if(clarificationQuestionId == null)
+            throw new TutorException(CLARIFICATION_ID_IS_NULL);
+        ClarificationQuestion clarificationQuestion = clarificationQuestionRepository.findById(clarificationQuestionId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_NOT_FOUND, clarificationQuestionId));
+
+        return clarificationQuestion.getResponses().stream().map(ClarificationResponseDto::new).collect(Collectors.toList());
     }
 }

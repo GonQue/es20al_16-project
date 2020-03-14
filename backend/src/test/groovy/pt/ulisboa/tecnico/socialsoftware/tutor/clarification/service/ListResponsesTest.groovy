@@ -96,6 +96,8 @@ class ListResponsesTest extends Specification {
         clarificationResponse.setTeacher(teacher)
         clarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
 
+        clarificationQuestion.addResponse(clarificationResponse)
+
         optionRepository.save(option)
         questionRepository.save(question)
         userRepository.save(student)
@@ -107,15 +109,13 @@ class ListResponsesTest extends Specification {
 
     def 'associate one response with a clarficationQuestion and list it'() {
         when:
-        def result = clarificationService.listResponses(clarificationQuestion.getId(), student.getId())
+        def result = clarificationService.listResponses(clarificationQuestion.getId())
 
         then: 'the returned data have one response'
         result.size() == 1
         def resResponse = result.get(0)
         resResponse.getId() != null
-        resResponse.getTeacher().getId() != null
         resResponse.getTeacherResponse() == TEACHER_RESPONSE
-        resResponse.getResponseDate != null
     }
 
     def 'associate two responses to a clarficationQuestion and list them'() {
@@ -129,56 +129,36 @@ class ListResponsesTest extends Specification {
         secondClarificationResponse.setTeacher(secondTeacher)
         secondClarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
 
+        clarificationQuestion.addResponse(secondClarificationResponse)
+
         userRepository.save(secondTeacher)
         clarificationResponseRepository.save(secondClarificationResponse)
 
         when:
-        def result = clarificationService.listResponses(clarificationQuestion.getId(), student.getId())
+        def result = clarificationService.listResponses(clarificationQuestion.getId())
 
         then: 'the returned data have two responses'
         result.size() == 2
         def resFirstResponse = result.get(0)
         resFirstResponse.getId() != null
-        resFirstResponse.getTeacher().getId() != null
         resFirstResponse.getTeacherResponse() == TEACHER_RESPONSE
-        resFirstResponse.getResponseDate != null
         def resSecondResponse = result.get(1)
         resSecondResponse.getId() != null
-        resSecondResponse.getTeacher().getId() != null
         resSecondResponse.getTeacherResponse() == TEACHER_RESPONSE
-        resSecondResponse.getResponseDate != null
-    }
-
-    def 'student does not exist'() {
-        when:
-        def result = clarificationService.listResponses(clarificationQuestion.getId(), UNEXISTENT_ID)
-
-        then:
-        def error = thrown(TutorException)
-        error.errorMessage == USER_NOT_FOUND
     }
 
     def 'question clarification does not exist'() {
         when:
-        def result = clarificationService.listResponses(UNEXISTENT_ID, student.getId())
+        clarificationService.listResponses(UNEXISTENT_ID)
 
         then:
         def error = thrown(TutorException)
         error.errorMessage == QUESTION_CLARIFICATION_NOT_FOUND
     }
 
-    def 'student id is null'() {
-        when:
-        def result = clarificationService.listResponses(clarificationQuestion.getId(), null)
-
-        then:
-        def error = thrown(TutorException)
-        error.errorMessage == USER_ID_IS_NULL
-    }
-
     def 'question clarification id is null'() {
         when:
-        def result = clarificationService.listResponses(null, student.getId())
+        clarificationService.listResponses(null)
 
         then:
         def error = thrown(TutorException)
