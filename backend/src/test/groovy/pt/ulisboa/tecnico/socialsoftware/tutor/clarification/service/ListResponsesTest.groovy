@@ -21,11 +21,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CLARIFICATION_CONTENT
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CLARIFICATION_ID_IS_NULL
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_CLARIFICATION_NOT_FOUND
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_ID_IS_NULL
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND
 
 @DataJpaTest
 class ListResponsesTest extends Specification {
@@ -111,7 +108,7 @@ class ListResponsesTest extends Specification {
         when:
         def result = clarificationService.listResponses(clarificationQuestion.getId())
 
-        then: 'the returned data have one response'
+        then: 'the returned data has one response'
         result.size() == 1
         def resResponse = result.get(0)
         resResponse.getId() != null

@@ -15,7 +15,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationRe
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
@@ -205,10 +204,14 @@ public class ClarificationService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ClarificationResponseDto> listResponses(Integer clarificationQuestionId) {
 
-        if(clarificationQuestionId == null)
-            throw new TutorException(CLARIFICATION_ID_IS_NULL);
-        ClarificationQuestion clarificationQuestion = clarificationQuestionRepository.findById(clarificationQuestionId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_NOT_FOUND, clarificationQuestionId));
+        checkClarificationId(clarificationQuestionId);
 
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        return listOfResponsesDto(clarificationQuestion);
+    }
+
+    private List<ClarificationResponseDto> listOfResponsesDto(ClarificationQuestion clarificationQuestion) {
         return clarificationQuestion.getResponses().stream().map(ClarificationResponseDto::new).collect(Collectors.toList());
     }
 }
