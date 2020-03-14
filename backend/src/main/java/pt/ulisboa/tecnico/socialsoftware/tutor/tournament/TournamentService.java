@@ -120,19 +120,6 @@ public class TournamentService {
    }
 
 
-
-      /*Tournament tournament = new Tournament(user, tournamentDto);
-      tournament.setCourseExecution(courseExecution);
-      tournament.setTopics(topics);
-      tournament.setQuiz(quiz);
-
-      entityManager.persist(tournament);
-
-      return new TournamentDto(tournamentDto.getQuiz(), topicsDto, tournament);
-
-
-   }*/
-
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto enrollStudent(TournamentDto tournamentDto, UserDto studentDto) {
       Tournament tournament = tournamentRepository.findById(tournamentDto.getId()).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentDto.getId()));
