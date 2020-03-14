@@ -57,11 +57,8 @@ public class CourseExecution {
         if (academicTerm == null || academicTerm.trim().isEmpty()) {
             throw new TutorException(COURSE_EXECUTION_ACADEMIC_TERM_IS_EMPTY);
         }
-        if (course.getCourseExecutions().stream()
-                .anyMatch(courseExecution -> courseExecution.getType().equals(type)
-                        && courseExecution.getAcronym().equals(acronym)
-                        && courseExecution.getAcademicTerm().equals(academicTerm))) {
-            throw new TutorException(DUPLICATE_COURSE_EXECUTION,acronym + academicTerm);
+        if (course.existsCourseExecution(acronym, academicTerm, type)) {
+            throw new TutorException(DUPLICATE_COURSE_EXECUTION, acronym + academicTerm);
         }
 
         this.type = type;
@@ -74,6 +71,15 @@ public class CourseExecution {
 
     public void addTournament(Tournament tournament) {
         tournaments.add(tournament);
+    }
+
+    public void delete() {
+        if (!getQuizzes().isEmpty() || !getAssessments().isEmpty()) {
+            throw new TutorException(CANNOT_DELETE_COURSE_EXECUTION, acronym + academicTerm);
+        }
+
+        course.getCourseExecutions().remove(this);
+        users.forEach(user -> user.getCourseExecutions().remove(this));
     }
 
     public Integer getId() {
