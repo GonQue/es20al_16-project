@@ -1,10 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "question_answers")
@@ -29,6 +32,9 @@ public class QuestionAnswer {
     private Option option;
 
     private Integer sequence;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answer", orphanRemoval=true)
+    private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
 
     public QuestionAnswer() {
     }
@@ -116,6 +122,12 @@ public class QuestionAnswer {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
+
+    public List<ClarificationQuestion> getClarification_questions() { return clarification_questions; }
+
+    public void setClarification_questions(List<ClarificationQuestion> clarification_questions) { this.clarification_questions = clarification_questions; }
+
+    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarification_questions.add(clarificationQuestion); }
 
     @Override
     public String toString() {

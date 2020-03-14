@@ -79,6 +79,8 @@ class AnswerClarificationTest extends Specification{
         def clarificationQuestionResult = clarificationQuestionRepository.findAll().get(0)
         clarificationQuestionResult.getStatus().name() == ClarificationQuestion.Status.ANSWERED.name()
         clarificationQuestionResult.getResponses().size() == 1L
+        and: "responses list of the teacher"
+        teacher.getClarification_responses().size() == 1L
     }
 
     def 'two teachers clarify the same student'() {
@@ -109,6 +111,9 @@ class AnswerClarificationTest extends Specification{
         def clarificationQuestionResult = clarificationQuestionRepository.findAll().get(0)
         clarificationQuestionResult.getStatus().name() == ClarificationQuestion.Status.ANSWERED.name()
         clarificationQuestionResult.getResponses().size() == 2L
+        and: "responses list of both teachers"
+        teacher.getClarification_responses().size() == 1L
+        second_teacher.getClarification_responses().size() == 1L
     }
 
     def 'the user is not a teacher'() {

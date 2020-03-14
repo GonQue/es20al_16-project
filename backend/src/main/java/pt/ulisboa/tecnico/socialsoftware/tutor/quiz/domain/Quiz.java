@@ -4,8 +4,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
                 @Index(name = "quizzes_indx_0", columnList = "key")
         })
 public class Quiz {
+
     public enum QuizType {
         EXAM, TEST, GENERATED, PROPOSED, IN_CLASS
     }
@@ -62,9 +65,13 @@ public class Quiz {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quiz", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<QuizAnswer> quizAnswers = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quiz", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<Tournament> tournaments = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
+
 
     public Quiz() {}
 
@@ -80,6 +87,10 @@ public class Quiz {
         setConclusionDate(quizDto.getConclusionDateDate());
         this.series = quizDto.getSeries();
         this.version = quizDto.getVersion();
+    }
+
+    public void addTournament(Tournament tournament) {
+        tournaments.add(tournament);
     }
 
     public Integer getId() {
