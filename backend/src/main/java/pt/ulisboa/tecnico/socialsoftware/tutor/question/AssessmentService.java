@@ -53,17 +53,9 @@ public class AssessmentService {
                 .orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public CourseDto findAssessmentCourseExecution(int assessmentId) {
-        return assessmentRepository.findById(assessmentId)
-                .map(Assessment::getCourseExecution)
-                .map(CourseDto::new)
-                .orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
-    }
-
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<AssessmentDto> findAssessments(int courseExecutionId) {
         return assessmentRepository.findByExecutionCourseId(courseExecutionId).stream()
@@ -72,8 +64,8 @@ public class AssessmentService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<AssessmentDto> findAvailableAssessments(int courseExecutionId) {
         return assessmentRepository.findByExecutionCourseId(courseExecutionId).stream()
@@ -85,8 +77,8 @@ public class AssessmentService {
 
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AssessmentDto createAssessment(int executionId, AssessmentDto assessmentDto) {
         CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
@@ -107,8 +99,8 @@ public class AssessmentService {
 
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AssessmentDto updateAssessment(Integer assessmentId, AssessmentDto assessmentDto) {
         Assessment assessment = assessmentRepository.findById(assessmentId).orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
@@ -147,8 +139,8 @@ public class AssessmentService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void removeAssessment(Integer assessmentId) {
         Assessment assessment = assessmentRepository.findById(assessmentId).orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
@@ -157,8 +149,8 @@ public class AssessmentService {
     }
 
     @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void assessmentSetStatus(Integer assessmentId, Assessment.Status status) {
         Assessment assessment = assessmentRepository.findById(assessmentId).orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
@@ -166,4 +158,3 @@ public class AssessmentService {
     }
 
 }
-
