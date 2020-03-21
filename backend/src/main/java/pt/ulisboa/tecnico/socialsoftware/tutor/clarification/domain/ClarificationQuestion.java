@@ -49,6 +49,7 @@ public class ClarificationQuestion {
         question = q;
         student = s;
         answer = a;
+        setStatus(Status.NOT_ANSWERED);
         content = clarificationQuestionDto.getContent();
         creationDate = LocalDateTime.now();
     }
