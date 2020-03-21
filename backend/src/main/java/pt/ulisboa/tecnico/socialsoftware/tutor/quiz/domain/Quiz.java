@@ -4,8 +4,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
                 @Index(name = "quizzes_indx_0", columnList = "key")
         })
 public class Quiz {
+
     public enum QuizType {
         EXAM, TEST, GENERATED, PROPOSED, IN_CLASS
     }
@@ -47,6 +50,12 @@ public class Quiz {
     @Column(columnDefinition = "boolean default false")
     private boolean scramble = false;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean qrCodeOnly = false;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean oneWay = false;
+
     @Column(nullable = false)
     private String title = "Title";
 
@@ -62,9 +71,13 @@ public class Quiz {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quiz", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<QuizAnswer> quizAnswers = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quiz", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<Tournament> tournaments = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
+
 
     public Quiz() {}
 
@@ -74,12 +87,18 @@ public class Quiz {
         this.key = quizDto.getKey();
         setTitle(quizDto.getTitle());
         this.type = quizDto.getType();
-        this.scramble = quizDto.getScramble();
+        this.scramble = quizDto.isScramble();
+        this.qrCodeOnly = quizDto.isQrCodeOnly();
+        this.oneWay = quizDto.isOneWay();
         this.creationDate = quizDto.getCreationDateDate();
         setAvailableDate(quizDto.getAvailableDateDate());
         setConclusionDate(quizDto.getConclusionDateDate());
         this.series = quizDto.getSeries();
         this.version = quizDto.getVersion();
+    }
+
+    public void addTournament(Tournament tournament) {
+        tournaments.add(tournament);
     }
 
     public Integer getId() {
@@ -104,6 +123,22 @@ public class Quiz {
 
     public void setScramble(boolean scramble) {
     this.scramble = scramble;
+    }
+
+    public boolean isQrCodeOnly() {
+        return qrCodeOnly;
+    }
+
+    public void setQrCodeOnly(boolean qrCodeOnly) {
+        this.qrCodeOnly = qrCodeOnly;
+    }
+
+    public boolean isOneWay() {
+        return oneWay;
+    }
+
+    public void setOneWay(boolean noBack) {
+        this.oneWay = noBack;
     }
 
     public String getTitle() {
@@ -173,10 +208,6 @@ public class Quiz {
         return quizAnswers;
     }
 
-    public boolean isScramble() {
-        return scramble;
-    }
-
     public CourseExecution getCourseExecution() {
         return courseExecution;
     }
@@ -220,7 +251,7 @@ public class Quiz {
         if (this.type.equals(QuizType.PROPOSED) && availableDate == null) {
             throw new TutorException(QUIZ_NOT_CONSISTENT, "Available date");
         }
-        if (this.type.equals(QuizType.PROPOSED) && this.conclusionDate != null && conclusionDate.isBefore(availableDate)) {
+        if (this.type.equals(QuizType.PROPOSED) && this.availableDate != null && this.conclusionDate != null && conclusionDate.isBefore(availableDate)) {
             throw new TutorException(QUIZ_NOT_CONSISTENT, "Available date");
         }
     }

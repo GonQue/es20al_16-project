@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -42,6 +43,9 @@ public class CourseExecution {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseExecution", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<Assessment> assessments = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseExecution", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<Tournament> tournaments = new HashSet<>();
+
     public CourseExecution() {
     }
 
@@ -52,11 +56,8 @@ public class CourseExecution {
         if (academicTerm == null || academicTerm.trim().isEmpty()) {
             throw new TutorException(COURSE_EXECUTION_ACADEMIC_TERM_IS_EMPTY);
         }
-        if (course.getCourseExecutions().stream()
-                .anyMatch(courseExecution -> courseExecution.getType().equals(type)
-                        && courseExecution.getAcronym().equals(acronym)
-                        && courseExecution.getAcademicTerm().equals(academicTerm))) {
-            throw new TutorException(DUPLICATE_COURSE_EXECUTION,acronym + academicTerm);
+        if (course.existsCourseExecution(acronym, academicTerm, type)) {
+            throw new TutorException(DUPLICATE_COURSE_EXECUTION, acronym + academicTerm);
         }
 
         this.type = type;
@@ -65,6 +66,19 @@ public class CourseExecution {
         this.academicTerm = academicTerm;
         this.status = Status.ACTIVE;
         course.addCourseExecution(this);
+    }
+
+    public void addTournament(Tournament tournament) {
+        tournaments.add(tournament);
+    }
+
+    public void delete() {
+        if (!getQuizzes().isEmpty() || !getAssessments().isEmpty()) {
+            throw new TutorException(CANNOT_DELETE_COURSE_EXECUTION, acronym + academicTerm);
+        }
+
+        course.getCourseExecutions().remove(this);
+        users.forEach(user -> user.getCourseExecutions().remove(this));
     }
 
     public Integer getId() {

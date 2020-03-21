@@ -4,10 +4,13 @@ export class Quiz {
   id!: number;
   number!: number;
   scramble!: boolean;
+  qrCodeOnly!: boolean;
+  oneWay!: boolean;
   title!: string;
   creationDate!: string | undefined;
   availableDate!: string | undefined;
   conclusionDate!: string | undefined;
+  secondsToConclusion!: number;
   type!: string;
   series!: number;
   version!: string;
@@ -21,6 +24,8 @@ export class Quiz {
       this.id = jsonObj.id;
       this.number = jsonObj.number;
       this.scramble = jsonObj.scramble;
+      this.qrCodeOnly = jsonObj.qrCodeOnly;
+      this.oneWay = jsonObj.oneWay;
       this.title = jsonObj.title;
       this.type = jsonObj.type;
       this.series = jsonObj.series;
@@ -30,6 +35,7 @@ export class Quiz {
       this.creationDate = jsonObj.creationDate;
       this.availableDate = jsonObj.availableDate;
       this.conclusionDate = jsonObj.conclusionDate;
+      this.secondsToConclusion = jsonObj.secondsToConclusion;
 
       if (jsonObj.questions) {
         this.questions = jsonObj.questions.map(

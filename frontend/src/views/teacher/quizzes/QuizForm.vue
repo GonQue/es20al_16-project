@@ -18,7 +18,7 @@
       <v-row>
         <v-col cols="12" sm="6">
           <v-datetime-picker
-            label="Available Date"
+            label="*Available Date"
             format="yyyy-MM-dd HH:mm"
             v-model="quiz.availableDate"
             date-format="yyyy-MM-dd"
@@ -43,12 +43,19 @@
         <v-col style="display: flex; justify-content: center">
           <v-switch v-model="quiz.scramble" label="Scramble" />
         </v-col>
+        <v-col style="display: flex; justify-content: center">
+          <v-switch v-model="quiz.qrCodeOnly" label="QRCode Only" />
+        </v-col>
+        <v-col style="display: flex; justify-content: center">
+          <v-switch v-model="quiz.oneWay" label="One Way Quiz" />
+        </v-col>
         <v-col cols="12" sm="6">
           <v-select
             v-model="quiz.type"
             :items="['PROPOSED', 'IN_CLASS']"
             label="*Type"
           ></v-select>
+          {{ quiz.type }}
         </v-col>
       </v-row>
 
@@ -215,7 +222,7 @@
 
     <show-quiz-dialog
       v-if="quiz"
-      :dialog="quizDialog"
+      v-model="quizDialog"
       :quiz="quiz"
       v-on:close-quiz-dialog="onCloseQuizDialog"
     />
@@ -352,6 +359,7 @@ export default class QuizForm extends Vue {
   get canSave(): boolean {
     return (
       !!this.quiz.title &&
+      !!this.quiz.availableDate &&
       !!this.quiz.type &&
       ((this.quiz.type == 'IN_CLASS' &&
         this.quiz.conclusionDate !== undefined) ||
@@ -367,8 +375,7 @@ export default class QuizForm extends Vue {
   async save() {
     try {
       this.quiz.questions = this.quizQuestions;
-      let updatedQuiz: Quiz;
-      updatedQuiz = await RemoteServices.saveQuiz(this.quiz);
+      let updatedQuiz = await RemoteServices.saveQuiz(this.quiz);
       this.cleanQuizQuestions();
       this.$emit('updateQuiz', updatedQuiz);
     } catch (error) {

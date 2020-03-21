@@ -3,11 +3,14 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.user;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,8 +19,8 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails, Importable {
-    public enum Role {STUDENT, TEACHER, ADMIN}
+public class User implements UserDetails {
+    public enum Role {STUDENT, TEACHER, ADMIN, DEMO_ADMIN}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +31,7 @@ public class User implements UserDetails, Importable {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-    
+
     @Column(unique=true)
     private String username;
 
@@ -54,8 +57,21 @@ public class User implements UserDetails, Importable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<QuizAnswer> quizAnswers = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<Tournament> tournamentsCreated = new HashSet<>();
+
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="enrolled")
+    private Set<Tournament> tournamentsEnrolled = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
+    private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true)
+    private List<ClarificationResponse> clarification_responses = new ArrayList<>();
+
 
     public User() {
     }
@@ -75,6 +91,15 @@ public class User implements UserDetails, Importable {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+    }
+
+
+    public void addTournament(Tournament tournament) {
+        tournamentsCreated.add(tournament);
+    }
+    public void enrollTournament(Tournament tournament){
+        tournamentsEnrolled.add(tournament);
+
     }
 
     public Integer getId() {
@@ -157,7 +182,7 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)
             this.numberOfTeacherQuizzes = (int) getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.PROPOSED))
                     .count();
 
@@ -171,7 +196,7 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfStudentQuizzes() {
         if(this.numberOfStudentQuizzes == null)
             this.numberOfStudentQuizzes = (int) getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.GENERATED))
                     .count();
 
@@ -185,7 +210,7 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfInClassQuizzes() {
         if (this.numberOfInClassQuizzes == null)
             this.numberOfInClassQuizzes = (int) getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS))
                     .count();
 
@@ -199,7 +224,7 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfTeacherAnswers() {
         if (this.numberOfTeacherAnswers == null)
             this.numberOfTeacherAnswers = getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.PROPOSED))
                     .mapToInt(quizAnswer -> quizAnswer.getQuiz().getQuizQuestions().size())
                     .sum();
@@ -214,11 +239,11 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfInClassAnswers() {
         if (this.numberOfInClassAnswers == null)
             this.numberOfInClassAnswers = getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS))
                     .mapToInt(quizAnswer -> quizAnswer.getQuiz().getQuizQuestions().size())
                     .sum();
-            return numberOfInClassAnswers;
+        return numberOfInClassAnswers;
     }
 
     public void setNumberOfInClassAnswers(Integer numberOfInClassAnswers) {
@@ -228,7 +253,7 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfStudentAnswers() {
         if (this.numberOfStudentAnswers == null) {
             this.numberOfStudentAnswers = getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.GENERATED))
                     .mapToInt(quizAnswer -> quizAnswer.getQuiz().getQuizQuestions().size())
                     .sum();
@@ -244,14 +269,14 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfCorrectTeacherAnswers() {
         if (this.numberOfCorrectTeacherAnswers == null)
             this.numberOfCorrectTeacherAnswers = (int) this.getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.PROPOSED))
                     .flatMap(quizAnswer -> quizAnswer.getQuestionAnswers().stream())
                     .filter(questionAnswer -> questionAnswer.getOption() != null &&
                             questionAnswer.getOption().getCorrect())
                     .count();
 
-            return numberOfCorrectTeacherAnswers;
+        return numberOfCorrectTeacherAnswers;
     }
 
     public void setNumberOfCorrectTeacherAnswers(Integer numberOfCorrectTeacherAnswers) {
@@ -261,11 +286,11 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfCorrectInClassAnswers() {
         if (this.numberOfCorrectInClassAnswers == null)
             this.numberOfCorrectInClassAnswers = (int) this.getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS))
                     .flatMap(quizAnswer -> quizAnswer.getQuestionAnswers().stream())
                     .filter(questionAnswer -> questionAnswer.getOption() != null &&
-                        questionAnswer.getOption().getCorrect())
+                            questionAnswer.getOption().getCorrect())
                     .count();
 
         return numberOfCorrectInClassAnswers;
@@ -278,11 +303,11 @@ public class User implements UserDetails, Importable {
     public Integer getNumberOfCorrectStudentAnswers() {
         if (this.numberOfCorrectStudentAnswers == null)
             this.numberOfCorrectStudentAnswers = (int) this.getQuizAnswers().stream()
-                    .filter(quizAnswer -> quizAnswer.getCompleted())
+                    .filter(QuizAnswer::isCompleted)
                     .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.GENERATED))
                     .flatMap(quizAnswer -> quizAnswer.getQuestionAnswers().stream())
                     .filter(questionAnswer -> questionAnswer.getOption() != null &&
-                        questionAnswer.getOption().getCorrect())
+                            questionAnswer.getOption().getCorrect())
                     .count();
 
         return numberOfCorrectStudentAnswers;
@@ -303,6 +328,8 @@ public class User implements UserDetails, Importable {
             case GENERATED:
                 this.numberOfStudentQuizzes = getNumberOfStudentQuizzes() + 1;
                 break;
+            default:
+                break;
         }
     }
 
@@ -316,6 +343,8 @@ public class User implements UserDetails, Importable {
                 break;
             case GENERATED:
                 this.numberOfStudentAnswers = getNumberOfStudentAnswers() + 1;
+                break;
+            default:
                 break;
         }
     }
@@ -331,6 +360,8 @@ public class User implements UserDetails, Importable {
             case GENERATED:
                 this.numberOfCorrectStudentAnswers = getNumberOfCorrectStudentAnswers() + 1;
                 break;
+            default:
+                break;
         }
     }
 
@@ -342,28 +373,17 @@ public class User implements UserDetails, Importable {
         this.courseExecutions.add(course);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", role=" + role +
-                ", id=" + id +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", courseAcronyms='" + enrolledCoursesAcronyms + '\'' +
-                ", numberOfTeacherQuizzes=" + numberOfTeacherQuizzes +
-                ", numberOfInClassQuizzes=" + numberOfInClassQuizzes +
-                ", numberOfStudentQuizzes=" + numberOfStudentQuizzes +
-                ", numberOfTeacherAnswers=" + numberOfTeacherAnswers +
-                ", numberOfCorrectTeacherAnswers=" + numberOfCorrectTeacherAnswers +
-                ", numberOfInClassAnswers=" + numberOfInClassAnswers +
-                ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
-                ", numberOfStudentAnswers=" + numberOfStudentAnswers +
-                ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
-                ", creationDate=" + creationDate +
-                ", courseExecutions=" + courseExecutions +
-                '}';
-    }
+    public List<ClarificationQuestion> getClarification_questions() { return clarification_questions; }
+
+    public void setClarification_questions(List<ClarificationQuestion> clarification_questions) { this.clarification_questions = clarification_questions; }
+
+    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarification_questions.add(clarificationQuestion); }
+
+    public List<ClarificationResponse> getClarification_responses() { return clarification_responses; }
+
+    public void setClarification_responses(List<ClarificationResponse> clarification_responses) { this.clarification_responses = clarification_responses; }
+
+    public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarification_responses.add(clarificationResponse); }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
