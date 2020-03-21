@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
@@ -22,6 +23,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionProposalService {
@@ -42,9 +46,6 @@ public class QuestionProposalService {
 
     @Autowired
     private QuestionService questionService;
-
-    @PersistenceContext
-    EntityManager entityManager;
 
     private User getStudent(ProposedQuestionDto proposedQuestionDto) {
         Integer studentId = proposedQuestionDto.getStudentId();
@@ -83,7 +84,7 @@ public class QuestionProposalService {
         Question question = createQuestion(courseId, proposedQuestionDto);
         proposedQuestion.addQuestion(question);
 
-        this.entityManager.persist(proposedQuestion);
+        pqRepository.save(proposedQuestion);
         return new ProposedQuestionDto(proposedQuestion);
     }
 
@@ -103,8 +104,18 @@ public class QuestionProposalService {
         return new ProposedQuestionDto(pq);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ProposedQuestionDto> getProposedQuestions(int id) {
+        User student = findStudent(id);
+        return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).collect(Collectors.toList());
+    }
+
     private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
         return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    }
+
+    private User findStudent(int id){
+        return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
     }
 
     private User findTeacher(ProposedQuestionDto pqDto) {

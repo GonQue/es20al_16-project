@@ -68,6 +68,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         userRepository.save(teacher)
 
         def student = new User("student", "student", 2, User.Role.STUDENT)
+        userRepository.save(student)
 
         course = new Course("course", Course.Type.TECNICO)
         courseRepository.save(course)
@@ -106,7 +107,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
     def 'the user is not a teacher'() {
         given: "a admin"
-        def admin = new User("admin", "admin", 2, User.Role.ADMIN)
+        def admin = new User("admin", "admin", 3, User.Role.ADMIN)
         userRepository.save(admin)
         def adminDto = new UserDto(admin)
 
