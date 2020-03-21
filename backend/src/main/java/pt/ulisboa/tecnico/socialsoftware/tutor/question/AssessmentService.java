@@ -20,9 +20,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicConjunctionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.AssessmentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicConjunctionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -48,8 +45,13 @@ public class AssessmentService {
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
 
-    @PersistenceContext
-    EntityManager entityManager;
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public CourseDto findAssessmentCourseExecution(int assessmentId) {
+        return assessmentRepository.findById(assessmentId)
+                .map(Assessment::getCourseExecution)
+                .map(CourseDto::new)
+                .orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
+    }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CourseDto findAssessmentCourseExecution(int assessmentId) {
@@ -98,8 +100,8 @@ public class AssessmentService {
                 }).collect(Collectors.toList());
 
         Assessment assessment = new Assessment(courseExecution, topicConjunctions, assessmentDto);
+        assessmentRepository.save(assessment);
 
-        this.entityManager.persist(assessment);
         return new AssessmentDto(assessment);
     }
 
@@ -151,7 +153,7 @@ public class AssessmentService {
     public void removeAssessment(Integer assessmentId) {
         Assessment assessment = assessmentRepository.findById(assessmentId).orElseThrow(() -> new TutorException(ASSESSMENT_NOT_FOUND, assessmentId));
         assessment.remove();
-        entityManager.remove(assessment);
+        assessmentRepository.delete(assessment);
     }
 
     @Retryable(
