@@ -15,7 +15,6 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @Table(name = "course_executions")
 public class CourseExecution {
-
     public enum Status {ACTIVE, INACTIVE, HISTORIC}
 
     @Id
