@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tournament;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +27,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import java.util.*;
 
@@ -51,9 +48,6 @@ public class TournamentService {
 
    @Autowired
    private QuizRepository quizRepository;
-
-   @PersistenceContext
-   EntityManager entityManager;
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto createTournament(int executionId, TournamentDto tournamentDto){
@@ -98,7 +92,7 @@ public class TournamentService {
       Tournament tournament = new Tournament(creatorUser, courseExecution, quiz, tournamentDto);
       tournament.setTopics(topics);
 
-      entityManager.persist(tournament);
+      tournamentRepository.save(tournament);
       return tournament;
    }
 
