@@ -22,7 +22,7 @@ public class ClarificationQuestionDto implements Serializable {
     public ClarificationQuestionDto(ClarificationQuestion clarificationQuestion) {
         this.id = clarificationQuestion.getId();
         this.content = clarificationQuestion.getContent();
-        this.status = ClarificationQuestion.Status.NOT_ANSWERED.name();
+        this.status = clarificationQuestion.getStatus().name();
 
         if (clarificationQuestion.getCreationDate() != null)
             this.creationDate = clarificationQuestion.getCreationDate().format(formatter);

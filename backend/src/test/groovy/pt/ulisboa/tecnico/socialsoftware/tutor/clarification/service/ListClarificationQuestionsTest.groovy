@@ -82,6 +82,8 @@ class ListClarificationQuestionsTest extends Specification {
         clarificationQuestion.setContent(CONTENT)
         clarificationQuestion.setStatus(ClarificationQuestion.Status.NOT_ANSWERED)
 
+        student.addClarificationQuestion(clarificationQuestion)
+
         optionRepository.save(option)
         questionRepository.save(question)
         userRepository.save(student)
@@ -97,26 +99,13 @@ class ListClarificationQuestionsTest extends Specification {
         result.size() == 1
         def resQuestion = result.get(0)
         resQuestion.getId() != null
-        resQuestion.getContent() != CONTENT
+        resQuestion.getContent() == CONTENT
         resQuestion.getStatus() == ClarificationQuestion.Status.NOT_ANSWERED.name()
-        resQuestion.getCreationDate() != null
     }
 
     def 'list an ANSWERED clarificationQuestion'() {
         given: 'answer the question'
-        def teacher = new User()
-        teacher.setKey(2)
-        teacher.setRole(User.Role.TEACHER)
-
-        def clarificationResponse = new ClarificationResponse()
-        clarificationResponse.setClarificationQuestion(clarificationQuestion)
-        clarificationResponse.setTeacher(teacher)
-        clarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
-
-        clarificationQuestion.addResponse(clarificationResponse)
-
-        userRepository.save(teacher)
-        clarificationResponseRepository.save(clarificationResponse)
+        clarificationQuestion.setStatus(ClarificationQuestion.Status.ANSWERED)
 
         when:
         def result = clarificationService.listClarificationQuestions(student.getId())
@@ -125,9 +114,8 @@ class ListClarificationQuestionsTest extends Specification {
         result.size() == 1
         def resQuestion = result.get(0)
         resQuestion.getId() != null
-        resQuestion.getContent() != CONTENT
+        resQuestion.getContent() == CONTENT
         resQuestion.getStatus() == ClarificationQuestion.Status.ANSWERED.name()
-        resQuestion.getCreationDate() != null
     }
 
     def 'list more than one clarificationQuestion'() {
@@ -150,23 +138,24 @@ class ListClarificationQuestionsTest extends Specification {
         secondClarificationQuestion.setContent(CONTENT)
         secondClarificationQuestion.setStatus(ClarificationQuestion.Status.NOT_ANSWERED)
 
+        student.addClarificationQuestion(secondClarificationQuestion)
+
         optionRepository.save(secondOption)
         questionRepository.save(secondQuestion)
         answerRepository.save(secondAnswer)
+        clarificationQuestionRepository.save(secondClarificationQuestion)
 
         when:
         def result = clarificationService.listClarificationQuestions(student.getId())
 
         then: 'the returned data has two clarificationQuestions'
         result.size() == 2
-        def resFirstQuestion = result.get(0)
-        resFirstQuestion.getId() != null
-        resFirstQuestion.getContent() != CONTENT
-        resFirstQuestion.getCreationDate() != null
-        def resSecondQuestion = result.get(1)
-        resSecondQuestion.getId() != null
-        resSecondQuestion.getContent() != CONTENT
-        resSecondQuestion.getCreationDate() != null
+        def resFirstClarificationQuestion = result.get(0)
+        resFirstClarificationQuestion.getId() != null
+        resFirstClarificationQuestion.getContent() == CONTENT
+        def resSecondClarificationQuestion = result.get(1)
+        resSecondClarificationQuestion.getId() != null
+        resSecondClarificationQuestion.getContent() == CONTENT
     }
 
     def 'user does not exist'() {

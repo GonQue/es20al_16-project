@@ -204,8 +204,16 @@ public class ClarificationService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ClarificationQuestionDto> listClarificationQuestions(Integer studentId) {
-        //TODO
-        return new ArrayList<ClarificationQuestionDto>();
+
+        checkStudentId(studentId);
+
+        User student = getStudent(studentId);
+
+        return listOfClarificationQuestionsDto(student);
+    }
+
+    private List<ClarificationQuestionDto> listOfClarificationQuestionsDto(User student) {
+        return student.getClarification_questions().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
 
     @Retryable(
