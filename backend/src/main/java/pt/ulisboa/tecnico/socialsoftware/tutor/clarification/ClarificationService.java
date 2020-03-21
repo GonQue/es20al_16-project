@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -196,6 +197,15 @@ public class ClarificationService {
         teacher.addClarificationResponse(clarificationResponse);
 
         return clarificationResponse;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationQuestionDto> listClarificationQuestions(Integer studentId) {
+        //TODO
+        return new ArrayList<ClarificationQuestionDto>();
     }
 
     @Retryable(
