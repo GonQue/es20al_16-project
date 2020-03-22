@@ -74,7 +74,7 @@ public class User implements UserDetails {
     private List<ClarificationResponse> clarification_responses = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
-    private List<ProposedQuestion> proposedQuestions = new ArrayList<>();
+    private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public User() {
     }
