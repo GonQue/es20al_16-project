@@ -43,9 +43,6 @@ public class QuestionProposalService {
     @Autowired
     private QuestionService questionService;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     private User getStudent(ProposedQuestionDto proposedQuestionDto) {
         Integer studentId = proposedQuestionDto.getStudentId();
         if (studentId == null) {
@@ -60,6 +57,7 @@ public class QuestionProposalService {
         }
         QuestionDto questionDto = questionService.createQuestion(courseId, proposedQuestionDto.getQuestion());
         Question question = questionRepository.findByKey(questionDto.getKey()).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_NOT_FOUND));
+        question.setStatus(Question.Status.SUBMITTED);
         addTopicsToQuestion(proposedQuestionDto, question);
         return question;
     }
@@ -83,7 +81,7 @@ public class QuestionProposalService {
         Question question = createQuestion(courseId, proposedQuestionDto);
         proposedQuestion.addQuestion(question);
 
-        this.entityManager.persist(proposedQuestion);
+        pqRepository.save(proposedQuestion);
         return new ProposedQuestionDto(proposedQuestion);
     }
 
