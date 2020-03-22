@@ -13,7 +13,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 public class TournamentDto implements Serializable {
     private Integer id;
-    private Integer key;
     private String name;
     private UserDto creator;
     private String startDate;
@@ -31,10 +30,10 @@ public class TournamentDto implements Serializable {
 
     public TournamentDto(){}
 
-    public TournamentDto(QuizDto quizDto,List<TopicDto> topics,Tournament tournament){
+    public TournamentDto(UserDto userDto, QuizDto quizDto,List<TopicDto> topics,Tournament tournament){
         this.id = tournament.getId();
-        this.key = tournament.getKey();
         this.name = tournament.getName();
+        this.creator = userDto;
         this.startDate = tournament.getStartDate().format(formatter);
         this.endDate = tournament.getEndDate().format(formatter);
         this.numberOfQuestions = tournament.getNumberOfQuestions();
@@ -45,7 +44,6 @@ public class TournamentDto implements Serializable {
 
     public TournamentDto(Tournament tournament){
         this.id = tournament.getId();
-        this.key = tournament.getKey();
         this.name = tournament.getName();
         this.status = tournament.getStatus().name();
 
@@ -57,14 +55,6 @@ public class TournamentDto implements Serializable {
 
     public Integer getId() {
         return id;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
-    }
-
-    public Integer getKey() {
-        return key;
     }
 
     public void setName(String name) {
