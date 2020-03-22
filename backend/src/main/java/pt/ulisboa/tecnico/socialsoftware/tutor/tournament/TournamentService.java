@@ -64,7 +64,7 @@ public class TournamentService {
       quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
 
-      return new TournamentDto(tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
+      return new TournamentDto(tournamentDto.getCreator(), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
 
