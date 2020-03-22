@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 public class ClarificationQuestionDto implements Serializable {
 
     private Integer id;
+    private Integer answerId;
     private String content;
     private String status;
     private String creationDate = null;
@@ -21,6 +22,7 @@ public class ClarificationQuestionDto implements Serializable {
 
     public ClarificationQuestionDto(ClarificationQuestion clarificationQuestion) {
         this.id = clarificationQuestion.getId();
+        this.answerId = clarificationQuestion.getAnswer().getId();
         this.content = clarificationQuestion.getContent();
         this.status = clarificationQuestion.getStatus().name();
 
@@ -35,6 +37,10 @@ public class ClarificationQuestionDto implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public Integer getAnswerId() { return answerId; }
+
+    public void setAnswerId(Integer answerId) { this.answerId = answerId; }
 
     public String getContent() {
         return content;

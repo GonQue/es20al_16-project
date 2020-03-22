@@ -48,7 +48,8 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationQuestionDto createClarification(Integer questionId, Integer studentId, Integer answerId, ClarificationQuestionDto clarificationQuestionDto) {
+    public ClarificationQuestionDto createClarification(Integer questionId, Integer studentId, ClarificationQuestionDto clarificationQuestionDto) {
+        Integer answerId = clarificationQuestionDto.getAnswerId();
 
         checkClarificationContent(clarificationQuestionDto);
 

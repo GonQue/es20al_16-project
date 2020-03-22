@@ -98,11 +98,12 @@ class CreateClarificationTest extends Specification{
         given: "create clarificationQuestionDto"
         def clarificationQuestionDto = new ClarificationQuestionDto()
         clarificationQuestionDto.setId(clarificationQuestion.getId())
+        clarificationQuestionDto.setAnswerId(clarificationQuestion.getAnswer().getId())
         clarificationQuestionDto.setContent(clarificationQuestion.getContent())
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
 
         when:
-        clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), clarificationQuestion.getStudent().getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
+        clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), clarificationQuestion.getStudent().getId(), clarificationQuestionDto)
 
         then: "the student is clarified"
         clarificationQuestionRepository.count() == 1L
@@ -119,11 +120,12 @@ class CreateClarificationTest extends Specification{
         given: "create clarificationQuestionDto"
         def clarificationQuestionDto = new ClarificationQuestionDto()
         clarificationQuestionDto.setId(clarificationQuestion.getId())
+        clarificationQuestionDto.setAnswerId(clarificationQuestion.getAnswer().getId())
         clarificationQuestionDto.setContent(clarificationQuestion.getContent())
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
 
         when:
-        clarificationService.createClarification(UNEXISTENT_ID, clarificationQuestion.getStudent().getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
+        clarificationService.createClarification(UNEXISTENT_ID, clarificationQuestion.getStudent().getId(), clarificationQuestionDto)
 
         then:
         def error = thrown(TutorException)
@@ -134,17 +136,17 @@ class CreateClarificationTest extends Specification{
         given: "create clarificationQuestionDto"
         def clarificationQuestionDto = new ClarificationQuestionDto()
         clarificationQuestionDto.setId(clarificationQuestion.getId())
+        clarificationQuestionDto.setAnswerId(clarificationQuestion.getAnswer().getId())
         clarificationQuestionDto.setContent(clarificationQuestion.getContent())
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
         and: "new question, quizQuestion not answered"
         def newQuestion = new Question()
         newQuestion.setKey(2)
         newQuestion.setContent(CONTENT)
-
         questionRepository.save(newQuestion)
 
         when:
-        clarificationService.createClarification(newQuestion.getId(), clarificationQuestion.getStudent().getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
+        clarificationService.createClarification(newQuestion.getId(), clarificationQuestion.getStudent().getId(), clarificationQuestionDto)
 
         then:
         def error = thrown(TutorException)
@@ -155,6 +157,7 @@ class CreateClarificationTest extends Specification{
         given: "create clarificationQuestionDto"
         def clarificationQuestionDto = new ClarificationQuestionDto()
         clarificationQuestionDto.setId(clarificationQuestion.getId())
+        clarificationQuestionDto.setAnswerId(clarificationQuestion.getAnswer().getId())
         clarificationQuestionDto.setContent(clarificationQuestion.getContent())
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
         and: "user is a teacher"
@@ -164,7 +167,7 @@ class CreateClarificationTest extends Specification{
         userRepository.save(teacher)
 
         when:
-        clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), teacher.getId(), clarificationQuestion.getAnswer().getId(), clarificationQuestionDto)
+        clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), teacher.getId(), clarificationQuestionDto)
 
         then:
         def error = thrown(TutorException)
@@ -182,9 +185,10 @@ class CreateClarificationTest extends Specification{
         def sId = studentId = studentId == UNEXISTENT_ID ? UNEXISTENT_ID : student.getId()
         def qId = questionId = questionId == UNEXISTENT_ID ? UNEXISTENT_ID : question.getId()
         def aId = answerId = answerId == UNEXISTENT_ID ? UNEXISTENT_ID : answer.getId()
+        clarificationQuestionDto.setAnswerId(aId)
 
         when:
-        clarificationService.createClarification(qId, sId, aId, clarificationQuestionDto)
+        clarificationService.createClarification(qId, sId, clarificationQuestionDto)
 
         then:
         def error = thrown(TutorException)
@@ -207,9 +211,10 @@ class CreateClarificationTest extends Specification{
         def qId = questionId = questionId == null ? null : question.getId()
         def aId = answerId = answerId == null ? null : answer.getId()
         clarificationQuestionDto.setContent(content)
+        clarificationQuestionDto.setAnswerId(aId)
 
         when:
-        clarificationService.createClarification(qId,sId,aId, clarificationQuestionDto)
+        clarificationService.createClarification(qId, sId, clarificationQuestionDto)
 
         then:
         def error = thrown(TutorException)
