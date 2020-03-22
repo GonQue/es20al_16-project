@@ -118,7 +118,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         proposedQuestionDto.setJustification(" ")
 
         when:
-        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
+        questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -134,7 +134,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         proposedQuestionDto.setJustification("JUSTIFICATION")
 
         when:
-        def result = questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
+        def result = questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         result.getTeacher().getUsername() == teacher.getUsername()
@@ -151,7 +151,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         proposedQuestionDto.setJustification(" ")
 
         when:
-        def result = questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
+        def result = questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         result.getEvaluation() == ProposedQuestion.Evaluation.APPROVED.name()
@@ -171,7 +171,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         approvedQuestionDto.setTeacher(teacherDto)
 
         when:
-        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), approvedQuestionDto)
+        questionProposalService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -188,7 +188,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         proposedQuestionDto.setEvaluation(evaluation.name())
 
         when:
-        questionProposalService.teacherEvaluatesProposedQuestion(course.getId(), proposedQuestionDto)
+        questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)

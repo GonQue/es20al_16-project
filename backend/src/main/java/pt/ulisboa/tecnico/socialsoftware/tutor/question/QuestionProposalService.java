@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,9 +90,9 @@ public class QuestionProposalService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ProposedQuestionDto teacherEvaluatesProposedQuestion(int courseId, ProposedQuestionDto pqDto) {
+    public ProposedQuestionDto teacherEvaluatesProposedQuestion(ProposedQuestionDto pqDto) {
 
-        Course course = findCourse(courseId);
+        Course course = findCourse(pqDto.getId());
         User teacher = findTeacher(pqDto);
         ProposedQuestion pq = findProposedQuestion(pqDto);
 
@@ -103,6 +104,7 @@ public class QuestionProposalService {
 
         return new ProposedQuestionDto(pq);
     }
+
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ProposedQuestionDto> getProposedQuestions(int id) {
@@ -126,8 +128,9 @@ public class QuestionProposalService {
         return userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
     }
 
-    private Course findCourse(int courseId) {
-        return courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
+    public Course findCourse(int pqId) {
+        ProposedQuestion proposedQuestion = pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+        return proposedQuestion.getQuestion().getCourse();
     }
 
 }
