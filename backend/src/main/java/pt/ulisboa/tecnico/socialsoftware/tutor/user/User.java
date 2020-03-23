@@ -368,7 +368,7 @@ public class User implements UserDetails {
         }
     }
 
-    public List<ProposedQuestion> getProposedQuestions() { return this.proposedQuestions; }
+    public Set<ProposedQuestion> getProposedQuestions() { return this.proposedQuestions; }
 
     public void addProposedQuestion(ProposedQuestion pq) { this.proposedQuestions.add(pq); }
 
