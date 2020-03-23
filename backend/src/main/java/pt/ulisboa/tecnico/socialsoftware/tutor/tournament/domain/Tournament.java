@@ -31,9 +31,6 @@ public class Tournament {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique=true, nullable = false)
-    private Integer key;
-
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -80,7 +77,6 @@ public class Tournament {
             throw new TutorException(TOURNAMENT_NAME_INVALID);
         }
 
-        this.endDate = LocalDateTime.parse(tournamentDto.getEndDate(), formatter);
 
         if(tournamentDto.getStartDate()==null || tournamentDto.getEndDate()==null){
             startDate = LocalDateTime.now().plusHours(1);
@@ -99,7 +95,6 @@ public class Tournament {
         }
 
         this.id = tournamentDto.getId();
-        this.key = tournamentDto.getKey();
         this.name = tournamentDto.getName();
         this.creator = creator;
         this.numberOfQuestions = tournamentDto.getNumberOfQuestions();
@@ -124,9 +119,6 @@ public class Tournament {
 
     public void setId(Integer id) { this.id = id; }
 
-    public Integer getKey() { return key; }
-
-    public void setKey(Integer key) { this.key = key; }
 
     public Status getStatus() { return status; }
 
