@@ -28,7 +28,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
 class ListResponsesTest extends Specification {
     public static final String CONTENT = "clarificationQuestion content"
     public static final String TEACHER_RESPONSE = "teacher response"
-    public static final Integer UNEXISTENT_ID = 99999999
+    public static final Integer UNEXISTENT_ID = -1
 
     @Autowired
     ClarificationService clarificationService
@@ -166,7 +166,7 @@ class ListResponsesTest extends Specification {
     static class ClarificationServiceImplTestContextConfiguration {
 
         @Bean
-        QuestionClarificationService() {
+        ClarificationService clarificationService() {
             return new ClarificationService()
         }
     }
