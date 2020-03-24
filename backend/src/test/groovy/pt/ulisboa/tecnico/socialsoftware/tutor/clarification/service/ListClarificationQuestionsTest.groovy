@@ -11,7 +11,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationQuesti
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationResponseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
@@ -27,8 +26,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.US
 @DataJpaTest
 class ListClarificationQuestionsTest extends Specification {
     public static final String CONTENT = "clarificationQuestion content"
-    public static final String TEACHER_RESPONSE = "teacher response"
-    public static final Integer UNEXISTENT_ID = 99999999
+    public static final Integer UNEXISTENT_ID = -1
 
     @Autowired
     ClarificationService clarificationService
@@ -59,7 +57,7 @@ class ListClarificationQuestionsTest extends Specification {
     def clarificationQuestion
 
     def setup() {
-        given: 'one response'
+        given: 'a clarification question'
         student = new User()
         student.setKey(1)
         student.setRole(User.Role.STUDENT)
@@ -180,7 +178,7 @@ class ListClarificationQuestionsTest extends Specification {
     static class ClarificationServiceImplTestContextConfiguration {
 
         @Bean
-        QuestionClarificationService() {
+        ClarificationService clarificationService() {
             return new ClarificationService()
         }
     }
