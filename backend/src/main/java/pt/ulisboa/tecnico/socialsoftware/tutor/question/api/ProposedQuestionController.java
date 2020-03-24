@@ -17,7 +17,7 @@ public class ProposedQuestionController {
     @Autowired
     private QuestionProposalService questionProposalService;
 
-    @PostMapping("/courses/{courseId}/questions/proposed-questions")
+    @PostMapping("/courses/{courseId}/proposed-questions")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public ProposedQuestionDto createProposedQuestion(@PathVariable int courseId, @Valid @RequestBody ProposedQuestionDto propQuestionDto) {
         return questionProposalService.studentSubmitQuestion(courseId, propQuestionDto);
