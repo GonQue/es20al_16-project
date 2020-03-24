@@ -146,7 +146,6 @@ public class ClarificationService {
         checkClarificationId(clarificationQuestionId);
 
         checkTeacherId(teacherId);
-
         checkTeacherResponse(clarificationResponseDto);
 
         User teacher = getTeacher(teacherId);
