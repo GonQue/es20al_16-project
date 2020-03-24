@@ -48,6 +48,7 @@ class CreateTournamentTest extends Specification {
     public static final String ACADEMIC_TERM = "1 SEM"
     public static final String TOPIC_NAME_1= "topic name 1"
     public static final String TOPIC_NAME_2= "topic name 2"
+    public static final String STUDENT_USERNAME= "student username test"
     public static final int NUMBER_OF_QUESTIONS = 5
 
     @Autowired
@@ -89,12 +90,9 @@ class CreateTournamentTest extends Specification {
 
 
     def setup(){
-        //tournamentService = new TournamentService()
-
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
         tournamentDto = new TournamentDto()
-        tournamentDto.setKey(1)
 
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
@@ -103,7 +101,7 @@ class CreateTournamentTest extends Specification {
 
         courseExecutionRepository.save(courseExecution)
 
-        user = new User('name', "username", 1, User.Role.STUDENT)
+        user = new User('name', STUDENT_USERNAME, 1, User.Role.STUDENT)
         user.addCourse(courseExecution)
         userRepository.save(user)
 
@@ -150,7 +148,6 @@ class CreateTournamentTest extends Specification {
 
         then:
         result.getName() == TOURNAMENT_NAME
-        result.getKey() == 1
         result.getStartDate() == startDate.format(formatter)
         result.getEndDate() == endDate.format(formatter)
         result.getTopics().size() == 2
@@ -158,6 +155,7 @@ class CreateTournamentTest extends Specification {
         result.getTopics().contains(topicDtoTwo)
         result.getNumberOfQuestions() == NUMBER_OF_QUESTIONS
         result.getQuiz().getKey() == 1
+        result.getCreator().getUsername()==STUDENT_USERNAME
         
     }
 
