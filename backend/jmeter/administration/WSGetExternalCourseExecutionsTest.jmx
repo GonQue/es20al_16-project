@@ -104,7 +104,7 @@
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert course type" enabled="true">
               <stringProp name="JSON_PATH">$[0].courseType</stringProp>
-              <stringProp name="EXPECTED_VALUE">TECNICO</stringProp>
+              <stringProp name="EXPECTED_VALUE">TECNICOA</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
