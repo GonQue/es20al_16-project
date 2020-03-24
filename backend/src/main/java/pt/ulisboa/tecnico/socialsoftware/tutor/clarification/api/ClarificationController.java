@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.security.Principal;
+import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 
@@ -29,6 +30,18 @@ public class ClarificationController {
         }
 
         return clarificationService.createClarification(questionId, user.getId(), clarificationQuestionDto);
+    }
+
+    @GetMapping("/clarifications/status")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<ClarificationQuestionDto> getClarificationQuestions(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return clarificationService.listClarificationQuestions(user.getId());
     }
 
 }
