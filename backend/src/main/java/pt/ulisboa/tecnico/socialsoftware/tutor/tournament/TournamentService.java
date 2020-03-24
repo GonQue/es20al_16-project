@@ -59,7 +59,7 @@ public class TournamentService {
 
       Set<Topic> topics = getTopics(tournamentDto);
 
-      Tournament tournament = createTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
+      Tournament tournament = saveTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
       creatorUser.addTournament(tournament);
       quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
@@ -88,7 +88,7 @@ public class TournamentService {
       return topics;
    }
 
-   private Tournament createTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
+   private Tournament saveTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
       Tournament tournament = new Tournament(creatorUser, courseExecution, quiz, tournamentDto);
       tournament.setTopics(topics);
 
