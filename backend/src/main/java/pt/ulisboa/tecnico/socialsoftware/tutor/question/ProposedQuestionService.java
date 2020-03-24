@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Service
-public class QuestionProposalService {
+public class ProposedQuestionService {
     @Autowired
     private UserRepository userRepository;
 

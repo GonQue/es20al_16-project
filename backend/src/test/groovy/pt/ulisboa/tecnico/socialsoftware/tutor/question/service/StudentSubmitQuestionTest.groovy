@@ -10,7 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
@@ -40,7 +40,7 @@ class StudentSubmitQuestionTest extends Specification {
     static final String COURSE_ACADEMIC_TERM = "2S"
 
     @Autowired
-    QuestionProposalService questionProposalService
+    ProposedQuestionService questionProposalService
 
     @Autowired
     QuestionService questionService
@@ -220,8 +220,8 @@ class StudentSubmitQuestionTest extends Specification {
         }
 
         @Bean
-        QuestionProposalService questionPropService() {
-            return new QuestionProposalService()
+        ProposedQuestionService questionPropService() {
+            return new ProposedQuestionService()
         }
     }
 }
