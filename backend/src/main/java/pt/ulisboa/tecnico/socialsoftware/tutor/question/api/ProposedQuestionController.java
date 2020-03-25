@@ -10,6 +10,7 @@ import javax.validation.Valid;
 
 @RestController
 public class ProposedQuestionController {
+
     @Autowired
     private ProposedQuestionService proposedQuestionService;
 
@@ -17,5 +18,12 @@ public class ProposedQuestionController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#proposedQuestionId, 'PQ.ACCESS')")
     public ProposedQuestionDto teacherEvaluatesProposedQuestion(@PathVariable Integer proposedQuestionId, @Valid @RequestBody ProposedQuestionDto pqDto){
         return this.proposedQuestionService.teacherEvaluatesProposedQuestion(pqDto);
+    }
+
+
+    @PostMapping("/courses/{courseId}/proposed-questions")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public ProposedQuestionDto createProposedQuestion(@PathVariable int courseId, @Valid @RequestBody ProposedQuestionDto propQuestionDto) {
+        return proposedQuestionService.studentSubmitQuestion(courseId, propQuestionDto);
     }
 }

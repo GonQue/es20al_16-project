@@ -85,7 +85,7 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
         def list = new ArrayList<ProposedQuestionDto>()
 
         and: "10000 proposed questions"
-        1.upto(10000, {
+        1.upto(1, {
             def questionDto = new QuestionDto()
             questionDto.setKey(it)
             questionDto.setTitle("QUESTION_TITLE")
@@ -110,7 +110,7 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
         })
 
         when:
-        1.upto(10000, {
+        1.upto(1, {
             proposedQuestionService.teacherEvaluatesProposedQuestion(list.get((it as int) - 1))
         })
 

@@ -13,14 +13,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuest
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
-
 import java.util.Comparator;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,19 +41,17 @@ public class ProposedQuestionService {
     @Autowired
     private TopicRepository topicRepository;
 
-    @Autowired
-    private QuestionService questionService;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ProposedQuestionDto studentSubmitQuestion(int courseId, ProposedQuestionDto proposedQuestionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
 
         User student = getStudent(proposedQuestionDto);
+        List<Topic> topics = getTopics(courseId, proposedQuestionDto);
+
         ProposedQuestion proposedQuestion = new ProposedQuestion(student, course);
-
-        Question question = createQuestion(courseId, proposedQuestionDto);
-        proposedQuestion.addQuestion(question);
-
+        Question question = createQuestion(course, proposedQuestionDto);
+        proposedQuestion.addQuestion(question, topics);
         pqRepository.save(proposedQuestion);
         return new ProposedQuestionDto(proposedQuestion);
     }
@@ -89,23 +87,26 @@ public class ProposedQuestionService {
         return userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
     }
 
-    private Question createQuestion(int courseId, ProposedQuestionDto proposedQuestionDto) {
-        if (proposedQuestionDto.getQuestion() == null) {
-            throw new TutorException(ErrorMessage.PROPQUESTION_MISSING_QUESTION);
-        }
-        QuestionDto questionDto = questionService.createQuestion(courseId, proposedQuestionDto.getQuestion());
-        Question question = questionRepository.findByKey(questionDto.getKey()).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_NOT_FOUND));
-        addTopicsToQuestion(proposedQuestionDto, question);
+    private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
+        Question question = new Question(course, proposedQuestionDto.getQuestion());
+        question.setStatus(Question.Status.SUBMITTED);
+        question.setCreationDate(LocalDateTime.now());
+        questionRepository.save(question);
         return question;
     }
 
-    private void addTopicsToQuestion(ProposedQuestionDto proposedQuestionDto, Question question) {
+    private List<Topic> getTopics(int courseId, ProposedQuestionDto proposedQuestionDto) {
+        List<Topic> topics = new ArrayList<>();
+        if (proposedQuestionDto.getQuestion() == null) {
+            throw new TutorException(ErrorMessage.PROPQUESTION_MISSING_QUESTION);
+        }
         if (proposedQuestionDto.getQuestion().getTopics() != null) {
             for (TopicDto topicDto: proposedQuestionDto.getQuestion().getTopics()) {
-                Topic topic = topicRepository.findTopicByName(question.getCourse().getId(), topicDto.getName());
-                question.addTopic(topic);
+                Topic topic = topicRepository.findTopicByName(courseId, topicDto.getName());
+                topics.add(topic);
             }
         }
+        return topics;
     }
 
     private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {

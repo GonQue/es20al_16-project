@@ -17,7 +17,6 @@ public class ProposedQuestionDto {
         this.question = new QuestionDto(proposedQuestion.getQuestion());
         this.studentId = proposedQuestion.getStudent().getId();
         this.evaluation = proposedQuestion.getEvaluation().name();
-
         if (proposedQuestion.getTeacher() != null) {
             evaluate(proposedQuestion);
         }
