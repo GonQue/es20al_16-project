@@ -126,7 +126,7 @@ class GetProposedQuestionTest extends Specification {
 
         then: "the returned data are correct"
         result.size() == 3
-        def awaitingProposedQuestion = result.get(0)
+        def awaitingProposedQuestion = result.get(2)
         awaitingProposedQuestion.studentId == student.getId()
         awaitingProposedQuestion.question.getKey() == 1
         awaitingProposedQuestion.evaluation == ProposedQuestion.Evaluation.AWAITING.name()
@@ -138,7 +138,7 @@ class GetProposedQuestionTest extends Specification {
         approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
         approvedProposedQuestion.justification == " "
 
-        def rejectedProposedQuestion = result.get(2)
+        def rejectedProposedQuestion = result.get(0)
         rejectedProposedQuestion.studentId == student.getId()
         rejectedProposedQuestion.teacherId == teacher.getId()
         rejectedProposedQuestion.question.getKey() == 3
