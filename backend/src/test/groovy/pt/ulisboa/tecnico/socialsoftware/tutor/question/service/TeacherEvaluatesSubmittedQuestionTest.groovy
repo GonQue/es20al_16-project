@@ -35,9 +35,6 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     static final String JUSTIFICATION = "JUSTIFICATION"
 
     @Autowired
-    QuestionService questionService
-
-    @Autowired
     ProposedQuestionService questionProposalService
 
     @Autowired
@@ -216,14 +213,8 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     static class TeacherEvaluateTestContextConfiguration {
 
         @Bean
-        QuestionService questionService() {
-            return new QuestionService()
-        }
-
-        @Bean
-        ProposedQuestionService questionProposalService() {
+        ProposedQuestionService proposedQuestionService() {
             return new ProposedQuestionService()
         }
     }
-
 }

@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
@@ -72,6 +73,8 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true)
     private List<ClarificationResponse> clarification_responses = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
+    private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public User() {
     }
@@ -364,6 +367,11 @@ public class User implements UserDetails {
                 break;
         }
     }
+
+    public Set<ProposedQuestion> getProposedQuestions() { return this.proposedQuestions; }
+
+    public void addProposedQuestion(ProposedQuestion pq) { this.proposedQuestions.add(pq); }
+
 
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);

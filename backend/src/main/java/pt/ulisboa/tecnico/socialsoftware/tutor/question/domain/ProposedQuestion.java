@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "proposed_questions")
@@ -41,6 +42,7 @@ public class ProposedQuestion {
     public ProposedQuestion(User student, Course course) {
         checkUserPermission(student, course, User.Role.STUDENT);
         this.student = student;
+        student.addProposedQuestion(this);
     }
 
     public Integer getId() { return id; }
@@ -101,14 +103,14 @@ public class ProposedQuestion {
         }
     }
 
-    public void addQuestion(Question question) {
+    public void addQuestion(Question question, List<Topic> topics) {
 
         // If it has a topic, has to belong to the course's topics
-        if (!question.getTopics().isEmpty() && !question.getTopics().stream()
+        if (!topics.isEmpty() && !topics.stream()
                 .allMatch(topic -> question.getCourse().getTopics().contains(topic))) {
             throw new TutorException(ErrorMessage.TOPIC_NOT_BELONGING_TO_COURSE);
         }
-
+        topics.forEach(question::addTopic);
         this.question = question;
     }
 }

@@ -20,6 +20,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProposedQuestionService {
@@ -47,24 +50,25 @@ public class ProposedQuestionService {
     }
 
     private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
-        if (proposedQuestionDto.getQuestion() == null) {
-            throw new TutorException(ErrorMessage.PROPQUESTION_MISSING_QUESTION);
-        }
         Question question = new Question(course, proposedQuestionDto.getQuestion());
         question.setStatus(Question.Status.SUBMITTED);
-        addTopicsToQuestion(proposedQuestionDto, question);
         question.setCreationDate(LocalDateTime.now());
         questionRepository.save(question);
         return question;
     }
 
-    private void addTopicsToQuestion(ProposedQuestionDto proposedQuestionDto, Question question) {
+    private List<Topic> getTopics(int courseId, ProposedQuestionDto proposedQuestionDto) {
+        List<Topic> topics = new ArrayList<>();
+        if (proposedQuestionDto.getQuestion() == null) {
+            throw new TutorException(ErrorMessage.PROPQUESTION_MISSING_QUESTION);
+        }
         if (proposedQuestionDto.getQuestion().getTopics() != null) {
             for (TopicDto topicDto: proposedQuestionDto.getQuestion().getTopics()) {
-                Topic topic = topicRepository.findTopicByName(question.getCourse().getId(), topicDto.getName());
-                question.addTopic(topic);
+                Topic topic = topicRepository.findTopicByName(courseId, topicDto.getName());
+                topics.add(topic);
             }
         }
+        return topics;
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -72,11 +76,11 @@ public class ProposedQuestionService {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
 
         User student = getStudent(proposedQuestionDto);
+        List<Topic> topics = getTopics(courseId, proposedQuestionDto);
+
         ProposedQuestion proposedQuestion = new ProposedQuestion(student, course);
-
         Question question = createQuestion(course, proposedQuestionDto);
-        proposedQuestion.addQuestion(question);
-
+        proposedQuestion.addQuestion(question, topics);
         pqRepository.save(proposedQuestion);
         return new ProposedQuestionDto(proposedQuestion);
     }
@@ -97,8 +101,18 @@ public class ProposedQuestionService {
         return new ProposedQuestionDto(pq);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ProposedQuestionDto> getProposedQuestions(int id) {
+        User student = findStudent(id);
+        return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).collect(Collectors.toList());
+    }
+
     private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
         return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    }
+
+    private User findStudent(int id){
+        return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
     }
 
     private User findTeacher(ProposedQuestionDto pqDto) {
