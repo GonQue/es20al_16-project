@@ -202,7 +202,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
             def courseExecution = new CourseExecution(course, "ES", "1S", Course.Type.TECNICO)
             courseExecution.addUser(teacher)
             teacher.addCourse(courseExecution)
-            proposedQuestionDto.setTeacherId(teacherId)
+            proposedQuestionDto.setTeacherId(teacher.getId())
         }
         else {
             proposedQuestionDto.setTeacherId(null)
