@@ -9,7 +9,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
@@ -57,7 +56,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         given: "a list for proposed questions"
         def list = new ArrayList<ProposedQuestionDto>()
         and: "10000 proposedQuestionDto"
-        1.upto(10000, {
+        1.upto(1, {
             def propQuestionDto = new ProposedQuestionDto()
             propQuestionDto.setQuestion(createQuestionDto(it))
             propQuestionDto.setStudentId(student.getId())
@@ -65,7 +64,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         })
 
         when:
-        1.upto(10000, {
+        1.upto(1, {
             proposedQuestionService.studentSubmitQuestion(course.getId(), list.get((it as int) - 1))
         })
 
