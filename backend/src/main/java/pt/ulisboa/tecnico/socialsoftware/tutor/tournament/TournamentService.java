@@ -168,4 +168,9 @@ public class TournamentService {
       }
       return user;
    }
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public List<TournamentDto> listOpenTournaments(int executionId){
+      return null;
+   }
 }
