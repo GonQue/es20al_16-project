@@ -76,7 +76,7 @@
 
 INSERT INTO quiz_answers VALUES (999999, &apos;2019-10-18 21:17:28.460416&apos;, &apos;t&apos;, 5373, 676, &apos;f&apos;);
 
-INSERT INTO quiz_questions VALUES (999999, 0, 9000, 5373);
+INSERT INTO quiz_questions VALUES (999999, 0, 999999, 5373);
 
 INSERT INTO options VALUES (999999, &apos;test_content&apos;, &apos;f&apos;, 999999, 0);
 
@@ -190,7 +190,7 @@ INSERT INTO clarifications VALUES (999999, &apos;test_content&apos;, &apos;2020-
               <stringProp name="variableNames">id,teacherResponse,clarificationId</stringProp>
             </CSVDataSet>
             <hashTree/>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create clarification question" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create clarification response" enabled="true">
               <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
               <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
                 <collectionProp name="Arguments.arguments">
