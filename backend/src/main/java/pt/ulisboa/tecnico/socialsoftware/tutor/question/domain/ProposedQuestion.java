@@ -36,9 +36,8 @@ public class ProposedQuestion {
     @Enumerated(EnumType.STRING)
     private Evaluation evaluation = Evaluation.AWAITING;
 
-    public ProposedQuestion() {
+    public ProposedQuestion() {}
 
-    }
     public ProposedQuestion(User student, Course course) {
         checkUserPermission(student, course, User.Role.STUDENT);
         this.student = student;
@@ -104,7 +103,6 @@ public class ProposedQuestion {
     }
 
     public void addQuestion(Question question, List<Topic> topics) {
-
         // If it has a topic, has to belong to the course's topics
         if (!topics.isEmpty() && !topics.stream()
                 .allMatch(topic -> question.getCourse().getTopics().contains(topic))) {

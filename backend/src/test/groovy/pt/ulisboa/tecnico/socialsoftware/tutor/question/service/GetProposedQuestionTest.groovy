@@ -5,7 +5,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -21,7 +20,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
 @DataJpaTest
@@ -48,6 +46,7 @@ class GetProposedQuestionTest extends Specification {
     @Autowired
     TopicRepository topicRepository
 
+
     def "the student does not exist"(){
         when:
         proposedQuestionService.getProposedQuestions(100000)
@@ -66,7 +65,6 @@ class GetProposedQuestionTest extends Specification {
         and: "a teacher"
         def teacher = new User("teacher", "teacher", 2, User.Role.TEACHER)
         userRepository.save(teacher)
-        def teacherDto = new UserDto(teacher)
 
         and: "a course"
         def course = new Course("course", Course.Type.TECNICO)
@@ -95,7 +93,6 @@ class GetProposedQuestionTest extends Specification {
 
         student.addProposedQuestion(propQuestion)
 
-
         and: "an approved proposed question"
 
         def question2 = createQuestion(course, 2)
@@ -109,7 +106,6 @@ class GetProposedQuestionTest extends Specification {
         proposedQuestionRepository.save(propQuestion2)
 
         student.addProposedQuestion(propQuestion2)
-
 
         and: "a rejected proposed question"
         def question3 = createQuestion(course, 3)
@@ -137,18 +133,19 @@ class GetProposedQuestionTest extends Specification {
 
         def approvedProposedQuestion = result.get(1)
         approvedProposedQuestion.studentId == student.getId()
-        approvedProposedQuestion.teacher.getId() == teacherDto.getId()
+        approvedProposedQuestion.teacherId == teacher.getId()
         approvedProposedQuestion.question.getKey() == 2
         approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
         approvedProposedQuestion.justification == " "
 
         def rejectedProposedQuestion = result.get(2)
         rejectedProposedQuestion.studentId == student.getId()
-        rejectedProposedQuestion.teacher.getId() == teacherDto.getId()
+        rejectedProposedQuestion.teacherId == teacher.getId()
         rejectedProposedQuestion.question.getKey() == 3
         rejectedProposedQuestion.evaluation == ProposedQuestion.Evaluation.REJECTED.name()
         rejectedProposedQuestion.justification == "JUSTIFICATION"
     }
+
 
     def createQuestion(Course course, int key){
         def questionDto = new QuestionDto()
@@ -168,6 +165,7 @@ class GetProposedQuestionTest extends Specification {
 
         return question
     }
+
 
     @TestConfiguration
     static class GetProposedQuestionTestContextConfiguration {

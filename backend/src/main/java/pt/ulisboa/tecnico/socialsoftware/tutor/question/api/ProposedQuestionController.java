@@ -2,10 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 
@@ -16,6 +13,13 @@ public class ProposedQuestionController {
 
     @Autowired
     private ProposedQuestionService proposedQuestionService;
+
+    @PutMapping("/proposed-questions/{proposedQuestionId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#proposedQuestionId, 'PQ.ACCESS')")
+    public ProposedQuestionDto teacherEvaluatesProposedQuestion(@PathVariable Integer proposedQuestionId, @Valid @RequestBody ProposedQuestionDto pqDto){
+        return this.proposedQuestionService.teacherEvaluatesProposedQuestion(pqDto);
+    }
+
 
     @PostMapping("/courses/{courseId}/proposed-questions")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
