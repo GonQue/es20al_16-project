@@ -58,11 +58,10 @@ public class Tournament {
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "topic_id")
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Topic> topics = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Set<User> enrolled = new HashSet<>();
   
