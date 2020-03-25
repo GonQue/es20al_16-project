@@ -40,10 +40,7 @@ class StudentSubmitQuestionTest extends Specification {
     static final String COURSE_ACADEMIC_TERM = "2S"
 
     @Autowired
-    ProposedQuestionService questionProposalService
-
-    @Autowired
-    QuestionService questionService
+    ProposedQuestionService proposedQuestionService
 
     @Autowired
     UserRepository userRepository
@@ -95,7 +92,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(user.getId())
 
         when:
-        questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -116,7 +113,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(anotherStudent.getId())
 
         when:
-        questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -147,7 +144,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(student.getId())
 
         when:
-        def result = questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        def result = proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         result.getQuestion().getTopics().size() == 1
@@ -167,7 +164,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(student.getId())
 
         when:
-        def result = questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        def result = proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         result.getQuestion() != null
@@ -182,7 +179,7 @@ class StudentSubmitQuestionTest extends Specification {
         addQuestion(hasQuestion)
         addStudent(hasStudent)
         when:
-        questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -213,11 +210,6 @@ class StudentSubmitQuestionTest extends Specification {
 
     @TestConfiguration
     static class PropQuestionServiceImplTestContextConfiguration {
-
-        @Bean
-        QuestionService questionService() {
-            return new QuestionService()
-        }
 
         @Bean
         ProposedQuestionService questionPropService() {

@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 
 @Service
 public class ProposedQuestionService {
@@ -40,9 +41,6 @@ public class ProposedQuestionService {
     @Autowired
     private TopicRepository topicRepository;
 
-    @Autowired
-    private QuestionService questionService;
-
     private User getStudent(ProposedQuestionDto proposedQuestionDto) {
         Integer studentId = proposedQuestionDto.getStudentId();
         if (studentId == null) {
@@ -51,14 +49,15 @@ public class ProposedQuestionService {
         return userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
     }
 
-    private Question createQuestion(int courseId, ProposedQuestionDto proposedQuestionDto) {
+    private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
         if (proposedQuestionDto.getQuestion() == null) {
             throw new TutorException(ErrorMessage.PROPQUESTION_MISSING_QUESTION);
         }
-        QuestionDto questionDto = questionService.createQuestion(courseId, proposedQuestionDto.getQuestion());
-        Question question = questionRepository.findByKey(questionDto.getKey()).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_NOT_FOUND));
+        Question question = new Question(course, proposedQuestionDto.getQuestion());
         question.setStatus(Question.Status.SUBMITTED);
         addTopicsToQuestion(proposedQuestionDto, question);
+        question.setCreationDate(LocalDateTime.now());
+        questionRepository.save(question);
         return question;
     }
 
@@ -78,7 +77,7 @@ public class ProposedQuestionService {
         User student = getStudent(proposedQuestionDto);
         ProposedQuestion proposedQuestion = new ProposedQuestion(student, course);
 
-        Question question = createQuestion(courseId, proposedQuestionDto);
+        Question question = createQuestion(course, proposedQuestionDto);
         proposedQuestion.addQuestion(question);
 
         pqRepository.save(proposedQuestion);
