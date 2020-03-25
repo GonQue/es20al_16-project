@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -167,5 +168,17 @@ public class TournamentService {
          throw new TutorException(INVALID_USERNAME);
       }
       return user;
+   }
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public List<TournamentDto> listOpenTournaments(int executionId){
+      CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+      return courseExecution.getTournaments().stream()
+              .filter(tournament -> tournament.getStatus() == Tournament.Status.CREATED)
+              .sorted(Comparator.comparing(Tournament::getStartDate))
+              .map(TournamentDto::new)
+              .collect(Collectors.toList());
+
    }
 }
