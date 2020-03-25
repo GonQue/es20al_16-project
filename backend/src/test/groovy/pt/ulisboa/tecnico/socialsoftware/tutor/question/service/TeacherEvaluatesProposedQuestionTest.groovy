@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -21,25 +20,24 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
 
 @DataJpaTest
-class TeacherEvaluatesSubmittedQuestionTest extends Specification {
+class TeacherEvaluatesProposedQuestionTest extends Specification {
     static final String JUSTIFICATION = "JUSTIFICATION"
 
     @Autowired
     QuestionService questionService
 
     @Autowired
-    QuestionProposalService questionProposalService
+    ProposedQuestionService proposedQuestionService
 
     @Autowired
     CourseRepository courseRepository
@@ -57,9 +55,9 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     UserRepository userRepository
 
     def teacher
-    def teacherDto
     def course
     def courseExecution
+    def question
     def proposedQuestion
     def proposedQuestionDto
 
@@ -81,8 +79,6 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         courseExecSet.add(courseExecution)
         teacher.setCourseExecutions(courseExecSet)
 
-        teacherDto = new UserDto(teacher)
-
         def questionDto = new QuestionDto()
         questionDto.setKey(1)
         questionDto.setTitle("QUESTION_TITLE")
@@ -95,7 +91,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         options.add(optionDto)
         questionDto.setOptions(options)
 
-        def question = new Question(course, questionDto)
+        question = new Question(course, questionDto)
         questionRepository.save(question)
 
         proposedQuestion = new ProposedQuestion()
@@ -109,16 +105,16 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         given: "a admin"
         def admin = new User("admin", "admin", 3, User.Role.ADMIN)
         userRepository.save(admin)
-        def adminDto = new UserDto(admin)
+        def adminId = admin.getId()
 
         and: "a proposed question"
         proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-        proposedQuestionDto.setTeacher(adminDto)
+        proposedQuestionDto.setTeacherId(adminId)
         proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
         proposedQuestionDto.setJustification(" ")
 
         when:
-        questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
+        proposedQuestionService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -129,15 +125,15 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     def 'the teacher teaches the course'() {
         given: "a proposed question"
         proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-        proposedQuestionDto.setTeacher(teacherDto)
+        proposedQuestionDto.setTeacherId(teacher.getId())
         proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
-        proposedQuestionDto.setJustification("JUSTIFICATION")
+        proposedQuestionDto.setJustification(JUSTIFICATION)
 
         when:
-        def result = questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
+        def result = proposedQuestionService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
-        result.getTeacher().getUsername() == teacher.getUsername()
+        result.getTeacherId() == teacher.getId()
         teacher.getCourseExecutions().size() == 1
         teacher.getCourseExecutions().contains(courseExecution) == true
     }
@@ -146,12 +142,12 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     def 'the question is approved'() {
         given: "a proposed question"
         proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-        proposedQuestionDto.setTeacher(teacherDto)
+        proposedQuestionDto.setTeacherId(teacher.getId())
         proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
         proposedQuestionDto.setJustification(" ")
 
         when:
-        def result = questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
+        def result = proposedQuestionService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         result.getEvaluation() == ProposedQuestion.Evaluation.APPROVED.name()
@@ -168,10 +164,10 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
 
         and: "a repeated evaluation"
         approvedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
-        approvedQuestionDto.setTeacher(teacherDto)
+        approvedQuestionDto.setTeacherId(teacher.getId())
 
         when:
-        questionProposalService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
+        proposedQuestionService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -188,7 +184,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         proposedQuestionDto.setEvaluation(evaluation.name())
 
         when:
-        questionProposalService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
+        proposedQuestionService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -206,10 +202,10 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
             def courseExecution = new CourseExecution(course, "ES", "1S", Course.Type.TECNICO)
             courseExecution.addUser(teacher)
             teacher.addCourse(courseExecution)
-            proposedQuestionDto.setTeacher(teacherDto)
+            proposedQuestionDto.setTeacherId(teacherId)
         }
         else {
-            proposedQuestionDto.setTeacher(null)
+            proposedQuestionDto.setTeacherId(null)
         }
     }
 
@@ -222,8 +218,8 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
         }
 
         @Bean
-        QuestionProposalService questionProposalService() {
-            return new QuestionProposalService()
+        ProposedQuestionService questionProposalService() {
+            return new ProposedQuestionService()
         }
     }
 

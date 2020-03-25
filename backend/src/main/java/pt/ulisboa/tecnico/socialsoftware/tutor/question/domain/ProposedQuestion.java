@@ -35,9 +35,8 @@ public class ProposedQuestion {
     @Enumerated(EnumType.STRING)
     private Evaluation evaluation = Evaluation.AWAITING;
 
-    public ProposedQuestion() {
+    public ProposedQuestion() {}
 
-    }
     public ProposedQuestion(User student, Course course) {
         checkUserPermission(student, course, User.Role.STUDENT);
         this.student = student;
@@ -103,13 +102,11 @@ public class ProposedQuestion {
     }
 
     public void addQuestion(Question question) {
-
         // If it has a topic, has to belong to the course's topics
         if (!question.getTopics().isEmpty() && !question.getTopics().stream()
                 .allMatch(topic -> question.getCourse().getTopics().contains(topic))) {
             throw new TutorException(ErrorMessage.TOPIC_NOT_BELONGING_TO_COURSE);
         }
-
         this.question = question;
     }
 }
