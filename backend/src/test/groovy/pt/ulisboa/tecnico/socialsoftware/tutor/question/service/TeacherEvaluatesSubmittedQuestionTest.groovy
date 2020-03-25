@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -21,7 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository
@@ -36,10 +35,7 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     static final String JUSTIFICATION = "JUSTIFICATION"
 
     @Autowired
-    QuestionService questionService
-
-    @Autowired
-    QuestionProposalService questionProposalService
+    ProposedQuestionService questionProposalService
 
     @Autowired
     CourseRepository courseRepository
@@ -217,14 +213,8 @@ class TeacherEvaluatesSubmittedQuestionTest extends Specification {
     static class TeacherEvaluateTestContextConfiguration {
 
         @Bean
-        QuestionService questionService() {
-            return new QuestionService()
-        }
-
-        @Bean
-        QuestionProposalService questionProposalService() {
-            return new QuestionProposalService()
+        ProposedQuestionService proposedQuestionService() {
+            return new ProposedQuestionService()
         }
     }
-
 }

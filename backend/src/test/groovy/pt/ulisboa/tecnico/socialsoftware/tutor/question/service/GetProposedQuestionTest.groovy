@@ -1,17 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
-import spock.lang.Unroll
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_BLANK
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_EMPTY
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_EMPTY
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -22,9 +16,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
@@ -33,11 +26,9 @@ import spock.lang.Specification
 
 @DataJpaTest
 class GetProposedQuestionTest extends Specification {
-    @Autowired
-    QuestionService questionService
 
     @Autowired
-    QuestionProposalService questionProposalService
+    ProposedQuestionService proposedQuestionService
 
     @Autowired
     CourseRepository courseRepository
@@ -59,7 +50,7 @@ class GetProposedQuestionTest extends Specification {
 
     def "the student does not exist"(){
         when:
-        questionProposalService.getProposedQuestions(100000)
+        proposedQuestionService.getProposedQuestions(100000)
 
         then:
         def exception = thrown(TutorException)
@@ -135,7 +126,7 @@ class GetProposedQuestionTest extends Specification {
 
 
         when:
-        def result = questionProposalService.getProposedQuestions(student.getId())
+        def result = proposedQuestionService.getProposedQuestions(student.getId())
 
         then: "the returned data are correct"
         result.size() == 3
@@ -179,16 +170,11 @@ class GetProposedQuestionTest extends Specification {
     }
 
     @TestConfiguration
-    static class TeacherEvaluateTestContextConfiguration {
+    static class GetProposedQuestionTestContextConfiguration {
 
         @Bean
-        QuestionService questionService() {
-            return new QuestionService()
-        }
-
-        @Bean
-        QuestionProposalService questionProposalService() {
-            return new QuestionProposalService()
+        ProposedQuestionService proposedQuestionService() {
+            return new ProposedQuestionService()
         }
     }
 
