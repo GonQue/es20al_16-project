@@ -54,8 +54,6 @@ class CreateTournamentsServiceSpockPerformanceTest extends Specification {
         def user = new User('name', "STUDENT_USERNAME", 1, User.Role.STUDENT)
         user.addCourse(courseExecution)
         userRepository.save(user)
-        def userDto = new UserDto(user)
-        tournamentDto.setCreator(userDto)
 
         def quiz = new Quiz()
         quiz.setKey(1)
@@ -81,7 +79,7 @@ class CreateTournamentsServiceSpockPerformanceTest extends Specification {
         tournamentDto.setTopics(new ArrayList<>(Arrays.asList(TopicDto1, TopicDto2, TopicDto3)))
         tournamentDto.setNumberOfQuestions(2)
         when:
-        1.upto(100000, { tournamentService.createTournament(courseExecution.getId(), tournamentDto)})
+        1.upto(100000, { tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)})
 
         then:
         true
