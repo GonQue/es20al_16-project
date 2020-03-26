@@ -26,9 +26,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,11 +58,11 @@ public class TournamentService {
 
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
-   public TournamentDto createTournament(int executionId, TournamentDto tournamentDto){
+   public TournamentDto createTournament(int executionId, int creatorId, TournamentDto tournamentDto){
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
 
       Quiz quiz = getQuiz(tournamentDto);
-      User creatorUser = getCreator(tournamentDto);
+      User creatorUser = getCreator(creatorId);
       checkCreatorCourse(courseExecution, creatorUser);
 
       Set<Topic> topics = getTopics(tournamentDto);
@@ -75,7 +72,7 @@ public class TournamentService {
       quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
 
-      return new TournamentDto(tournamentDto.getCreator(), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
+      return new TournamentDto(new UserDto(creatorUser), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
 
@@ -113,11 +110,11 @@ public class TournamentService {
       }
    }
 
-   private User getCreator(TournamentDto tournamentDto) {
-      if(tournamentDto.getCreator()==null){
+   private User getCreator(int creatorId) {
+      if(creatorId==0){
          throw new TutorException(TOURNAMENT_NO_CREATOR);
       }
-      User creatorUser = userRepository.findById(tournamentDto.getCreator().getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+      User creatorUser = userRepository.findById(creatorId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, creatorId));
       if(creatorUser.getRole() != User.Role.STUDENT){
          throw new TutorException(TOURNAMENT_CREATOR_NOT_STUDENT);
       }
