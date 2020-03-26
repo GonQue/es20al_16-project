@@ -8,6 +8,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto
@@ -19,6 +21,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.INVALID_USERNAME
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_CLOSED
@@ -48,6 +53,9 @@ class StudentEnrollTournamentTest extends Specification {
     @Autowired
     UserRepository userRepository
 
+    @Autowired
+    QuizRepository quizRepository
+
     def tournament
     def tournamentDto
     def tournamentId
@@ -57,8 +65,11 @@ class StudentEnrollTournamentTest extends Specification {
     def user2
     def userDto
     def user2Dto
+    def formatter
+    def quiz
 
     def setup(){
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         course1 = new Course(COURSE_NAME1, Course.Type.TECNICO)
         courseRepository.save(course1)
 
@@ -72,8 +83,6 @@ class StudentEnrollTournamentTest extends Specification {
         tournamentRepository.save(tournament)
         tournamentId=tournament.getId()
 
-        tournamentDto = new TournamentDto(tournament)
-
         user = new User()
         user.setKey(1)
         user.setRole(User.Role.STUDENT)
@@ -81,6 +90,18 @@ class StudentEnrollTournamentTest extends Specification {
         userRepository.save(user)
 
         userDto = new UserDto(user)
+
+        tournament.setCreator(user)
+        tournament.setStartDate(LocalDateTime.now())
+        tournament.setEndDate(LocalDateTime.now().plusDays(1))
+        tournament.setNumberOfQuestions(5)
+
+        quiz = new Quiz()
+        quiz.setKey(1)
+        quizRepository.save(quiz)
+        tournament.setQuiz(quiz)
+        tournament.setStatus(Tournament.Status.STARTED)
+        tournamentDto = new TournamentDto(tournament)
 
     }
 
