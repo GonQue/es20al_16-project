@@ -14,7 +14,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class AnswerClarificationPerformanceTest extends Specification{
+class GetClarificationResponsesPerformanceTest extends Specification{
 
     public static final String TEACHER_RESPONSE = "teacher response"
 

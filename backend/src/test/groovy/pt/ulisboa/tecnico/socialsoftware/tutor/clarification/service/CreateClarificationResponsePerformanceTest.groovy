@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.administration.service
+package pt.ulisboa.tecnico.socialsoftware.tutor.clarification.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -48,6 +48,8 @@ class CreateClarificationResponsePerformanceTest extends Specification {
         clarificationResponse = new ClarificationResponse()
         clarificationResponse.setTeacher(teacher)
         clarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
+        clarificationResponse.setClarificationQuestion(clarificationQuestion)
+        clarificationResponseRepository.save(clarificationResponse)
     }
 
     def "performance testing to create 10000 clarification responses"() {
