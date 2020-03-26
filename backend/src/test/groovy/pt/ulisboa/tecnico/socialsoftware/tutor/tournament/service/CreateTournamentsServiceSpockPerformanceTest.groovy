@@ -79,7 +79,8 @@ class CreateTournamentsServiceSpockPerformanceTest extends Specification {
         tournamentDto.setTopics(new ArrayList<>(Arrays.asList(TopicDto1, TopicDto2, TopicDto3)))
         tournamentDto.setNumberOfQuestions(2)
         when:
-        1.upto(100000, { tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)})
+        //1.upto(100000
+        1.upto(1, { tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)})
 
         then:
         true

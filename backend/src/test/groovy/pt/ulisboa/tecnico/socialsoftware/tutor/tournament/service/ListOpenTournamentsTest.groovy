@@ -9,10 +9,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 import java.time.LocalDateTime
@@ -40,6 +42,11 @@ class ListOpenTournamentsTest extends Specification {
     @Autowired
     CourseExecutionRepository courseExecutionRepository
 
+    @Autowired
+    UserRepository userRepository
+
+    @Autowired
+    QuizRepository quizRepository
 
     def course
     def courseExecution
@@ -53,23 +60,43 @@ class ListOpenTournamentsTest extends Specification {
 
         courseExecution = new CourseExecution(course, "ACRONYM", "ACADEMIC_TERM", Course.Type.TECNICO)
 
+        def user = new User()
+        user.setKey(1)
+        userRepository.save(user)
+
+        def quiz = new Quiz()
+        quiz.setKey(1)
+        quizRepository.save(quiz)
+
         tournament1 = new Tournament()
         tournament1.setName(TOURNAMENT_NAME1)
         tournament1.setCourseExecution(courseExecution)
         tournament1.setStartDate(LocalDateTime.now())
         tournament1.setStatus(Tournament.Status.CREATED)
+        tournament1.setEndDate(LocalDateTime.now().plusDays(1))
+        tournament1.setQuiz(quiz)
+        tournament1.setNumberOfQuestions(5)
+        tournament1.setCreator(user)
 
         tournament2 = new Tournament()
         tournament2.setName(TOURNAMENT_NAME2)
         tournament2.setCourseExecution(courseExecution)
         tournament2.setStartDate(LocalDateTime.now())
         tournament2.setStatus(Tournament.Status.CREATED)
+        tournament2.setEndDate(LocalDateTime.now().plusDays(1))
+        tournament2.setQuiz(quiz)
+        tournament2.setNumberOfQuestions(5)
+        tournament2.setCreator(user)
 
         tournament3 = new Tournament()
         tournament3.setName(TOURNAMENT_NAME3)
         tournament3.setCourseExecution(courseExecution)
         tournament3.setStartDate(LocalDateTime.now())
         tournament3.setStatus(Tournament.Status.CREATED)
+        tournament3.setEndDate(LocalDateTime.now().plusDays(1))
+        tournament3.setQuiz(quiz)
+        tournament3.setNumberOfQuestions(5)
+        tournament3.setCreator(user)
 
 
 
