@@ -100,9 +100,9 @@
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
 	&quot;name&quot;: &quot;TORNEIO 1 teste jmeter&quot;,&#xd;
-	&quot;creator&quot;: {&quot;id&quot;:&quot;676&quot;},&#xd;
 	&quot;quiz&quot;: {&quot;id&quot;:&quot;5370&quot;},&#xd;
-	&quot;topics&quot;:[{&quot;id&quot;:&quot;82&quot;}],&#xd;
+	&quot;topics&quot;:[{&quot;id&quot;:&quot;82&quot;}, {&quot;id&quot;:&quot;83&quot;}, {&quot;id&quot;:&quot;84&quot;}, {&quot;id&quot;:&quot;85&quot;}, {&quot;id&quot;:&quot;86&quot;}, {&quot;id&quot;:&quot;87&quot;},&#xd;
+			{&quot;id&quot;:&quot;88&quot;}, {&quot;id&quot;:&quot;89&quot;}, {&quot;id&quot;:&quot;90&quot;}, {&quot;id&quot;:&quot;91&quot;}, {&quot;id&quot;:&quot;92&quot;}],&#xd;
 	&quot;numberOfQuestions&quot;:&quot;1&quot;&#xd;
 }&#xd;
 </stringProp>
@@ -114,7 +114,7 @@
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/executions/${executionId}/tournaments</stringProp>
+            <stringProp name="HTTPSampler.path">/executions/${executionId}/create-tournament</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
