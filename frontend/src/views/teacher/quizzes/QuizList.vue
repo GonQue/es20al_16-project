@@ -178,6 +178,7 @@ export default class QuizList extends Vue {
       width: '5%'
     },
     { text: 'Type', value: 'type', align: 'center', width: '5%' },
+
     { text: 'Series', value: 'series', align: 'center', width: '5%' },
     { text: 'Version', value: 'version', align: 'center', width: '5%' },
     {
