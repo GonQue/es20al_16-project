@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto;
 
+import java.util.List;
+
 
 @RestController
 public class TournamentController {
@@ -37,8 +39,11 @@ public class TournamentController {
         return tournamentService.createTournament(executionId, tournamentDto);
     }
 
-  
-  
+    @GetMapping("/executions/{executionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
+    public List<TournamentDto> listOpenTournaments(@PathVariable int executionId) {
+        return tournamentService.listOpenTournaments(executionId);
+    }
+
 
 }
-
