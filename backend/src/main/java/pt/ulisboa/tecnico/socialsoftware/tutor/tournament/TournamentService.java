@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tournament;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +29,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -52,9 +51,6 @@ public class TournamentService {
    @Autowired
    private QuizRepository quizRepository;
 
-   @PersistenceContext
-   EntityManager entityManager;
-
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public CourseDto findTournamentCourseExecution(int tournamentId) {
       return this.tournamentRepository.findById(tournamentId)
@@ -74,12 +70,12 @@ public class TournamentService {
 
       Set<Topic> topics = getTopics(tournamentDto);
 
-      Tournament tournament = createTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
+      Tournament tournament = saveTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
       creatorUser.addTournament(tournament);
       quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
 
-      return new TournamentDto(tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
+      return new TournamentDto(tournamentDto.getCreator(), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
 
@@ -103,11 +99,11 @@ public class TournamentService {
       return topics;
    }
 
-   private Tournament createTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
+   private Tournament saveTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
       Tournament tournament = new Tournament(creatorUser, courseExecution, quiz, tournamentDto);
       tournament.setTopics(topics);
 
-      entityManager.persist(tournament);
+      tournamentRepository.save(tournament);
       return tournament;
    }
 
@@ -182,5 +178,17 @@ public class TournamentService {
          throw new TutorException(INVALID_USERNAME);
       }
       return user;
+   }
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public List<TournamentDto> listOpenTournaments(int executionId){
+      CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+      return courseExecution.getTournaments().stream()
+              .filter(tournament -> tournament.getStatus() == Tournament.Status.CREATED)
+              .sorted(Comparator.comparing(Tournament::getStartDate))
+              .map(TournamentDto::new)
+              .collect(Collectors.toList());
+
    }
 }

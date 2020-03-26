@@ -66,7 +66,6 @@ class StudentEnrollTournamentTest extends Specification {
         courseRepository.save(courseExecution1)
 
         tournament = new Tournament()
-        tournament.setKey(1)
         tournament.setName(TOURNAMENT_NAME)
         tournament.setStatus(Tournament.Status.CREATED)
         tournament.setCourseExecution(courseExecution1)
@@ -95,7 +94,6 @@ class StudentEnrollTournamentTest extends Specification {
         def result = tournamentService.enrollStudent(tournamentId, userDto)
 
         then:
-        result.getKey() == 1
         result.getName()==TOURNAMENT_NAME
         result.getEnrolled()!=null
         result.getEnrolled().size()==1
@@ -126,7 +124,6 @@ class StudentEnrollTournamentTest extends Specification {
         def result = tournamentService.enrollStudent(tournamentId, userDto)
 
         then:
-        result.getKey() == 1
         result.getEnrolled()!=null
         result.getEnrolled().size()==2
         result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(userDto.getId()) })

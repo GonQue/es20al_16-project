@@ -81,6 +81,14 @@ public class CourseExecution {
         users.forEach(user -> user.getCourseExecutions().remove(this));
     }
 
+    public void setUsers(Set<User> users) { this.users = users; }
+
+    public void setQuizzes(Set<Quiz> quizzes) { this.quizzes = quizzes; }
+
+    public Set<Tournament> getTournaments() { return tournaments; }
+
+    public void setTournaments(Set<Tournament> tournaments) { this.tournaments = tournaments; }
+
     public Integer getId() {
         return id;
     }

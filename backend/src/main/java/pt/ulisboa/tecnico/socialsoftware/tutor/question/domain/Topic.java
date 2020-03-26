@@ -37,7 +37,7 @@ public class Topic {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="topics")
+    @ManyToMany(mappedBy="topics")
     private Set<Tournament> tournaments = new HashSet<>();
 
     public Topic() {
@@ -48,6 +48,10 @@ public class Topic {
         this.course = course;
         course.addTopic(this);
     }
+
+    public Set<Tournament> getTournaments() { return tournaments; }
+
+    public void setTournaments(Set<Tournament> tournaments) { this.tournaments = tournaments; }
 
     public Integer getId() {
         return id;
