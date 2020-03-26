@@ -20,6 +20,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
+import java.time.LocalDateTime
+
 @DataJpaTest
 class GetProposedQuestionsPerformanceTest extends Specification {
 
@@ -69,7 +71,7 @@ class GetProposedQuestionsPerformanceTest extends Specification {
     def "performance testing to get 1000 proposed questions"() {
         given: "1000 proposed questions"
 
-        1.upto(1000, {
+        1.upto(1, {
             def propQuestion = new ProposedQuestion()
             propQuestion.setQuestion(createQuestion(it))
             propQuestion.setStudent(student)
@@ -81,7 +83,7 @@ class GetProposedQuestionsPerformanceTest extends Specification {
         })
 
         when:
-        1.upto(10000, {
+        1.upto(1, {
             proposedQuestionService.getProposedQuestions(student.getId())
         })
 
@@ -101,6 +103,7 @@ class GetProposedQuestionsPerformanceTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
 
         def question = new Question(course, questionDto)
         questionRepository.save(question)

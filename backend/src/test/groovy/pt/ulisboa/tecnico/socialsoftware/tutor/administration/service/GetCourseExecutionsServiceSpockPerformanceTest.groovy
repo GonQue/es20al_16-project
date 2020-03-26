@@ -32,12 +32,12 @@ class GetCourseExecutionsServiceSpockPerformanceTest extends Specification {
         def course = new Course(COURSE, Course.Type.TECNICO)
         courseRepository.save(course)
         and: "a 1000 course executions"
-        1.upto(1000, {
+        1.upto(1, {
             courseExecutionRepository.save(new CourseExecution(course, ACRONYM + it, ACADEMIC_TERM, Course.Type.TECNICO))
         })
 
         when:
-        1.upto(10000, { administrationService.getCourseExecutions(User.Role.ADMIN)})
+        1.upto(1, { administrationService.getCourseExecutions(User.Role.ADMIN)})
 
         then:
         true

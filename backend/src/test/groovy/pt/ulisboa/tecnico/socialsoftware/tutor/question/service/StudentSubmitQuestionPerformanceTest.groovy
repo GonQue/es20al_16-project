@@ -16,7 +16,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
-import spock.lang.Specification;
+import spock.lang.Specification
+
+import java.time.LocalDateTime;
 
 @DataJpaTest
 class StudentSubmitQuestionPerformanceTest extends Specification {
@@ -57,7 +59,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         given: "a list for proposed questions"
         def list = new ArrayList<ProposedQuestionDto>()
         and: "10000 proposedQuestionDto"
-        1.upto(10000, {
+        1.upto(1, {
             def propQuestionDto = new ProposedQuestionDto()
             propQuestionDto.setQuestion(createQuestionDto(it))
             propQuestionDto.setStudentId(student.getId())
@@ -65,7 +67,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         })
 
         when:
-        1.upto(10000, {
+        1.upto(1, {
             proposedQuestionService.studentSubmitQuestion(course.getId(), list.get((it as int) - 1))
         })
 
@@ -85,6 +87,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
         return questionDto
     }
 
