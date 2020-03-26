@@ -7,6 +7,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import spock.lang.Unroll
 
+import java.time.LocalDateTime
+
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_BLANK
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_EMPTY
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_EMPTY
@@ -77,7 +79,6 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         teacher.setCourseExecutions(courseExecSet)
 
         def questionDto = new QuestionDto()
-        questionDto.setKey(1)
         questionDto.setTitle("QUESTION_TITLE")
         questionDto.setContent("QUESTION_CONTENT")
         questionDto.setStatus(Question.Status.SUBMITTED.name())
@@ -87,6 +88,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
 
         question = new Question(course, questionDto)
         questionRepository.save(question)

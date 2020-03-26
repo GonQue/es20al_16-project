@@ -24,6 +24,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.LocalDateTime
+
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.PROPQUESTION_MISSING_QUESTION
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_EMPTY
 
@@ -69,7 +71,6 @@ class StudentSubmitQuestionTest extends Specification {
         courseRepository.save(course)
 
         questionDto = new QuestionDto()
-        questionDto.setKey(1)
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.SUBMITTED.name())
@@ -79,6 +80,7 @@ class StudentSubmitQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
     }
 
     def 'the user is not a Student'() {
@@ -167,7 +169,8 @@ class StudentSubmitQuestionTest extends Specification {
 
         then:
         result.getQuestion() != null
-        result.getQuestion().getKey() == 1
+        result.getQuestion().getTitle() == QUESTION_TITLE
+        result.getQuestion().getContent() == QUESTION_CONTENT
         result.getStudentId() == student.getId()
     }
 
