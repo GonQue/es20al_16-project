@@ -68,8 +68,8 @@ class GetProposedQuestionsPerformanceTest extends Specification {
         courseExecutionRepository.save(courseExecution)
     }
 
-    def "performance testing to get 1000 proposed questions"() {
-        given: "1000 proposed questions"
+    def "performance testing to get 2000 proposed questions 20000 times"() {
+        given: "2000 proposed questions"
 
         1.upto(1, {
             def propQuestion = new ProposedQuestion()

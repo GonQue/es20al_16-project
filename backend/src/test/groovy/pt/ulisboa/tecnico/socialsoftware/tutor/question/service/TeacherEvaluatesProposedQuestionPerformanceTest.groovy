@@ -82,11 +82,11 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
     }
 
 
-    def "performance testing to evaluate 1000 proposed questions"() {
+    def "performance testing to evaluate 300000 proposed questions"() {
         given: "a set of proposed questions"
         def list = new ArrayList<ProposedQuestionDto>()
 
-        and: "10000 proposed questions"
+        and: "300000 proposed questions"
         1.upto(1, {
             def questionDto = new QuestionDto()
             questionDto.setKey(it)

@@ -55,10 +55,10 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         courseExecutionRepository.save(courseExecution)
     }
 
-    def "performance testing to create 10000 proposed questions"() {
+    def "performance testing to create 300000 proposed questions"() {
         given: "a list for proposed questions"
         def list = new ArrayList<ProposedQuestionDto>()
-        and: "10000 proposedQuestionDto"
+        and: "300000 proposedQuestionDto"
         1.upto(1, {
             def propQuestionDto = new ProposedQuestionDto()
             propQuestionDto.setQuestion(createQuestionDto(it))
