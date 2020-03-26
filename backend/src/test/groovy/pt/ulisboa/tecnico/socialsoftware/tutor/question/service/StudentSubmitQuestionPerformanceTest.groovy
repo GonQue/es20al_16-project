@@ -47,6 +47,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         courseRepository.save(course)
 
         def courseExecution = new CourseExecution(course, "AC12", "1SEM", Course.Type.TECNICO)
+        course.addCourseExecution(courseExecution)
         courseExecution.addUser(student)
         student.addCourse(courseExecution)
         courseExecutionRepository.save(courseExecution)
@@ -56,7 +57,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         given: "a list for proposed questions"
         def list = new ArrayList<ProposedQuestionDto>()
         and: "10000 proposedQuestionDto"
-        1.upto(1, {
+        1.upto(10000, {
             def propQuestionDto = new ProposedQuestionDto()
             propQuestionDto.setQuestion(createQuestionDto(it))
             propQuestionDto.setStudentId(student.getId())
@@ -64,7 +65,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         })
 
         when:
-        1.upto(1, {
+        1.upto(10000, {
             proposedQuestionService.studentSubmitQuestion(course.getId(), list.get((it as int) - 1))
         })
 
