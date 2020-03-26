@@ -35,7 +35,7 @@ public class TournamentController {
     }
   
   
-    @PostMapping("/executions/{executionId}/tournaments")
+    @PostMapping("/executions/{executionId}/create-tournament")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public TournamentDto createTournament(Principal principal, @PathVariable int executionId, @RequestBody TournamentDto tournamentDto){
         logger.debug("createTournament");
