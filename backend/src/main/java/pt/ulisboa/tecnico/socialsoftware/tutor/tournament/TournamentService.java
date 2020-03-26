@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 
@@ -28,8 +29,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 
 import java.util.*;
 
@@ -54,6 +54,15 @@ public class TournamentService {
 
    @PersistenceContext
    EntityManager entityManager;
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public CourseDto findTournamentCourseExecution(int tournamentId) {
+      return this.tournamentRepository.findById(tournamentId)
+              .map(Tournament::getCourseExecution)
+              .map(CourseDto::new)
+              .orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+   }
+
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto createTournament(int executionId, TournamentDto tournamentDto){
@@ -121,9 +130,9 @@ public class TournamentService {
 
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
-   public TournamentDto enrollStudent(TournamentDto tournamentDto, UserDto studentDto) {
-      Tournament tournament = tournamentRepository.findById(tournamentDto.getId()).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentDto.getId()));
-      User user = getUser(tournamentDto, studentDto);
+   public TournamentDto enrollStudent(int tournamentId, UserDto studentDto) {
+      Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+      User user = getUser(tournament, studentDto);
 
       checkUserInCourseExecution(user, tournament.getCourseExecution(), USER_NOT_IN_COURSE_EXECUTION);
       if (tournament.getStatus() == Tournament.Status.CLOSED) { throw new TutorException(TOURNAMENT_CLOSED); }
@@ -163,9 +172,9 @@ public class TournamentService {
       return enrolled;
    }
 
-   private User getUser(TournamentDto tournamentDto, UserDto studentDto) {
+   private User getUser(Tournament tournament, UserDto studentDto) {
       if(studentDto==null){ throw new TutorException(TOURNAMENT_NO_STUDENT_TO_ENROLL);}
-      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournament.getCreator().getId()));
       if (user.getRole() != User.Role.STUDENT) {
          throw new TutorException(TOURNAMENT_ENROLLED_NOT_STUDENT);
       }
