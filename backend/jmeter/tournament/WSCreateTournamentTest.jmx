@@ -102,7 +102,8 @@
 	&quot;name&quot;: &quot;TORNEIO 1 teste jmeter&quot;,&#xd;
 	&quot;creator&quot;: {&quot;id&quot;:&quot;676&quot;},&#xd;
 	&quot;quiz&quot;: {&quot;id&quot;:&quot;5370&quot;},&#xd;
-	&quot;topics&quot;:[{&quot;id&quot;:&quot;82&quot;}],&#xd;
+	&quot;topics&quot;:[{&quot;id&quot;:&quot;82&quot;}, {&quot;id&quot;:&quot;83&quot;}, {&quot;id&quot;:&quot;84&quot;}, {&quot;id&quot;:&quot;85&quot;}, {&quot;id&quot;:&quot;86&quot;}, {&quot;id&quot;:&quot;87&quot;},&#xd;
+			{&quot;id&quot;:&quot;88&quot;}, {&quot;id&quot;:&quot;89&quot;}, {&quot;id&quot;:&quot;90&quot;}, {&quot;id&quot;:&quot;91&quot;}, {&quot;id&quot;:&quot;92&quot;}],&#xd;
 	&quot;numberOfQuestions&quot;:&quot;1&quot;&#xd;
 }&#xd;
 </stringProp>

@@ -42,7 +42,7 @@ class CreateTournamentsServiceSpockPerformanceTest extends Specification {
     @Autowired
     TopicRepository topicRepository
 
-    def "performance test to create 10000 course executions"() {
+    def "performance test to create 100000 tournaments"() {
         given:"a course execution"
         def course = new Course("COURSE_NAME", Course.Type.TECNICO)
         def courseExecution = new CourseExecution(course, "ACRONYM", "ACADEMIC_TERM", Course.Type.TECNICO)
@@ -64,9 +64,21 @@ class CreateTournamentsServiceSpockPerformanceTest extends Specification {
         tournamentDto.setQuiz(quizDto)
 
         def topicOne = new Topic()
+        topicOne.setName("TOPIC_NAME_1")
         topicRepository.save(topicOne)
-        def TopicDto = new TopicDto(topicOne)
-        tournamentDto.setTopics(new ArrayList<>(Arrays.asList(TopicDto)))
+        def TopicDto1 = new TopicDto(topicOne)
+
+        def topicTwo = new Topic()
+        topicTwo.setName("TOPIC_NAME_2")
+        topicRepository.save(topicTwo)
+        def TopicDto2 = new TopicDto(topicTwo)
+
+        def topicThree = new Topic()
+        topicThree.setName("TOPIC_NAME_3")
+        topicRepository.save(topicThree)
+        def TopicDto3 = new TopicDto(topicThree)
+
+        tournamentDto.setTopics(new ArrayList<>(Arrays.asList(TopicDto1, TopicDto2, TopicDto3)))
         tournamentDto.setNumberOfQuestions(2)
         when:
         1.upto(100000, { tournamentService.createTournament(courseExecution.getId(), tournamentDto)})
