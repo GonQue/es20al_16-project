@@ -73,7 +73,6 @@ class StudentSubmitQuestionTest extends Specification {
         courseRepository.save(course)
 
         questionDto = new QuestionDto()
-        questionDto.setKey(1)
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.SUBMITTED.name())
@@ -171,7 +170,8 @@ class StudentSubmitQuestionTest extends Specification {
 
         then:
         result.getQuestion() != null
-        result.getQuestion().getKey() == 1
+        result.getQuestion().getTitle() == QUESTION_TITLE
+        result.getQuestion().getContent() == QUESTION_CONTENT
         result.getStudentId() == student.getId()
     }
 
