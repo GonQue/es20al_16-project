@@ -39,7 +39,7 @@ class GetClarificationResponsesPerformanceTest extends Specification{
         clarificationQuestion.setStatus(ClarificationQuestion.Status.NOT_ANSWERED)
         clarificationQuestionRepository.save(clarificationQuestion)
         given: "10000 clarification responses"
-        1.upto(10000, {
+        1.upto(1, {
             def cR = new ClarificationResponse()
             cR.setTeacher(teacher)
             cR.setClarificationQuestion(clarificationQuestion)
@@ -48,7 +48,7 @@ class GetClarificationResponsesPerformanceTest extends Specification{
         })
 
         when:
-        1.upto(10000, {clarificationService.listResponses(clarificationQuestion.getId())})
+        1.upto(1, {clarificationService.listResponses(clarificationQuestion.getId())})
 
         then:
         true
