@@ -1,13 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
-public class ProposedQuestionDto {
+import java.io.Serializable;
+
+public class ProposedQuestionDto implements Serializable {
     private Integer id;
     private Integer studentId;
     private QuestionDto question;
-    private UserDto teacher;
+    private Integer teacherId;
     private String justification;
     private String evaluation;
 
@@ -17,15 +18,15 @@ public class ProposedQuestionDto {
         this.id = proposedQuestion.getId();
         this.question = new QuestionDto(proposedQuestion.getQuestion());
         this.studentId = proposedQuestion.getStudent().getId();
+        this.evaluation = proposedQuestion.getEvaluation().name();
         if (proposedQuestion.getTeacher() != null) {
             evaluate(proposedQuestion);
         }
     }
 
     private void evaluate(ProposedQuestion proposedQuestion) {
-        this.teacher = new UserDto(proposedQuestion.getTeacher());
+        this.teacherId = proposedQuestion.getTeacher().getId();
         this.justification = proposedQuestion.getJustification();
-        this.evaluation = proposedQuestion.getEvaluation().name();
     }
 
     public Integer getId() { return id; }
@@ -36,9 +37,9 @@ public class ProposedQuestionDto {
 
     public void setStudentId(Integer studentId) { this.studentId = studentId; }
 
-    public UserDto getTeacher() { return teacher; }
+    public Integer getTeacherId() { return teacherId; }
 
-    public void setTeacher(UserDto teacher) { this.teacher = teacher; }
+    public void setTeacherId(Integer teacherId) { this.teacherId = teacherId; }
 
     public String getJustification() { return justification; }
 
