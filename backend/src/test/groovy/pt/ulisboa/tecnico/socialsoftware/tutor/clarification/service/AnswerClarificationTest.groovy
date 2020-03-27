@@ -26,7 +26,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.US
 @DataJpaTest
 class AnswerClarificationTest extends Specification{
     public static final String TEACHER_RESPONSE = "teacher response"
-    public static final Integer UNEXISTENT_ID = 99999999
+    public static final Integer UNEXISTENT_ID = -1
     public static final Integer EXISTENT_ID = 1
 
     @Autowired
@@ -187,7 +187,7 @@ class AnswerClarificationTest extends Specification{
     static class ClarificationServiceImplTestContextConfiguration {
 
         @Bean
-        QuestionClarificationService() {
+        ClarificationService clarificationService() {
             return new ClarificationService()
         }
     }

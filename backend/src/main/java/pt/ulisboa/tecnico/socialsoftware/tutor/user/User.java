@@ -8,6 +8,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements UserDetails, DomainEntity {
     public enum Role {STUDENT, TEACHER, ADMIN, DEMO_ADMIN}
 
     @Id
@@ -72,6 +75,8 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true)
     private List<ClarificationResponse> clarification_responses = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
+    private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public User() {
     }
@@ -93,13 +98,17 @@ public class User implements UserDetails {
         this.numberOfCorrectStudentAnswers = 0;
     }
 
-
     public void addTournament(Tournament tournament) {
         tournamentsCreated.add(tournament);
     }
-    public void enrollTournament(Tournament tournament){
-        tournamentsEnrolled.add(tournament);
 
+    public void enrollTournament(Tournament tournament) {
+        tournamentsEnrolled.add(tournament);
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visitUser(this);
     }
 
     public Integer getId() {
@@ -365,6 +374,11 @@ public class User implements UserDetails {
         }
     }
 
+    public Set<ProposedQuestion> getProposedQuestions() { return this.proposedQuestions; }
+
+    public void addProposedQuestion(ProposedQuestion pq) { this.proposedQuestions.add(pq); }
+
+
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -384,29 +398,6 @@ public class User implements UserDetails {
     public void setClarification_responses(List<ClarificationResponse> clarification_responses) { this.clarification_responses = clarification_responses; }
 
     public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarification_responses.add(clarificationResponse); }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", role=" + role +
-                ", id=" + id +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", courseAcronyms='" + enrolledCoursesAcronyms + '\'' +
-                ", numberOfTeacherQuizzes=" + numberOfTeacherQuizzes +
-                ", numberOfInClassQuizzes=" + numberOfInClassQuizzes +
-                ", numberOfStudentQuizzes=" + numberOfStudentQuizzes +
-                ", numberOfTeacherAnswers=" + numberOfTeacherAnswers +
-                ", numberOfCorrectTeacherAnswers=" + numberOfCorrectTeacherAnswers +
-                ", numberOfInClassAnswers=" + numberOfInClassAnswers +
-                ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
-                ", numberOfStudentAnswers=" + numberOfStudentAnswers +
-                ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
-                ", creationDate=" + creationDate +
-                ", courseExecutions=" + courseExecutions +
-                '}';
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

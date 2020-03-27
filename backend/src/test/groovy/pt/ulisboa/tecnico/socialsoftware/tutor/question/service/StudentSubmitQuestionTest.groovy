@@ -10,8 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionProposalService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
@@ -24,6 +23,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.time.LocalDateTime
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.PROPQUESTION_MISSING_QUESTION
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_EMPTY
@@ -40,10 +41,7 @@ class StudentSubmitQuestionTest extends Specification {
     static final String COURSE_ACADEMIC_TERM = "2S"
 
     @Autowired
-    QuestionProposalService questionProposalService
-
-    @Autowired
-    QuestionService questionService
+    ProposedQuestionService proposedQuestionService
 
     @Autowired
     UserRepository userRepository
@@ -73,7 +71,6 @@ class StudentSubmitQuestionTest extends Specification {
         courseRepository.save(course)
 
         questionDto = new QuestionDto()
-        questionDto.setKey(1)
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(Question.Status.SUBMITTED.name())
@@ -83,6 +80,7 @@ class StudentSubmitQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
     }
 
     def 'the user is not a Student'() {
@@ -95,7 +93,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(user.getId())
 
         when:
-        questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -116,7 +114,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(anotherStudent.getId())
 
         when:
-        questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -147,7 +145,7 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(student.getId())
 
         when:
-        def result = questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        def result = proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         result.getQuestion().getTopics().size() == 1
@@ -167,11 +165,12 @@ class StudentSubmitQuestionTest extends Specification {
         propQuestionDto.setStudentId(student.getId())
 
         when:
-        def result = questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        def result = proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         result.getQuestion() != null
-        result.getQuestion().getKey() == 1
+        result.getQuestion().getTitle() == QUESTION_TITLE
+        result.getQuestion().getContent() == QUESTION_CONTENT
         result.getStudentId() == student.getId()
     }
 
@@ -182,7 +181,7 @@ class StudentSubmitQuestionTest extends Specification {
         addQuestion(hasQuestion)
         addStudent(hasStudent)
         when:
-        questionProposalService.studentSubmitQuestion(course.getId(), propQuestionDto)
+        proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
 
         then:
         def exception = thrown(TutorException)
@@ -215,13 +214,8 @@ class StudentSubmitQuestionTest extends Specification {
     static class PropQuestionServiceImplTestContextConfiguration {
 
         @Bean
-        QuestionService questionService() {
-            return new QuestionService()
-        }
-
-        @Bean
-        QuestionProposalService questionPropService() {
-            return new QuestionProposalService()
+        ProposedQuestionService questionPropService() {
+            return new ProposedQuestionService()
         }
     }
 }

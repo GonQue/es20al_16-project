@@ -15,7 +15,6 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @Table(name = "course_executions")
 public class CourseExecution {
-
     public enum Status {ACTIVE, INACTIVE, HISTORIC}
 
     @Id
@@ -81,6 +80,14 @@ public class CourseExecution {
         course.getCourseExecutions().remove(this);
         users.forEach(user -> user.getCourseExecutions().remove(this));
     }
+
+    public void setUsers(Set<User> users) { this.users = users; }
+
+    public void setQuizzes(Set<Quiz> quizzes) { this.quizzes = quizzes; }
+
+    public Set<Tournament> getTournaments() { return tournaments; }
+
+    public void setTournaments(Set<Tournament> tournaments) { this.tournaments = tournaments; }
 
     public Integer getId() {
         return id;

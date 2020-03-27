@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
@@ -31,8 +30,6 @@ import spock.lang.Unroll
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_DATA
-
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NO_CREATOR
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_QUIZ_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NAME_INVALID
@@ -48,6 +45,7 @@ class CreateTournamentTest extends Specification {
     public static final String ACADEMIC_TERM = "1 SEM"
     public static final String TOPIC_NAME_1= "topic name 1"
     public static final String TOPIC_NAME_2= "topic name 2"
+    public static final String STUDENT_USERNAME= "student username test"
     public static final int NUMBER_OF_QUESTIONS = 5
 
     @Autowired
@@ -89,12 +87,9 @@ class CreateTournamentTest extends Specification {
 
 
     def setup(){
-        //tournamentService = new TournamentService()
-
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
         tournamentDto = new TournamentDto()
-        tournamentDto.setKey(1)
 
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
@@ -103,12 +98,12 @@ class CreateTournamentTest extends Specification {
 
         courseExecutionRepository.save(courseExecution)
 
-        user = new User('name', "username", 1, User.Role.STUDENT)
+        user = new User('name', STUDENT_USERNAME, 1, User.Role.STUDENT)
         user.addCourse(courseExecution)
         userRepository.save(user)
 
         userDto = new UserDto(user)
-        tournamentDto.setCreator(userDto)
+        //tournamentDto.setCreator(userDto)
 
         startDate = LocalDateTime.now()
         endDate = LocalDateTime.now().plusDays(1)
@@ -146,11 +141,10 @@ class CreateTournamentTest extends Specification {
 
 
         when:
-        def result = tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        def result = tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
 
         then:
         result.getName() == TOURNAMENT_NAME
-        result.getKey() == 1
         result.getStartDate() == startDate.format(formatter)
         result.getEndDate() == endDate.format(formatter)
         result.getTopics().size() == 2
@@ -158,6 +152,7 @@ class CreateTournamentTest extends Specification {
         result.getTopics().contains(topicDtoTwo)
         result.getNumberOfQuestions() == NUMBER_OF_QUESTIONS
         result.getQuiz().getKey() == 1
+        result.getCreator().getUsername()==STUDENT_USERNAME
         
     }
 
@@ -168,7 +163,7 @@ class CreateTournamentTest extends Specification {
         tournamentDto.setTopics(new ArrayList<>(Arrays.asList()))
 
         when:
-        def result = tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        def result = tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
 
         then:
         result.getTopics() != null
@@ -183,10 +178,11 @@ class CreateTournamentTest extends Specification {
         and:"a teacher "
         user.setRole(User.Role.TEACHER)
         userDto = new UserDto(user)
-        tournamentDto.setCreator(userDto)
+        //tournamentDto.setCreator(userDto)
+        userRepository.save(user)
 
         when:
-        tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
 
         then:
         def exception = thrown(TutorException)
@@ -200,11 +196,11 @@ class CreateTournamentTest extends Specification {
         and:"a student not in the course execution"
         def user2 = new User('name2', "username2", 2, User.Role.STUDENT)
         userRepository.save(user2)
-        def userDto2 = new UserDto(user2)
-        tournamentDto.setCreator(userDto2)
+        //def userDto2 = new UserDto(user2)
+        //tournamentDto.setCreator(userDto2)
 
         when:
-        tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        tournamentService.createTournament(courseExecution.getId(), user2.getId(), tournamentDto)
 
         then:
         def exception = thrown(TutorException)
@@ -221,7 +217,7 @@ class CreateTournamentTest extends Specification {
         tournamentDto.setEndDate(endDate.format(formatter))
 
         when:
-        tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
 
         then:
         def exception = thrown(TutorException)
@@ -235,7 +231,7 @@ class CreateTournamentTest extends Specification {
         tournamentDto.setNumberOfQuestions(0)
 
         when:
-        tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
 
         then:
         def exception = thrown(TutorException)
@@ -252,7 +248,7 @@ class CreateTournamentTest extends Specification {
         createQuiz(hasQuiz)
 
         when:
-        tournamentService.createTournament(courseExecution.getId(), tournamentDto)
+        tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
 
         then:
         def exception = thrown(TutorException)
@@ -268,8 +264,7 @@ class CreateTournamentTest extends Specification {
     }
 
     def createUserCreator(hasCreator){
-        if(hasCreator){  tournamentDto.setCreator(userDto) }
-        else {  tournamentDto.setCreator(null)}
+        if(!hasCreator){  user.id=0 }
     }
     def createQuiz(hasQuiz){
         if(hasQuiz){ tournamentDto.setQuiz(quizDto) }
