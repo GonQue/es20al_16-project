@@ -133,13 +133,8 @@ public class AuthService {
     public AuthDto demoStudentAuth() {
         User user;
         //if (activeProfile.equals("dev")) {
-<<<<<<< HEAD
            // user = this.userService.createDemoStudent();
-       // } else {
-=======
-          //  user = this.userService.createDemoStudent();
         //} else {
->>>>>>> develop
             user = this.userService.getDemoStudent();
         //}
 
