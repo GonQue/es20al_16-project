@@ -28,9 +28,15 @@ public class TournamentController {
 
 
     @PostMapping("/tournaments/{tournamentId}/enroll-student")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#tournamentId, 'TOURNAMENT.ACCESS')")
-    public TournamentDto studentEnrollTournament(@PathVariable Integer tournamentId, @RequestBody UserDto userDto){
-        return tournamentService.enrollStudent(tournamentId, userDto);
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public TournamentDto studentEnrollTournament(@PathVariable Integer tournamentId, Principal principal){
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return tournamentService.enrollStudent(tournamentId, user.getId());
     }
   
   
