@@ -70,7 +70,7 @@ class GetClarificationQuestionsPerformanceTest extends Specification {
         quizAnswer.addQuestionAnswer(answer)
         student.addQuizAnswer(quizAnswer)
 
-        1.upto(1000, {
+        1.upto(1, {
             def clarificationQuestion = new ClarificationQuestion()
             clarificationQuestion.setQuestion(question)
             clarificationQuestion.setStudent(student)
@@ -87,7 +87,7 @@ class GetClarificationQuestionsPerformanceTest extends Specification {
         answerRepository.save(answer)
 
         when:
-        1.upto(10000, {
+        1.upto(1, {
             clarificationService.listClarificationQuestions(student.getId())
         })
 
