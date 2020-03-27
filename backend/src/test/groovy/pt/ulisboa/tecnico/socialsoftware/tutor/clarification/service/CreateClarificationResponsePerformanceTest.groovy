@@ -59,7 +59,7 @@ class CreateClarificationResponsePerformanceTest extends Specification {
         clarificationResponseDto.setTeacherResponse(clarificationResponse.getTeacherResponse())
 
         when:
-        1.upto(10000, {clarificationService.answerClarification(clarificationResponse.getClarificationQuestion().getId(), clarificationResponse.getTeacher().getId(),clarificationResponseDto)})
+        1.upto(1, {clarificationService.answerClarification(clarificationResponse.getClarificationQuestion().getId(), clarificationResponse.getTeacher().getId(),clarificationResponseDto)})
 
         then:
         true
