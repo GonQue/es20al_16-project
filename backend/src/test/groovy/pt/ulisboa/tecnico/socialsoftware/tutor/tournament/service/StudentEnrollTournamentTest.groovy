@@ -112,7 +112,7 @@ class StudentEnrollTournamentTest extends Specification {
         user.addCourse(courseExecution1)
 
         when:
-        def result = tournamentService.enrollStudent(tournamentId, userDto)
+        def result = tournamentService.enrollStudent(tournamentId, user.getId())
 
         then:
         result.getName()==TOURNAMENT_NAME
@@ -142,12 +142,12 @@ class StudentEnrollTournamentTest extends Specification {
         tournamentRepository.save(tournament)
 
         when:
-        def result = tournamentService.enrollStudent(tournamentId, userDto)
+        def result = tournamentService.enrollStudent(tournamentId, user.getId())
 
         then:
         result.getEnrolled()!=null
         result.getEnrolled().size()==2
-        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(userDto.getId()) })
+        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(user.getId()) })
         result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(user2Dto.getId()) })
 
     }
@@ -159,7 +159,7 @@ class StudentEnrollTournamentTest extends Specification {
         user.setRole(User.Role.TEACHER)
 
         when:
-        tournamentService.enrollStudent(tournamentId, userDto)
+        tournamentService.enrollStudent(tournamentId, user.getId())
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_ENROLLED_NOT_STUDENT
@@ -174,7 +174,7 @@ class StudentEnrollTournamentTest extends Specification {
         tournamentDto.setEnrolled(new ArrayList<>(Arrays.asList(userDto)))
 
         when:
-        tournamentService.enrollStudent(tournamentId, userDto)
+        tournamentService.enrollStudent(tournamentId, user.getId())
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.STUDENT_ALREADY_ENROLLED
@@ -191,7 +191,7 @@ class StudentEnrollTournamentTest extends Specification {
         user.addCourse(courseExecution2)
 
         when:
-        tournamentService.enrollStudent(tournamentId, userDto)
+        tournamentService.enrollStudent(tournamentId, user.getId())
 
         then:
         def exception = thrown(TutorException)
@@ -208,7 +208,7 @@ class StudentEnrollTournamentTest extends Specification {
         user.addCourse(courseExecution1)
 
         when:
-        tournamentService.enrollStudent(tournamentId, userDto)
+        tournamentService.enrollStudent(tournamentId, user.getId())
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_CLOSED
@@ -225,7 +225,7 @@ class StudentEnrollTournamentTest extends Specification {
         user.setUsername(username)
 
         when:
-        tournamentService.enrollStudent(tournamentId, userDto)
+        tournamentService.enrollStudent(tournamentId, user.getId())
 
         then:
         def exception = thrown(TutorException)

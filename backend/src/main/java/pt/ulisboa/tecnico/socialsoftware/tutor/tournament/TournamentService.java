@@ -103,7 +103,7 @@ public class TournamentService {
    }
 
    private User getCreator(int creatorId) {
-      if(creatorId==0){
+      if(creatorId<=0){
          throw new TutorException(TOURNAMENT_NO_CREATOR);
       }
       User creatorUser = userRepository.findById(creatorId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, creatorId));
@@ -115,9 +115,9 @@ public class TournamentService {
 
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
-   public TournamentDto enrollStudent(int tournamentId, UserDto studentDto) {
+   public TournamentDto enrollStudent(int tournamentId, int studentId) {
       Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
-      User user = getUser(tournament, studentDto);
+      User user = getUser(tournament, studentId);
 
       checkUserInCourseExecution(user, tournament.getCourseExecution(), USER_NOT_IN_COURSE_EXECUTION);
       if (tournament.getStatus() == Tournament.Status.CLOSED) { throw new TutorException(TOURNAMENT_CLOSED); }
@@ -157,9 +157,9 @@ public class TournamentService {
       return enrolled;
    }
 
-   private User getUser(Tournament tournament, UserDto studentDto) {
-      if(studentDto==null){ throw new TutorException(TOURNAMENT_NO_STUDENT_TO_ENROLL);}
-      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournament.getCreator().getId()));
+   private User getUser(Tournament tournament, int studentId) {
+      if(studentId<=0){ throw new TutorException(TOURNAMENT_NO_STUDENT_TO_ENROLL);}
+      User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournament.getCreator().getId()));
       if (user.getRole() != User.Role.STUDENT) {
          throw new TutorException(TOURNAMENT_ENROLLED_NOT_STUDENT);
       }

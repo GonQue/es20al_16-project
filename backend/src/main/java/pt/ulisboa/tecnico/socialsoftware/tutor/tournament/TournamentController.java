@@ -31,11 +31,12 @@ public class TournamentController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public TournamentDto studentEnrollTournament(@PathVariable Integer tournamentId, Principal principal){
         User user = (User) ((Authentication) principal).getPrincipal();
+
         if(user == null){
             throw new TutorException(AUTHENTICATION_ERROR);
         }
-        UserDto userDto = new UserDto(user);
-        return tournamentService.enrollStudent(tournamentId, userDto);
+
+        return tournamentService.enrollStudent(tournamentId, user.getId());
     }
   
   
