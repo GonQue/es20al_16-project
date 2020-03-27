@@ -89,7 +89,7 @@ class CreateClarificationPerformanceTest extends Specification{
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
 
         when:
-        1.upto(10000, {
+        1.upto(1, {
             clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), clarificationQuestion.getStudent().getId(), clarificationQuestionDto)
         })
 
