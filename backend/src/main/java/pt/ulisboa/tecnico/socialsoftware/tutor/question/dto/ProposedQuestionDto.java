@@ -2,7 +2,9 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 
-public class ProposedQuestionDto {
+import java.io.Serializable;
+
+public class ProposedQuestionDto implements Serializable {
     private Integer id;
     private Integer studentId;
     private QuestionDto question;
