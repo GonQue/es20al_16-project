@@ -53,9 +53,9 @@ class EnrollStudentTournamentServiceSpockPerformanceTest extends Specification {
         courseRepository.save(course)
         courseExecution = new CourseExecution(course, "ACRONYM", "ACADEMIC_TERM", Course.Type.TECNICO)
 
-        and: "200 tournament dtos"
+        and: "1000 students to enroll in a tournament"
         List<User> users = new ArrayList<User>()
-        for(int i=0; i<21; i++) {
+        for(int i=0; i<1001; i++) {
             def user = new User()
             user.setKey(i)
             def courseSet = new HashSet<CourseExecution>(Arrays.asList(courseExecution))
@@ -84,8 +84,7 @@ class EnrollStudentTournamentServiceSpockPerformanceTest extends Specification {
         tournamentRepository.save(tournament)
         courseExecutionRepository.save(courseExecution)
         when:
-        //1.upto(10000
-        0.upto(20, { tournamentService.enrollStudent(tournament.getId(), users[it].getId())})
+        0.upto(1000, { tournamentService.enrollStudent(tournament.getId(), users[it].getId())})
 
         then:
         true
