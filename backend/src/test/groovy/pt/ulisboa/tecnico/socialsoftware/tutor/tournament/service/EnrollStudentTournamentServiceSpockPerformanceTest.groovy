@@ -84,6 +84,7 @@ class EnrollStudentTournamentServiceSpockPerformanceTest extends Specification {
         tournamentRepository.save(tournament)
         courseExecutionRepository.save(courseExecution)
         when:
+        //0.upto(1000
         0.upto(1000, { tournamentService.enrollStudent(tournament.getId(), users[it].getId())})
 
         then:
