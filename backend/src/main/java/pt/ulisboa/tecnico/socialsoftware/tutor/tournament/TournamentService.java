@@ -3,10 +3,10 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tournament;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 
@@ -26,12 +26,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -52,25 +48,23 @@ public class TournamentService {
    @Autowired
    private QuizRepository quizRepository;
 
-   @PersistenceContext
-   EntityManager entityManager;
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
-   public TournamentDto createTournament(int executionId, TournamentDto tournamentDto){
+   public TournamentDto createTournament(int executionId, int creatorId, TournamentDto tournamentDto){
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
 
       Quiz quiz = getQuiz(tournamentDto);
-      User creatorUser = getCreator(tournamentDto);
+      User creatorUser = getCreator(creatorId);
       checkCreatorCourse(courseExecution, creatorUser);
 
       Set<Topic> topics = getTopics(tournamentDto);
 
-      Tournament tournament = createTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
+      Tournament tournament = saveTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
       creatorUser.addTournament(tournament);
       quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
 
-      return new TournamentDto(tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
+      return new TournamentDto(new UserDto(creatorUser), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
 
@@ -94,11 +88,11 @@ public class TournamentService {
       return topics;
    }
 
-   private Tournament createTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
+   private Tournament saveTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
       Tournament tournament = new Tournament(creatorUser, courseExecution, quiz, tournamentDto);
       tournament.setTopics(topics);
 
-      entityManager.persist(tournament);
+      tournamentRepository.save(tournament);
       return tournament;
    }
 
@@ -108,11 +102,11 @@ public class TournamentService {
       }
    }
 
-   private User getCreator(TournamentDto tournamentDto) {
-      if(tournamentDto.getCreator()==null){
+   private User getCreator(int creatorId) {
+      if(creatorId<=0){
          throw new TutorException(TOURNAMENT_NO_CREATOR);
       }
-      User creatorUser = userRepository.findById(tournamentDto.getCreator().getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+      User creatorUser = userRepository.findById(creatorId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, creatorId));
       if(creatorUser.getRole() != User.Role.STUDENT){
          throw new TutorException(TOURNAMENT_CREATOR_NOT_STUDENT);
       }
@@ -121,9 +115,9 @@ public class TournamentService {
 
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
-   public TournamentDto enrollStudent(TournamentDto tournamentDto, UserDto studentDto) {
-      Tournament tournament = tournamentRepository.findById(tournamentDto.getId()).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentDto.getId()));
-      User user = getUser(tournamentDto, studentDto);
+   public TournamentDto enrollStudent(int tournamentId, int studentId) {
+      Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+      User user = getUser(tournament, studentId);
 
       checkUserInCourseExecution(user, tournament.getCourseExecution(), USER_NOT_IN_COURSE_EXECUTION);
       if (tournament.getStatus() == Tournament.Status.CLOSED) { throw new TutorException(TOURNAMENT_CLOSED); }
@@ -163,9 +157,9 @@ public class TournamentService {
       return enrolled;
    }
 
-   private User getUser(TournamentDto tournamentDto, UserDto studentDto) {
-      if(studentDto==null){ throw new TutorException(TOURNAMENT_NO_STUDENT_TO_ENROLL);}
-      User user = userRepository.findById(studentDto.getId()).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournamentDto.getCreator().getId()));
+   private User getUser(Tournament tournament, int studentId) {
+      if(studentId<=0){ throw new TutorException(TOURNAMENT_NO_STUDENT_TO_ENROLL);}
+      User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, tournament.getCreator().getId()));
       if (user.getRole() != User.Role.STUDENT) {
          throw new TutorException(TOURNAMENT_ENROLLED_NOT_STUDENT);
       }
@@ -173,5 +167,17 @@ public class TournamentService {
          throw new TutorException(INVALID_USERNAME);
       }
       return user;
+   }
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public List<TournamentDto> listOpenTournaments(int executionId){
+      CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+
+      return courseExecution.getTournaments().stream()
+              .filter(tournament -> tournament.getStatus() == Tournament.Status.CREATED)
+              .sorted(Comparator.comparing(Tournament::getStartDate))
+              .map(TournamentDto::new)
+              .collect(Collectors.toList());
+
    }
 }

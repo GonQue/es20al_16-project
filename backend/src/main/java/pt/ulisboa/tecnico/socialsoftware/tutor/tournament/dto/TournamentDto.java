@@ -3,17 +3,22 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.Transient;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOPIC_NOT_FOUND;
+
 public class TournamentDto implements Serializable {
     private Integer id;
-    private Integer key;
     private String name;
     private UserDto creator;
     private String startDate;
@@ -31,10 +36,10 @@ public class TournamentDto implements Serializable {
 
     public TournamentDto(){}
 
-    public TournamentDto(QuizDto quizDto,List<TopicDto> topics,Tournament tournament){
+    public TournamentDto(UserDto userDto, QuizDto quizDto,List<TopicDto> topics,Tournament tournament){
         this.id = tournament.getId();
-        this.key = tournament.getKey();
         this.name = tournament.getName();
+        this.creator = userDto;
         this.startDate = tournament.getStartDate().format(formatter);
         this.endDate = tournament.getEndDate().format(formatter);
         this.numberOfQuestions = tournament.getNumberOfQuestions();
@@ -45,9 +50,18 @@ public class TournamentDto implements Serializable {
 
     public TournamentDto(Tournament tournament){
         this.id = tournament.getId();
-        this.key = tournament.getKey();
         this.name = tournament.getName();
+        this.creator = new UserDto(tournament.getCreator());
+        this.startDate = tournament.getStartDate().format(formatter);
+        this.endDate = tournament.getEndDate().format(formatter);
+        this.numberOfQuestions = tournament.getNumberOfQuestions();
         this.status = tournament.getStatus().name();
+        this.quiz = new QuizDto(tournament.getQuiz(), false);
+
+        Set<Topic> topicsTournament = tournament.getTopics();
+        for(Topic topic: topicsTournament){
+            this.topics.add(new TopicDto(topic));
+        }
 
     }
 
@@ -57,14 +71,6 @@ public class TournamentDto implements Serializable {
 
     public Integer getId() {
         return id;
-    }
-
-    public void setKey(Integer key) {
-        this.key = key;
-    }
-
-    public Integer getKey() {
-        return key;
     }
 
     public void setName(String name) {
