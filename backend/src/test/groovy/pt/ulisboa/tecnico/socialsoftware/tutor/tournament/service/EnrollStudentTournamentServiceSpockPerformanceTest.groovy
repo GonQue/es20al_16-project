@@ -47,43 +47,47 @@ class EnrollStudentTournamentServiceSpockPerformanceTest extends Specification {
     def course
     def courseExecution
 
-    def "performance test to list 100000 tournaments"() {
+    def "performance test to enroll students in one tournament"() {
         given:"a course execution"
         course = new Course("COURSE_NAME", Course.Type.TECNICO)
         courseRepository.save(course)
         courseExecution = new CourseExecution(course, "ACRONYM", "ACADEMIC_TERM", Course.Type.TECNICO)
 
         and: "200 tournament dtos"
-        def user = new User()
-        user.setKey(1)
-        userRepository.save(user)
+        List<User> users = new ArrayList<User>()
+        for(int i=0; i<21; i++) {
+            def user = new User()
+            user.setKey(i)
+            def courseSet = new HashSet<CourseExecution>(Arrays.asList(courseExecution))
+            //courseSet.add(courseExecution)
+            user.setRole(User.Role.STUDENT)
+            user.setCourseExecutions(courseSet)
+            user.setUsername("student"+i)
+            userRepository.save(user)
+            users.add(user)
+        }
 
         def quiz = new Quiz()
         quiz.setKey(1)
         quizRepository.save(quiz)
 
-        Set<Tournament> tournaments = new HashSet<>();
-        for(int i=0; i<200; i++){
-            def tournament = new Tournament()
-            tournament.setName(TOURNAMENT_NAME1)
-            tournament.setCourseExecution(courseExecution)
-            tournament.setStartDate(LocalDateTime.now())
-            tournament.setEndDate(LocalDateTime.now().plusDays(1))
-            tournament.setStatus(Tournament.Status.CREATED)
-            tournament.setQuiz(quiz)
-            tournament.setNumberOfQuestions(5)
-            tournament.setCreator(user)
-            tournaments.add(tournament)
+        def tournament = new Tournament()
+        tournament.setName(TOURNAMENT_NAME1)
+        tournament.setCourseExecution(courseExecution)
+        tournament.setStartDate(LocalDateTime.now())
+        tournament.setEndDate(LocalDateTime.now().plusDays(1))
+        tournament.setStatus(Tournament.Status.CREATED)
+        tournament.setQuiz(quiz)
+        tournament.setNumberOfQuestions(5)
+        tournament.setCreator(users[0])
 
-        }
-        courseExecution.setTournaments(tournaments);
+        tournamentRepository.save(tournament)
         courseExecutionRepository.save(courseExecution)
         when:
         //1.upto(10000
-        1.upto(10000, { tournamentService.listOpenTournaments(courseExecution.getId())})
+        0.upto(20, { tournamentService.enrollStudent(tournament.getId(), users[it].getId())})
 
         then:
-        courseExecution.getTournaments().size()==200
         true
 
     }
