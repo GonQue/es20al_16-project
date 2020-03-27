@@ -48,14 +48,6 @@ public class TournamentService {
    @Autowired
    private QuizRepository quizRepository;
 
-   @Transactional(isolation = Isolation.REPEATABLE_READ)
-   public CourseDto findTournamentCourseExecution(int tournamentId) {
-      return this.tournamentRepository.findById(tournamentId)
-              .map(Tournament::getCourseExecution)
-              .map(CourseDto::new)
-              .orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
-   }
-
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto createTournament(int executionId, int creatorId, TournamentDto tournamentDto){
