@@ -147,6 +147,11 @@
           </v-list>
         </v-menu>
 
+        <v-btn to="/student/clarifications" v-if="isStudent && currentCourse" text dark>
+          Clarifications
+          <v-icon>fas fa-file-alt</v-icon>
+        </v-btn>
+
         <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
           Stats
           <v-icon>fas fa-user</v-icon>
