@@ -187,7 +187,7 @@ let router = new Router({
           }
         },
         {
-          path: 'clarifications',
+          path: 'clarifications/status',
           name: 'clarificationQuestions',
           component: ListClarificationQuestionsView,
           meta: {

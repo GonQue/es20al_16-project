@@ -14,6 +14,7 @@ import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+import StatementClarificationQuestion from '@/models/statement/StatementClarificationQuestion';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -549,6 +550,19 @@ export default class RemoteServices {
   static async deleteCourse(courseExecutionId: number | undefined) {
     return httpClient
       .delete('/admin/courses/executions/' + courseExecutionId)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static getClarificationQuestions(): Promise<StatementClarificationQuestion[]> {
+    return httpClient
+      .get('/student/clarifications/status')
+      .then(response => {
+        return response.data.map((clarificationQuestion: any) => {
+          return new StatementClarificationQuestion(clarificationQuestion);
+        });
+      })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });

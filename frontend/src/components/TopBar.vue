@@ -147,7 +147,7 @@
           </v-list>
         </v-menu>
 
-        <v-btn to="/student/clarifications" v-if="isStudent && currentCourse" text dark>
+        <v-btn to="/student/clarifications/status" v-if="isStudent && currentCourse" text dark>
           Clarifications
           <v-icon>fas fa-file-alt</v-icon>
         </v-btn>
@@ -309,6 +309,13 @@
               <v-icon>done</v-icon>
             </v-list-item-action>
             <v-list-item-content>Solved Quizzes</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item to="/student/clarifications/status">
+            <v-list-item-action>
+              <v-icon>fas fa-file-alt</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Clarifications</v-list-item-content>
           </v-list-item>
 
           <v-list-item to="/student/stats">
