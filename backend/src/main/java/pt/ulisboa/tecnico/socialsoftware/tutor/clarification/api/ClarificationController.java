@@ -44,7 +44,7 @@ public class ClarificationController {
 
         return clarificationService.listClarificationQuestions(user.getId());
     }
-    @PostMapping("/teacher/clarifications/{clarificationId}/answer")
+    @PostMapping("/management/clarifications/{clarificationId}/answer")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ClarificationResponseDto createClarificationResponse(Principal principal, @PathVariable Integer clarificationId, @RequestBody ClarificationResponseDto clarificationResponseDto) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -56,7 +56,7 @@ public class ClarificationController {
         return clarificationService.answerClarification(clarificationId, user.getId(), clarificationResponseDto);
     }
 
-    @GetMapping("/student/clarifications/{clarificationId}/responses")
+    @GetMapping("/management/clarifications/{clarificationId}/responses")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public List<ClarificationResponseDto> listResponses(Principal principal, @PathVariable Integer clarificationId) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -68,4 +68,15 @@ public class ClarificationController {
         return clarificationService.listResponses(clarificationId);
     }
 
+    @GetMapping("/management/clarifications/status")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public List<ClarificationQuestionDto> getAllClarificationQuestions(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if (user == null) {
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return clarificationService.listAllClarificationQuestions();
+    }
 }

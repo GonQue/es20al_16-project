@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarificatio
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
@@ -231,5 +232,17 @@ public class ClarificationService {
 
     private List<ClarificationResponseDto> listOfResponsesDto(ClarificationQuestion clarificationQuestion) {
         return clarificationQuestion.getResponses().stream().map(ClarificationResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationQuestionDto> listAllClarificationQuestions() {
+        return listOfAllClarificationQuestionsDto();
+    }
+
+    private List<ClarificationQuestionDto> listOfAllClarificationQuestionsDto() {
+        return clarificationQuestionRepository.findAll().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
 }
