@@ -11,6 +11,7 @@ import QuestionsView from './views/teacher/questions/QuestionsView.vue';
 import TopicsView from './views/teacher/TopicsView.vue';
 import QuizzesView from './views/teacher/quizzes/QuizzesView.vue';
 import StudentsView from './views/teacher/students/StudentsView.vue';
+import ListTeacherClarificationQuestionsView from './views/teacher/clarifications/ListTeacherClarificationQuestionsView.vue';
 import StudentView from '@/views/student/StudentView.vue';
 import AvailableQuizzesView from './views/student/AvailableQuizzesView.vue';
 import SolvedQuizzesView from './views/student/SolvedQuizzesView.vue';
@@ -95,6 +96,15 @@ let router = new Router({
           component: AssessmentsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Assessment Topics',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
+          path: 'clarifications/status',
+          name: 'clarifications-management',
+          component: ListTeacherClarificationQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Clarifications',
             requiredAuth: 'Teacher'
           }
         },
