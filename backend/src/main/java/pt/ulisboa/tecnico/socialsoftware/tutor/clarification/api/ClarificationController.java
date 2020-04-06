@@ -21,7 +21,7 @@ public class ClarificationController {
     @Autowired
     private ClarificationService clarificationService;
 
-    @PostMapping("/clarifications/{questionId}/submit")
+    @PostMapping("/student/clarifications/{questionId}/submit")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ClarificationQuestionDto createClarificationQuestion(Principal principal, @PathVariable Integer questionId, @RequestBody ClarificationQuestionDto clarificationQuestionDto) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -33,7 +33,7 @@ public class ClarificationController {
         return clarificationService.createClarification(questionId, user.getId(), clarificationQuestionDto);
     }
 
-    @GetMapping("/clarifications/status")
+    @GetMapping("/student/clarifications/status")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public List<ClarificationQuestionDto> getClarificationQuestions(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -44,7 +44,7 @@ public class ClarificationController {
 
         return clarificationService.listClarificationQuestions(user.getId());
     }
-    @PostMapping("clarifications/{clarificationId}/answer")
+    @PostMapping("/teacher/clarifications/{clarificationId}/answer")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ClarificationResponseDto createClarificationResponse(Principal principal, @PathVariable Integer clarificationId, @RequestBody ClarificationResponseDto clarificationResponseDto) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -56,7 +56,7 @@ public class ClarificationController {
         return clarificationService.answerClarification(clarificationId, user.getId(), clarificationResponseDto);
     }
 
-    @GetMapping("clarifications/{clarificationId}/responses")
+    @GetMapping("/student/clarifications/{clarificationId}/responses")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public List<ClarificationResponseDto> listResponses(Principal principal, @PathVariable Integer clarificationId) {
         User user = (User) ((Authentication) principal).getPrincipal();
