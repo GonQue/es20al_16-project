@@ -26,6 +26,9 @@ import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 
+import ListProposedQuestionsView from './views/student/proposedQuestions/ListProposedQuestionsView.vue';
+
+
 Vue.use(Router);
 
 let router = new Router({
@@ -184,7 +187,16 @@ let router = new Router({
             title: process.env.VUE_APP_NAME + ' - Scan',
             requiredAuth: 'Student'
           }
-        }
+        },
+        {
+          path: 'listProposedQuestions',
+          name: 'listProposedQuestions',
+          component: ListProposedQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Proposed Questions',
+            requiredAuth: 'Student'
+          }
+        },
       ]
     },
     {
