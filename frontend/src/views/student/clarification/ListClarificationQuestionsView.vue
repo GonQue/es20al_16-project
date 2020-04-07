@@ -51,6 +51,7 @@
               v-on="on"
               @click="deleteClarificationQuestion(item.id)"
               color="#D32F2F"
+              data-cy="DeleteClarificationIcon"
               >delete</v-icon
             >
           </template>

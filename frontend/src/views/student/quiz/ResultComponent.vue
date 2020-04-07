@@ -15,6 +15,7 @@
       class="creationAlertSuccess"
       type="success"
       dismissible
+      data-cy="SuccessMessage"
     >
       The clarification question was successfully created.
     </v-alert>
@@ -70,7 +71,11 @@
     </ul>
     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on" class="clarification-btn">
+        <v-btn
+          v-on="on"
+          class="clarification-btn"
+          data-cy="ClarificationButton"
+        >
           Ask a teacher to clarify this question
           <v-icon>create</v-icon>
         </v-btn>
@@ -87,6 +92,7 @@
                   v-model="clarificationQuestion.content"
                   label="Question*"
                   required
+                  data-cy="ClarificationContent"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -95,14 +101,19 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="dialog = false" data-cy="cancelButton"
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+            data-cy="CancelButton"
             >Cancel</v-btn
           >
-          <v-btn v-if="clarificationQuestion.content != ''"
+          <v-btn
+            v-if="clarificationQuestion.content != ''"
             color="blue darken-1"
             text
             @click="createClarificationQuestion"
-            data-cy="saveButton"
+            data-cy="SaveButton"
           >
             Submit
           </v-btn>
@@ -156,9 +167,12 @@ export default class ResultComponent extends Vue {
     this.clarificationQuestion.status = 'NOT_ANSWERED';
     let today = new Date();
     this.clarificationQuestion.creationDate =
-      today.getFullYear() + '-' + ('00' + (today.getMonth() + 1)).slice(-2) +
+      today.getFullYear() +
       '-' +
-      ('00' + today.getDate()).slice(-2) + ' ' +
+      ('00' + (today.getMonth() + 1)).slice(-2) +
+      '-' +
+      ('00' + today.getDate()).slice(-2) +
+      ' ' +
       ('00' + today.getHours()).slice(-2) +
       ':' +
       ('00' + today.getMinutes()).slice(-2);
