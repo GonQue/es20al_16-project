@@ -140,6 +140,20 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void removeClarification(Integer clarificationQuestionId) {
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        clarificationQuestion.getResponses().forEach(response -> { response.remove(); clarificationResponseRepository.delete(response); } );
+
+        clarificationQuestion.remove();
+
+        clarificationQuestionRepository.delete(clarificationQuestion);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ClarificationResponseDto answerClarification(Integer clarificationQuestionId, Integer teacherId, ClarificationResponseDto clarificationResponseDto) {
         checkClarificationId(clarificationQuestionId);
 
