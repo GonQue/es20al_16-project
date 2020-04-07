@@ -57,8 +57,6 @@ public class ClarificationService {
 
         checkQuestionId(questionId);
 
-        checkAnswerId(answerId);
-
         Question question = getQuestion(questionId);
 
         User student = getStudent(studentId);
@@ -111,7 +109,7 @@ public class ClarificationService {
                 List<QuestionAnswer> questionAnswers = iQuizAnswer.getQuestionAnswers();
                 if(!questionAnswers.isEmpty())
                     for (QuestionAnswer iAnswer: questionAnswers) {
-                        if(iAnswer.getOption().getQuestion().getId() == questionId) {
+                        if(iAnswer.getQuizQuestion() != null && iAnswer.getQuizQuestion().getQuestion() != null && iAnswer.getQuizQuestion().getQuestion().getId() == questionId) {
                             valid = true;
                             break;
                         }

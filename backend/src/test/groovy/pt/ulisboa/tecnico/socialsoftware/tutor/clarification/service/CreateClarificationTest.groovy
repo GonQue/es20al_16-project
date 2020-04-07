@@ -18,6 +18,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionReposit
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -53,10 +55,14 @@ class CreateClarificationTest extends Specification{
     ClarificationQuestionRepository clarificationQuestionRepository
 
     @Autowired
+    QuizQuestionRepository quizQuestionRepository
+
+    @Autowired
     OptionRepository optionRepository
 
     def clarificationQuestion
     def question
+    def quizQuestion
     def student
     def answer
     def quizAnswer
@@ -71,6 +77,8 @@ class CreateClarificationTest extends Specification{
         question.setKey(1)
         question.setContent(CONTENT)
 
+        quizQuestion = new QuizQuestion()
+
         answer = new QuestionAnswer()
 
         quizAnswer = new QuizAnswer()
@@ -78,7 +86,9 @@ class CreateClarificationTest extends Specification{
         option = new Option()
 
         option.setQuestion(question)
+        quizQuestion.setQuestion(question)
         answer.setOption(option)
+        answer.setQuizQuestion(quizQuestion)
         quizAnswer.addQuestionAnswer(answer)
         student.addQuizAnswer(quizAnswer)
 
@@ -88,6 +98,7 @@ class CreateClarificationTest extends Specification{
         clarificationQuestion.setAnswer(answer)
         clarificationQuestion.setContent(CONTENT)
 
+        quizQuestionRepository.save(quizQuestion)
         optionRepository.save(option)
         questionRepository.save(question)
         userRepository.save(student)
@@ -206,12 +217,11 @@ class CreateClarificationTest extends Specification{
         given: "create clarificationQuestionDto"
         def clarificationQuestionDto = new ClarificationQuestionDto()
         clarificationQuestionDto.setId(clarificationQuestion.getId())
+        clarificationQuestionDto.setAnswerId(answer.getId())
         and: "input to test"
         def sId = studentId = studentId == null ? null : student.getId()
         def qId = questionId = questionId == null ? null : question.getId()
-        def aId = answerId = answerId == null ? null : answer.getId()
         clarificationQuestionDto.setContent(content)
-        clarificationQuestionDto.setAnswerId(aId)
 
         when:
         clarificationService.createClarification(qId, sId, clarificationQuestionDto)
@@ -221,12 +231,11 @@ class CreateClarificationTest extends Specification{
         error.errorMessage == errorMessage
 
         where:
-        studentId          | questionId     | answerId      | content   || errorMessage
-        null               | EXISTENT_ID    | EXISTENT_ID   | CONTENT   || USER_ID_IS_NULL
-        EXISTENT_ID        | null           | EXISTENT_ID   | CONTENT   || QUESTION_ID_IS_NULL
-        EXISTENT_ID        | EXISTENT_ID    | null          | CONTENT   || QUESTION_ANSWER_ID_IS_NULL
-        EXISTENT_ID        | EXISTENT_ID    | EXISTENT_ID   | null      || CLARIFICATION_CONTENT
-        EXISTENT_ID        | EXISTENT_ID    | EXISTENT_ID   | "   "     || CLARIFICATION_CONTENT
+        studentId          | questionId     | content   || errorMessage
+        null               | EXISTENT_ID    | CONTENT   || USER_ID_IS_NULL
+        EXISTENT_ID        | null           | CONTENT   || QUESTION_ID_IS_NULL
+        EXISTENT_ID        | EXISTENT_ID    | null      || CLARIFICATION_CONTENT
+        EXISTENT_ID        | EXISTENT_ID    | "   "     || CLARIFICATION_CONTENT
     }
 
     @TestConfiguration

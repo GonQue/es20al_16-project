@@ -17,6 +17,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionReposit
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import spock.lang.Specification
 
 @DataJpaTest
@@ -36,13 +38,14 @@ class CreateClarificationPerformanceTest extends Specification{
     QuestionAnswerRepository answerRepository
 
     @Autowired
-    ClarificationQuestionRepository clarificationQuestionRepository
+    QuizQuestionRepository quizQuestionRepository
 
     @Autowired
     OptionRepository optionRepository
 
     def clarificationQuestion
     def question
+    def quizQuestion
     def student
     def answer
     def quizAnswer
@@ -57,6 +60,8 @@ class CreateClarificationPerformanceTest extends Specification{
         question.setKey(1)
         question.setContent(CONTENT)
 
+        quizQuestion = new QuizQuestion()
+
         answer = new QuestionAnswer()
 
         quizAnswer = new QuizAnswer()
@@ -64,7 +69,9 @@ class CreateClarificationPerformanceTest extends Specification{
         option = new Option()
 
         option.setQuestion(question)
+        quizQuestion.setQuestion(question)
         answer.setOption(option)
+        answer.setQuizQuestion(quizQuestion)
         quizAnswer.addQuestionAnswer(answer)
         student.addQuizAnswer(quizAnswer)
 
@@ -74,6 +81,7 @@ class CreateClarificationPerformanceTest extends Specification{
         clarificationQuestion.setAnswer(answer)
         clarificationQuestion.setContent(CONTENT)
 
+        quizQuestionRepository.save(quizQuestion)
         optionRepository.save(option)
         questionRepository.save(question)
         userRepository.save(student)
