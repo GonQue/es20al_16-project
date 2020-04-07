@@ -555,13 +555,32 @@ export default class RemoteServices {
       });
   }
 
-  static getClarificationQuestions(): Promise<StatementClarificationQuestion[]> {
+  static getClarificationQuestions(): Promise<
+    StatementClarificationQuestion[]
+  > {
     return httpClient
       .get('/student/clarifications/status')
       .then(response => {
         return response.data.map((clarificationQuestion: any) => {
           return new StatementClarificationQuestion(clarificationQuestion);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createClarificationQuestion(
+    questionId: number | undefined,
+    clarificationQuestion: StatementClarificationQuestion | null
+  ): Promise<StatementClarificationQuestion> {
+    return httpClient
+      .post(
+        '/student/clarifications/' + questionId + '/submit',
+        clarificationQuestion
+      )
+      .then(response => {
+        return new StatementClarificationQuestion(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
