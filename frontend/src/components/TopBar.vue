@@ -61,6 +61,14 @@
                 <v-list-item-title>Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/management/proposedQuestions">
+              <v-list-item-action>
+                <v-icon>question_answer</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Proposed Questions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item to="/management/topics">
               <v-list-item-action>
                 <v-icon>category</v-icon>
@@ -242,6 +250,14 @@
               <v-list-item-title>Questions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item to="/management/proposedQuestions">
+            <v-list-item-action>
+              <v-icon>question_answer</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Proposed Questions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item to="/management/topics">
             <v-list-item-action>
               <v-icon>category</v-icon>
@@ -323,6 +339,13 @@
               <v-icon>done</v-icon>
             </v-list-item-action>
             <v-list-item-content>Solved Quizzes</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item to="/student/listProposedQuestions">
+            <v-list-item-action>
+              <v-icon>fas fa-user</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Proposed Questions</v-list-item-content>
           </v-list-item>
 
           <v-list-item to="/student/stats">

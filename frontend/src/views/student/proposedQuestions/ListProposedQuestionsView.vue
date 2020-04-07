@@ -8,5 +8,5 @@
     import { Component, Vue} from 'vue-property-decorator';
 
     @Component
-    export default class ListClarificationQuestionsView extends Vue {}
+    export default class ListProposedQuestionsView extends Vue {}
 </script>
