@@ -33,6 +33,18 @@ public class ClarificationController {
         return clarificationService.createClarification(questionId, user.getId(), clarificationQuestionDto);
     }
 
+    @DeleteMapping("/student/clarifications/{clarificationQuestionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public void removeClarificationQuestion(Principal principal, @PathVariable Integer clarificationQuestionId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.removeClarification(clarificationQuestionId);
+    }
+
     @GetMapping("/student/clarifications/status")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public List<ClarificationQuestionDto> getClarificationQuestions(Principal principal) {

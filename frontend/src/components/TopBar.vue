@@ -69,7 +69,7 @@
                 <v-list-item-title>Topics</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/management/quizzes">
+            <v-list-item to="/management/quizzes" data-cy="Quizzes">
               <v-list-item-action>
                 <v-icon>ballot</v-icon>
               </v-list-item-action>
@@ -114,7 +114,7 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
+            <v-btn v-on="on" text dark data-cy="Quizzes">
               Quizzes
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -128,7 +128,7 @@
                 <v-list-item-title>Available</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/student/create">
+            <v-list-item to="/student/create" data-cy="CreateQuiz">
               <v-list-item-action>
                 <v-icon>create</v-icon>
               </v-list-item-action>
@@ -144,7 +144,7 @@
                 <v-list-item-title>Scan</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/student/solved">
+            <v-list-item to="/student/solved" data-cy="SolvedQuizzes">
               <v-list-item-action>
                 <v-icon>done</v-icon>
               </v-list-item-action>
@@ -155,7 +155,13 @@
           </v-list>
         </v-menu>
 
-        <v-btn to="/student/clarifications/status" v-if="isStudent && currentCourse" text dark>
+        <v-btn
+          to="/student/clarifications/status"
+          v-if="isStudent && currentCourse"
+          text
+          dark
+          data-cy="Clarifications"
+        >
           Clarifications
           <v-icon>fas fa-file-alt</v-icon>
         </v-btn>
@@ -306,7 +312,7 @@
             <v-list-item-content>Available Quizzes</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/create">
+          <v-list-item to="/student/create" data-cy="CreateQuiz">
             <v-list-item-action>
               <v-icon>create</v-icon>
             </v-list-item-action>
@@ -320,14 +326,14 @@
             <v-list-item-content>Scan</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/solved">
+          <v-list-item to="/student/solved" data-cy="SolvedQuizzes">
             <v-list-item-action>
               <v-icon>done</v-icon>
             </v-list-item-action>
             <v-list-item-content>Solved Quizzes</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/clarifications/status">
+          <v-list-item to="/student/clarifications/status" data-cy="Clarifications">
             <v-list-item-action>
               <v-icon>fas fa-file-alt</v-icon>
             </v-list-item-action>

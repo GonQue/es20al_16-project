@@ -7,23 +7,26 @@ import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationResponseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion
-import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationResponse
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import spock.lang.Specification
 
 @DataJpaTest
-class CreateClarificationPerformanceTest extends Specification{
+class RemoveClarificationQuestionTest extends Specification {
     public static final String CONTENT = "CONTENT"
+    public static final String TEACHER_RESPONSE = "TEACHER RESPONSE"
 
     @Autowired
     ClarificationService clarificationService
@@ -38,10 +41,17 @@ class CreateClarificationPerformanceTest extends Specification{
     QuestionAnswerRepository answerRepository
 
     @Autowired
+    ClarificationQuestionRepository clarificationQuestionRepository
+
+    @Autowired
     QuizQuestionRepository quizQuestionRepository
 
     @Autowired
     OptionRepository optionRepository
+
+    @Autowired
+    ClarificationResponseRepository clarificationResponseRepository
+
 
     def clarificationQuestion
     def question
@@ -86,23 +96,42 @@ class CreateClarificationPerformanceTest extends Specification{
         questionRepository.save(question)
         userRepository.save(student)
         answerRepository.save(answer)
+        clarificationQuestionRepository.save(clarificationQuestion)
     }
 
-    def 'performance testing to create a clarification request'() {
-        given: "create clarificationQuestionDto"
-        def clarificationQuestionDto = new ClarificationQuestionDto()
-        clarificationQuestionDto.setId(clarificationQuestion.getId())
-        clarificationQuestionDto.setAnswerId(clarificationQuestion.getAnswer().getId())
-        clarificationQuestionDto.setContent(clarificationQuestion.getContent())
-        clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
+    def "remove a clarification question without responses"() {
+        when:
+        clarificationService.removeClarification(clarificationQuestion.getId())
+
+        then: "the question is removeQuestion"
+        clarificationQuestionRepository.count() == 0L
+        clarificationResponseRepository.count() == 0L
+    }
+
+    def "remove a clarification question with responses"() {
+        given: "a teacher"
+        def teacher = new User()
+        teacher.setKey(2)
+        teacher.setRole(User.Role.TEACHER)
+        userRepository.save(teacher)
+        and: "2 reponses"
+        def firstClarificationResponse = new ClarificationResponse()
+        firstClarificationResponse.setTeacher(teacher)
+        firstClarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
+        firstClarificationResponse.setClarificationQuestion(clarificationQuestion)
+        clarificationResponseRepository.save(teacher)
+        def secondClarificationResponse = new ClarificationResponse()
+        secondClarificationResponse.setTeacher(teacher)
+        secondClarificationResponse.setTeacherResponse(TEACHER_RESPONSE)
+        secondClarificationResponse.setClarificationQuestion(clarificationQuestion)
+        clarificationResponseRepository.save(teacher)
 
         when:
-        1.upto(1, {
-            clarificationService.createClarification(clarificationQuestion.getQuestion().getId(), clarificationQuestion.getStudent().getId(), clarificationQuestionDto)
-        })
+        clarificationService.removeClarification(clarificationQuestion.getId())
 
-        then:
-        true
+        then: "the question is removeQuestion"
+        clarificationQuestionRepository.count() == 0L
+        clarificationResponseRepository.count() == 0L
     }
 
     @TestConfiguration

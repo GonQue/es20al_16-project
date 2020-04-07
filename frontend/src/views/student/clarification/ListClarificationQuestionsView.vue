@@ -24,7 +24,9 @@
       <template v-slot:item.status="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon class="mr-2" :color="statusColor(item.status)" v-on="on">{{ statusIcon(item.status) }}</v-icon>
+            <v-icon class="mr-2" :color="statusColor(item.status)" v-on="on">{{
+              statusIcon(item.status)
+            }}</v-icon>
           </template>
           <span>{{ statusSpan(item.status) }}</span>
         </v-tooltip>
@@ -38,6 +40,22 @@
             >
           </template>
           <span>Show Responses</span>
+        </v-tooltip>
+      </template>
+
+      <template v-slot:item.deleteClarification="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              class="mr-2"
+              v-on="on"
+              @click="deleteClarificationQuestion(item.id)"
+              color="#D32F2F"
+              data-cy="DeleteClarificationIcon"
+              >delete</v-icon
+            >
+          </template>
+          <span>Remove Clarification</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -71,9 +89,20 @@ export default class ListClarificationQuestionsView extends Vue {
       text: 'Creation Date',
       value: 'creationDate',
       align: 'center',
-      width: '20%'
+      width: '15%'
     },
-    { text: 'Show Responses', value: 'responses', align: 'center', width: '5%' }
+    {
+      text: 'Show Responses',
+      value: 'responses',
+      align: 'center',
+      width: '5%'
+    },
+    {
+      text: 'Remove',
+      value: 'deleteClarification',
+      align: 'center',
+      width: '5%'
+    }
   ];
 
   statusIcon(status: string) {
@@ -92,6 +121,20 @@ export default class ListClarificationQuestionsView extends Vue {
     if (status == 'NOT_ANSWERED') return 'Not Answered';
     else if (status == 'ANSWERED') return 'Answered';
     else return 'Not Answered';
+  }
+
+  async deleteClarificationQuestion(clarificationId: number) {
+    if (confirm('Are you sure you want to delete this clarification question?')) {
+      try {
+        await RemoteServices.deleteClarificationQuestion(clarificationId);
+        this.clarificationQuestions = this.clarificationQuestions.filter(
+          clarificationQuestion => clarificationQuestion.id != clarificationId
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    }
   }
 
   async created() {
