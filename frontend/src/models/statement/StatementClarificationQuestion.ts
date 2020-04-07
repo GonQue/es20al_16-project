@@ -1,4 +1,5 @@
 export default class StatementClarificationQuestion {
+  id: number | null = null;
   content: string = '';
   answerId: number | null = null;
   questionContent: string = '';
@@ -7,6 +8,7 @@ export default class StatementClarificationQuestion {
 
   constructor(jsonObj?: StatementClarificationQuestion) {
     if (jsonObj) {
+      this.id = jsonObj.id;
       this.content = jsonObj.content;
       this.answerId = jsonObj.answerId;
       this.questionContent = jsonObj.questionContent;
