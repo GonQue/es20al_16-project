@@ -18,6 +18,7 @@ import QuizView from '@/views/student/quiz/QuizView.vue';
 import ResultsView from '@/views/student/quiz/ResultsView.vue';
 import StatsView from '@/views/student/StatsView.vue';
 import ScanView from '@/views/student/ScanView.vue';
+import ProposeQuestionView from '@/views/student/questions/ProposeQuestionView.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -182,6 +183,15 @@ let router = new Router({
           component: ScanView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Scan',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'propose',
+          name: 'propose-question',
+          component: ProposeQuestionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Propose Question',
             requiredAuth: 'Student'
           }
         }
