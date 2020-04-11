@@ -137,7 +137,6 @@ public class AuthService {
 //        } else {
             user = this.userService.getDemoStudent();
 //        }
-
         return new AuthDto(JwtTokenProvider.generateToken(user), new AuthUserDto(user));
     }
 

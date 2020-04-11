@@ -20,8 +20,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -46,7 +48,8 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ClarificationQuestionDto createClarification(Integer questionId, Integer studentId, Integer answerId, ClarificationQuestionDto clarificationQuestionDto) {
+    public ClarificationQuestionDto createClarification(Integer questionId, Integer studentId, ClarificationQuestionDto clarificationQuestionDto) {
+        Integer answerId = clarificationQuestionDto.getAnswerId();
 
         checkClarificationContent(clarificationQuestionDto);
 
@@ -143,7 +146,6 @@ public class ClarificationService {
         checkClarificationId(clarificationQuestionId);
 
         checkTeacherId(teacherId);
-
         checkTeacherResponse(clarificationResponseDto);
 
         User teacher = getTeacher(teacherId);
@@ -195,5 +197,39 @@ public class ClarificationService {
         teacher.addClarificationResponse(clarificationResponse);
 
         return clarificationResponse;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationQuestionDto> listClarificationQuestions(Integer studentId) {
+
+        checkStudentId(studentId);
+
+        User student = getStudent(studentId);
+
+        return listOfClarificationQuestionsDto(student);
+    }
+
+    private List<ClarificationQuestionDto> listOfClarificationQuestionsDto(User student) {
+        return student.getClarification_questions().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationResponseDto> listResponses(Integer clarificationQuestionId) {
+
+        checkClarificationId(clarificationQuestionId);
+
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        return listOfResponsesDto(clarificationQuestion);
+    }
+
+    private List<ClarificationResponseDto> listOfResponsesDto(ClarificationQuestion clarificationQuestion) {
+        return clarificationQuestion.getResponses().stream().map(ClarificationResponseDto::new).collect(Collectors.toList());
     }
 }
