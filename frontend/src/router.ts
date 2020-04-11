@@ -12,6 +12,7 @@ import TopicsView from './views/teacher/TopicsView.vue';
 import QuizzesView from './views/teacher/quizzes/QuizzesView.vue';
 import StudentsView from './views/teacher/students/StudentsView.vue';
 import ListTeacherClarificationQuestionsView from './views/teacher/clarifications/ListTeacherClarificationQuestionsView.vue';
+import ListClarificationResponsesView from './views/teacher/clarifications/ListClarificationResponsesView.vue';
 import StudentView from '@/views/student/StudentView.vue';
 import AvailableQuizzesView from './views/student/AvailableQuizzesView.vue';
 import SolvedQuizzesView from './views/student/SolvedQuizzesView.vue';
@@ -109,6 +110,16 @@ let router = new Router({
           }
         },
         {
+          path: 'responses',
+          name: 'show-teacher-clarification-responses',
+          component: ListClarificationResponsesView,
+          props: true,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Res',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
           path: 'students',
           name: 'students-management',
           component: StudentsView,
@@ -202,6 +213,16 @@ let router = new Router({
           component: ListClarificationQuestionsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - List Clarifications',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'responses',
+          name: 'show-student-clarification-responses',
+          component: ListClarificationResponsesView,
+          props: true,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Responses',
             requiredAuth: 'Student'
           }
         }

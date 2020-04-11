@@ -32,10 +32,10 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.responses>
+      <template v-slot:item.responses = {item}>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon class="mr-2" v-on="on" @click="$router.push('#')"
+            <v-icon class="mr-2" v-on="on" @click="showResponse(item)"
               >mdi-comment-text-multiple</v-icon
             >
           </template>
@@ -63,12 +63,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
 import StatementClarificationQuestion from '@/models/statement/StatementClarificationQuestion';
 import RemoteServices from '@/services/RemoteServices';
+import ClarificationQuestion from '@/models/management/ClarificationQuestion';
+  import EditClarificationResponseDialog from '@/views/teacher/clarifications/EditClarificationResponseDialog.vue';
+  import ListClarificationResponses from '@/views/teacher/clarifications/ListClarificationResponsesView.vue';
 
-@Component
+  @Component({
+    components: {
+      'list-clarification-responses': ListClarificationResponses,
+    }
+  })
 export default class ListClarificationQuestionsView extends Vue {
+  @Prop(ClarificationQuestion)  clarificationQuestion!: ClarificationQuestion;
+  currentClarificationQuestion: ClarificationQuestion | null = null;
   clarificationQuestions: StatementClarificationQuestion[] = [];
   search: string = '';
   headers: object = [
@@ -135,6 +144,12 @@ export default class ListClarificationQuestionsView extends Vue {
       }
       await this.$store.dispatch('clearLoading');
     }
+  }
+
+  async showResponse(clarificationQuestion: ClarificationQuestion){
+    this.currentClarificationQuestion = clarificationQuestion;
+    if(this.currentClarificationQuestion.id != null)
+      await this.$router.push({ name: 'show-student-clarification-responses' , params: {clarificationQuestionId : this.currentClarificationQuestion.id.toString()},});
   }
 
   async created() {
