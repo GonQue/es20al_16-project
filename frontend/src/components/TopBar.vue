@@ -104,7 +104,12 @@
           </v-list>
         </v-menu>
 
-        <v-btn to="/student/propose" v-if="isStudent && currentCourse" text dark>
+        <v-btn
+          to="/student/propose"
+          v-if="isStudent && currentCourse"
+          text
+          dark
+        >
           Questions
           <v-icon>question_answer</v-icon>
         </v-btn>
