@@ -21,6 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -90,7 +91,7 @@ class StudentSubmitQuestionTest extends Specification {
         and: "a proposedQuestionDto"
         propQuestionDto = new ProposedQuestionDto()
         propQuestionDto.setQuestion(questionDto)
-        propQuestionDto.setStudentId(user.getId())
+        propQuestionDto.setStudent(new UserDto(user))
 
         when:
         proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
@@ -111,7 +112,7 @@ class StudentSubmitQuestionTest extends Specification {
         and: "a proposedQuestionDto"
         propQuestionDto = new ProposedQuestionDto()
         propQuestionDto.setQuestion(questionDto)
-        propQuestionDto.setStudentId(anotherStudent.getId())
+        propQuestionDto.setStudent(new UserDto(anotherStudent))
 
         when:
         proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
@@ -142,7 +143,7 @@ class StudentSubmitQuestionTest extends Specification {
         def propQuestionDto = new ProposedQuestionDto()
         questionDto.setTopics(topics)
         propQuestionDto.setQuestion(questionDto)
-        propQuestionDto.setStudentId(student.getId())
+        propQuestionDto.setStudent(new UserDto(student))
 
         when:
         def result = proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
@@ -162,7 +163,7 @@ class StudentSubmitQuestionTest extends Specification {
         and: "a proposed question"
         propQuestionDto = new ProposedQuestionDto()
         propQuestionDto.setQuestion(questionDto)
-        propQuestionDto.setStudentId(student.getId())
+        propQuestionDto.setStudent(new UserDto(student))
 
         when:
         def result = proposedQuestionService.studentSubmitQuestion(course.getId(), propQuestionDto)
@@ -171,7 +172,7 @@ class StudentSubmitQuestionTest extends Specification {
         result.getQuestion() != null
         result.getQuestion().getTitle() == QUESTION_TITLE
         result.getQuestion().getContent() == QUESTION_CONTENT
-        result.getStudentId() == student.getId()
+        result.getStudent().getId() == student.getId()
     }
 
     @Unroll("invalid arguments: #hasQuestion | #hasStudent || errorMessage")
@@ -203,10 +204,10 @@ class StudentSubmitQuestionTest extends Specification {
             def courseExecution = new CourseExecution(course, COURSE_ACRONYM, COURSE_ACADEMIC_TERM, Course.Type.TECNICO)
             courseExecution.addUser(student)
             student.addCourse(courseExecution)
-            propQuestionDto.setStudentId(student.getId())
+            propQuestionDto.setStudent(new UserDto(student))
         }
         else {
-            propQuestionDto.setStudentId(null)
+            propQuestionDto.setStudent(null)
         }
     }
 
