@@ -51,7 +51,7 @@ class GetProposedQuestionsTest extends Specification {
 
     def "the student does not exist"(){
         when:
-        proposedQuestionService.getProposedQuestions(100000)
+        proposedQuestionService.getStudentProposedQuestions(100000)
 
         then:
         def exception = thrown(TutorException)
@@ -124,7 +124,7 @@ class GetProposedQuestionsTest extends Specification {
 
 
         when:
-        def result = proposedQuestionService.getProposedQuestions(student.getId())
+        def result = proposedQuestionService.getStudentProposedQuestions(student.getId())
 
         then: "the returned data are correct"
         result.size() == 3
@@ -164,6 +164,104 @@ class GetProposedQuestionsTest extends Specification {
         questionRepository.save(question)
 
         return question
+    }
+
+    def "the course doesn't exist"(){
+        when:
+        proposedQuestionService.getCourseProposedQuestions(100000)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.COURSE_NOT_FOUND
+    }
+
+    def "the proposed question exists in the course"() {
+        given: "a student"
+        def student = new User("student", "student", 1, User.Role.STUDENT)
+        userRepository.save(student)
+
+        and: "a teacher"
+        def teacher = new User("teacher", "teacher", 2, User.Role.TEACHER)
+        userRepository.save(teacher)
+
+        and: "a course"
+        def course = new Course("course", Course.Type.TECNICO)
+        courseRepository.save(course)
+
+        def courseExecution = new CourseExecution(course, "ES", "2S", Course.Type.TECNICO)
+        course.addCourseExecution(courseExecution)
+
+        Set<CourseExecution> courseExecSet = new HashSet<>()
+        courseExecSet.add(courseExecution)
+
+        courseExecution.addUser(student)
+        student.addCourse(courseExecution)
+        teacher.setCourseExecutions(courseExecSet)
+        courseExecutionRepository.save(courseExecution)
+
+        and: "an awaiting proposed question"
+
+        def question = createQuestion(course, 1)
+
+        def propQuestion = new ProposedQuestion()
+        propQuestion.setQuestion(question)
+        propQuestion.setStudent(student)
+        propQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING)
+        proposedQuestionRepository.save(propQuestion)
+
+        student.addProposedQuestion(propQuestion)
+        course.addProposedQuestion(propQuestion)
+
+        and: "an approved proposed question"
+
+        def question2 = createQuestion(course, 2)
+
+        def propQuestion2 = new ProposedQuestion()
+        propQuestion2.setQuestion(question2)
+        propQuestion2.setStudent(student)
+        propQuestion2.setTeacher(teacher)
+        propQuestion2.setEvaluation(ProposedQuestion.Evaluation.APPROVED)
+        propQuestion2.setJustification(" ")
+        proposedQuestionRepository.save(propQuestion2)
+
+        student.addProposedQuestion(propQuestion2)
+        course.addProposedQuestion(propQuestion2)
+
+        and: "a rejected proposed question"
+        def question3 = createQuestion(course, 3)
+
+        def propQuestion3 = new ProposedQuestion()
+        propQuestion3.setQuestion(question3)
+        propQuestion3.setStudent(student)
+        propQuestion3.setTeacher(teacher)
+        propQuestion3.setEvaluation(ProposedQuestion.Evaluation.REJECTED)
+        propQuestion3.setJustification("JUSTIFICATION")
+        proposedQuestionRepository.save(propQuestion3)
+
+        student.addProposedQuestion(propQuestion3)
+        course.addProposedQuestion(propQuestion3)
+
+
+        when:
+        def result = proposedQuestionService.getCourseProposedQuestions(course.getId())
+
+        then: "the returned data are correct"
+        result.size() == 3
+        def awaitingProposedQuestion = result.get(2)
+        awaitingProposedQuestion.studentId == student.getId()
+        awaitingProposedQuestion.evaluation == ProposedQuestion.Evaluation.AWAITING.name()
+
+        def approvedProposedQuestion = result.get(1)
+        approvedProposedQuestion.studentId == student.getId()
+        approvedProposedQuestion.teacherId == teacher.getId()
+        approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
+        approvedProposedQuestion.justification == " "
+
+        def rejectedProposedQuestion = result.get(0)
+        rejectedProposedQuestion.studentId == student.getId()
+        rejectedProposedQuestion.teacherId == teacher.getId()
+        rejectedProposedQuestion.evaluation == ProposedQuestion.Evaluation.REJECTED.name()
+        rejectedProposedQuestion.justification == "JUSTIFICATION"
     }
 
 

@@ -42,6 +42,7 @@ public class ProposedQuestion {
         checkUserPermission(student, course, User.Role.STUDENT);
         this.student = student;
         student.addProposedQuestion(this);
+        course.addProposedQuestion(this);
     }
 
     public Integer getId() { return id; }
