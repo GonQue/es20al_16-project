@@ -92,7 +92,7 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create course execution" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create proposed Question" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
@@ -106,7 +106,8 @@
 		&quot;options&quot; : [{&#xd;
 			&quot;content&quot;: &quot;optionsContent&quot;,&#xd;
 			&quot;correct&quot;: true}],&#xd;
-		&quot;status&quot;: &quot;SUBMITTED&quot;&#xd;
+		&quot;status&quot;: &quot;SUBMITTED&quot;,&#xd;
+		&quot;creationDate&quot;: &quot;2020-03-26 17:30&quot;&#xd;
 	}	&#xd;
 }&#xd;
 </stringProp>

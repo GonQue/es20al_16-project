@@ -22,8 +22,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
+import java.time.LocalDateTime
+
 @DataJpaTest
-class GetProposedQuestionTest extends Specification {
+class GetProposedQuestionsTest extends Specification {
 
     @Autowired
     ProposedQuestionService proposedQuestionService
@@ -126,22 +128,19 @@ class GetProposedQuestionTest extends Specification {
 
         then: "the returned data are correct"
         result.size() == 3
-        def awaitingProposedQuestion = result.get(0)
+        def awaitingProposedQuestion = result.get(2)
         awaitingProposedQuestion.studentId == student.getId()
-        awaitingProposedQuestion.question.getKey() == 1
         awaitingProposedQuestion.evaluation == ProposedQuestion.Evaluation.AWAITING.name()
 
         def approvedProposedQuestion = result.get(1)
         approvedProposedQuestion.studentId == student.getId()
         approvedProposedQuestion.teacherId == teacher.getId()
-        approvedProposedQuestion.question.getKey() == 2
         approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
         approvedProposedQuestion.justification == " "
 
-        def rejectedProposedQuestion = result.get(2)
+        def rejectedProposedQuestion = result.get(0)
         rejectedProposedQuestion.studentId == student.getId()
         rejectedProposedQuestion.teacherId == teacher.getId()
-        rejectedProposedQuestion.question.getKey() == 3
         rejectedProposedQuestion.evaluation == ProposedQuestion.Evaluation.REJECTED.name()
         rejectedProposedQuestion.justification == "JUSTIFICATION"
     }
@@ -159,6 +158,7 @@ class GetProposedQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
 
         def question = new Question(course, questionDto)
         questionRepository.save(question)

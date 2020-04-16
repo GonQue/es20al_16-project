@@ -75,7 +75,7 @@ public class ProposedQuestionService {
     public List<ProposedQuestionDto> getProposedQuestions(int id) {
         User student = findStudentById(id);
         return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).
-                sorted(Comparator.comparing(ProposedQuestionDto::getId)).
+                sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
                 collect(Collectors.toList());
     }
 
