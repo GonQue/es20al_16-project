@@ -132,12 +132,12 @@ public class AuthService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AuthDto demoStudentAuth() {
         User user;
-        //if (activeProfile.equals("dev")) {
-          //  user = this.userService.createDemoStudent();
-        //} else {
-            user = this.userService.getDemoStudent();
-        //}
 
+//        if (activeProfile.equals("dev")) {
+//            user = this.userService.createDemoStudent();
+//        } else {
+            user = this.userService.getDemoStudent();
+//        }
         return new AuthDto(JwtTokenProvider.generateToken(user), new AuthUserDto(user));
     }
 
