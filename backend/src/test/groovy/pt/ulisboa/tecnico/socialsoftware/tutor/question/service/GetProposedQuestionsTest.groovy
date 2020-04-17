@@ -129,18 +129,18 @@ class GetProposedQuestionsTest extends Specification {
         then: "the returned data are correct"
         result.size() == 3
         def awaitingProposedQuestion = result.get(2)
-        awaitingProposedQuestion.studentId == student.getId()
+        awaitingProposedQuestion.student.getId() == student.getId()
         awaitingProposedQuestion.evaluation == ProposedQuestion.Evaluation.AWAITING.name()
 
         def approvedProposedQuestion = result.get(1)
-        approvedProposedQuestion.studentId == student.getId()
-        approvedProposedQuestion.teacherId == teacher.getId()
+        approvedProposedQuestion.student.getId() == student.getId()
+        approvedProposedQuestion.teacher.getId() == teacher.getId()
         approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
         approvedProposedQuestion.justification == " "
 
         def rejectedProposedQuestion = result.get(0)
-        rejectedProposedQuestion.studentId == student.getId()
-        rejectedProposedQuestion.teacherId == teacher.getId()
+        rejectedProposedQuestion.student.getId() == student.getId()
+        rejectedProposedQuestion.teacher.getId() == teacher.getId()
         rejectedProposedQuestion.evaluation == ProposedQuestion.Evaluation.REJECTED.name()
         rejectedProposedQuestion.justification == "JUSTIFICATION"
     }
@@ -248,18 +248,18 @@ class GetProposedQuestionsTest extends Specification {
         then: "the returned data are correct"
         result.size() == 3
         def awaitingProposedQuestion = result.get(2)
-        awaitingProposedQuestion.studentId == student.getId()
+        awaitingProposedQuestion.student.getId() == student.getId()
         awaitingProposedQuestion.evaluation == ProposedQuestion.Evaluation.AWAITING.name()
 
         def approvedProposedQuestion = result.get(1)
-        approvedProposedQuestion.studentId == student.getId()
-        approvedProposedQuestion.teacherId == teacher.getId()
+        approvedProposedQuestion.student.getId() == student.getId()
+        approvedProposedQuestion.teacher.getId() == teacher.getId()
         approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
         approvedProposedQuestion.justification == " "
 
         def rejectedProposedQuestion = result.get(0)
-        rejectedProposedQuestion.studentId == student.getId()
-        rejectedProposedQuestion.teacherId == teacher.getId()
+        rejectedProposedQuestion.student.getId() == student.getId()
+        rejectedProposedQuestion.teacher.getId() == teacher.getId()
         rejectedProposedQuestion.evaluation == ProposedQuestion.Evaluation.REJECTED.name()
         rejectedProposedQuestion.justification == "JUSTIFICATION"
     }

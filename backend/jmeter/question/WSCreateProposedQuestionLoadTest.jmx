@@ -104,7 +104,9 @@
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
                     <stringProp name="Argument.value">{&#xd;
-	&quot;studentId&quot;: 676,&#xd;
+	&quot;student&quot;: {&#xd;
+    		&quot;username&quot;: &quot;Demo-Student&quot;&#xd;
+  	},&#xd;
 	&quot;question&quot;: {&#xd;
 		&quot;title&quot;: &quot;Question_Title&quot;,&#xd;
 		&quot;content&quot;: &quot;Question_Content&quot;,&#xd;

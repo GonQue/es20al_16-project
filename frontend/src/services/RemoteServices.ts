@@ -591,6 +591,20 @@ export default class RemoteServices {
       });
   }
 
+  static async createProposedQuestion(proposedQuestion: ProposedQuestion): Promise<ProposedQuestion> {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions/`,
+        proposedQuestion
+      )
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {
       return 'Unable to connect to server';

@@ -198,7 +198,7 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert student id" enabled="true">
-              <stringProp name="JSON_PATH">$[0].studentId</stringProp>
+              <stringProp name="JSON_PATH">$[0].student.id</stringProp>
               <stringProp name="EXPECTED_VALUE">676</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
@@ -207,7 +207,7 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
             </JSONPathAssertion>
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert teacher id" enabled="true">
-              <stringProp name="JSON_PATH">$[0].teacherId</stringProp>
+              <stringProp name="JSON_PATH">$[0].teacher.id</stringProp>
               <stringProp name="EXPECTED_VALUE">677</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>

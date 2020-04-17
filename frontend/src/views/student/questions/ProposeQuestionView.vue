@@ -16,6 +16,9 @@
             class="mx-2"
           />
           <v-spacer />
+          <v-btn color="primary" dark @click="newProposedQuestion"
+            >Propose Question</v-btn
+          >
         </v-card-title>
       </template>
 
@@ -45,7 +48,12 @@
         </v-tooltip>
       </template>
     </v-data-table>
-
+    <edit-question-dialog
+      v-if="currentPropQuestion"
+      v-model="editPropQuestionDialog"
+      :proposedQuestion="currentPropQuestion"
+      v-on:save-proposed-question="onSaveProposedQuestion"
+    />
     <show-justification-dialog
       v-if="currentPropQuestion"
       v-model="justificationDialog"
@@ -60,16 +68,19 @@ import { Component, Vue } from 'vue-property-decorator';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
 import ShowJustificationDialog from './ShowJustificationDialog.vue';
+import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDialog.vue';
 
 @Component({
   components: {
-    'show-justification-dialog': ShowJustificationDialog
+    'show-justification-dialog': ShowJustificationDialog,
+    'edit-question-dialog': EditPropQuestionDialog
   }
 })
 export default class ProposeQuestionView extends Vue {
   proposedQuestions: ProposedQuestion[] = [];
   currentPropQuestion: ProposedQuestion | null = null;
   justificationDialog: boolean = false;
+  editPropQuestionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
@@ -77,7 +88,12 @@ export default class ProposeQuestionView extends Vue {
     { text: 'Question', value: 'question.content', align: 'left' },
     { text: 'Topics', value: 'topics', align: 'center', sortable: false },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
-    { text: 'Justification', value: 'justification', align: 'center', sortable: false },
+    {
+      text: 'Justification',
+      value: 'justification',
+      align: 'center',
+      sortable: false
+    },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
@@ -105,6 +121,18 @@ export default class ProposeQuestionView extends Vue {
 
   onCloseShowJustificationDialog() {
     this.justificationDialog = false;
+  }
+
+  newProposedQuestion() {
+    this.currentPropQuestion = new ProposedQuestion();
+    this.editPropQuestionDialog = true;
+  }
+
+  async onSaveProposedQuestion(proposedQuestion: ProposedQuestion) {
+    this.proposedQuestions = this.proposedQuestions.filter(q => q.id !== proposedQuestion.id);
+    this.proposedQuestions.unshift(proposedQuestion);
+    this.editPropQuestionDialog = false;
+    this.currentPropQuestion = null;
   }
 }
 </script>

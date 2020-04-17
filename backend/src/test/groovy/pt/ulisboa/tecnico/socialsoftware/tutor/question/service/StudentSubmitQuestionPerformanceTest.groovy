@@ -15,7 +15,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import spock.lang.Specification
 
 import java.time.LocalDateTime;
@@ -62,7 +63,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         1.upto(1, {
             def propQuestionDto = new ProposedQuestionDto()
             propQuestionDto.setQuestion(createQuestionDto(it))
-            propQuestionDto.setStudentId(student.getId())
+            propQuestionDto.setStudent(new UserDto(student))
             list.add(propQuestionDto)
         })
 

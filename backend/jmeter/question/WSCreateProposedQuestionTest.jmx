@@ -99,7 +99,9 @@
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;studentId&quot;: 676,&#xd;
+	&quot;student&quot;: {&#xd;
+    		&quot;username&quot;: &quot;Demo-Student&quot; &#xd;
+  	},	&#xd;
 	&quot;question&quot;: {&#xd;
 		&quot;title&quot;: &quot;Question_Title&quot;,&#xd;
 		&quot;content&quot;: &quot;Question_Content&quot;,&#xd;
@@ -108,7 +110,7 @@
 			&quot;correct&quot;: true}],&#xd;
 		&quot;status&quot;: &quot;SUBMITTED&quot;,&#xd;
 		&quot;creationDate&quot;: &quot;2020-03-26 17:30&quot;&#xd;
-	}	&#xd;
+	}&#xd;
 }&#xd;
 </stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
@@ -131,7 +133,7 @@
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert studentId" enabled="true">
-              <stringProp name="JSON_PATH">$.studentId</stringProp>
+              <stringProp name="JSON_PATH">$.student.id</stringProp>
               <stringProp name="EXPECTED_VALUE">676</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>

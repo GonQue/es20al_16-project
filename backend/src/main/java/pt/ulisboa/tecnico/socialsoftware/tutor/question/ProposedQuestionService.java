@@ -18,6 +18,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
+
 import java.util.Comparator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -88,11 +90,11 @@ public class ProposedQuestionService {
     }
 
     private User getStudent(ProposedQuestionDto proposedQuestionDto) {
-        Integer studentId = proposedQuestionDto.getStudentId();
-        if (studentId == null) {
+        UserDto student = proposedQuestionDto.getStudent();
+        if (student == null) {
             throw new TutorException(ErrorMessage.USER_IS_EMPTY);
         }
-        return userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
+        return userRepository.findByUsername(student.getUsername());
     }
 
     private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
@@ -122,11 +124,10 @@ public class ProposedQuestionService {
     }
 
     private User getTeacher(ProposedQuestionDto pqDto) {
-        if (pqDto.getTeacherId() == null) {
+        if (pqDto.getTeacher() == null) {
             throw new TutorException(ErrorMessage.USER_IS_EMPTY);
         }
-        int teacherId = pqDto.getTeacherId();
-        return userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
+        return userRepository.findByUsername(pqDto.getTeacher().getUsername());
     }
 
     private User findStudentById(int id){
