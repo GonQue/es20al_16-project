@@ -17,7 +17,7 @@ import { QuizAnswers } from '@/models/management/QuizAnswers';
 import { Tournament } from '@/models/user/Tournament'
 
 const httpClient = axios.create();
-httpClient.defaults.timeout = 10000;
+httpClient.defaults.timeout = 50000;
 httpClient.defaults.baseURL = process.env.VUE_APP_ROOT_API;
 httpClient.defaults.headers.post['Content-Type'] = 'application/json';
 httpClient.interceptors.request.use(
