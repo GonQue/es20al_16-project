@@ -76,7 +76,9 @@
 
 INSERT INTO options(content, correct, question_id) VALUES (&apos;Content&apos;, true, (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;));
 
-INSERT INTO proposed_questions(id, student_id, question_id, evaluation) VALUES (1, 676, (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;), &apos;AWAITING&apos;); </stringProp>
+INSERT INTO proposed_questions(id, student_id, question_id, evaluation) VALUES (1, 676, (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;), &apos;AWAITING&apos;); 
+
+INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES (2, 1);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
@@ -350,7 +352,8 @@ INSERT INTO proposed_questions(id, student_id, question_id, evaluation) VALUES (
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM proposed_questions WHERE student_id = 676;
+          <stringProp name="query">DELETE FROM courses_proposed_questions WHERE course_id = 2;
+DELETE FROM proposed_questions WHERE student_id = 676;
 DELETE FROM options WHERE question_id = (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;);
 DELETE FROM questions WHERE title = &apos;Question_Title&apos;; 
 

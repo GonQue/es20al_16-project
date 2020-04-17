@@ -1,12 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
@@ -33,14 +36,32 @@ public class ProposedQuestionController {
         return proposedQuestionService.studentSubmitQuestion(courseId, propQuestionDto);
     }
 
-    @GetMapping("/courses/{courseId}/proposed-questions")
-    @PreAuthorize("(hasRole('ROLE_STUDENT') or hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS'))")
-    public List<ProposedQuestionDto> getUserProposedQuestions(Principal principal, @PathVariable int courseId) {
+    @GetMapping("/courses/{courseId}/student/proposed-questions")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<ProposedQuestionDto> getStudentProposedQuestions(Principal principal, @PathVariable int courseId) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
         if (user == null){
             throw new TutorException(ErrorMessage.AUTHENTICATION_ERROR);
         }
-        return proposedQuestionService.getProposedQuestions(user.getId());
+        return proposedQuestionService.getStudentProposedQuestions(user.getId());
+    }
+
+    @GetMapping("/courses/{courseId}/proposed-questions")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<ProposedQuestionDto> getCourseProposedQuestions(Principal principal, @PathVariable int courseId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if (user == null){
+            throw new TutorException(ErrorMessage.AUTHENTICATION_ERROR);
+        }
+        return proposedQuestionService.getCourseProposedQuestions(courseId);
+    }
+
+    @PostMapping("/proposed-questions/{proposedQuestionId}/set-evaluation")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#proposedQuestionId, 'PQ.ACCESS')")
+    public ResponseEntity proposedQuestionSetStatus(@PathVariable Integer proposedQuestionId, @Valid @RequestBody String evaluation) {
+        proposedQuestionService.setEvaluation(proposedQuestionId, ProposedQuestion.Evaluation.valueOf(evaluation));
+        return ResponseEntity.ok().build();
     }
 }

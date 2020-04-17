@@ -18,6 +18,7 @@ import QuizView from '@/views/student/quiz/QuizView.vue';
 import ResultsView from '@/views/student/quiz/ResultsView.vue';
 import StatsView from '@/views/student/StatsView.vue';
 import ScanView from '@/views/student/ScanView.vue';
+import ProposeQuestionView from '@/views/student/questions/ProposeQuestionView.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -25,6 +26,9 @@ import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
+
+import ProposedQuestionsView from "@/views/teacher/proposedQuestions/ProposedQuestionsView.vue";
+
 
 Vue.use(Router);
 
@@ -67,6 +71,15 @@ let router = new Router({
           component: QuestionsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Questions',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
+          path: 'proposedQuestions',
+          name: 'proposed-questions-management',
+          component: ProposedQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Proposed Questions',
             requiredAuth: 'Teacher'
           }
         },
@@ -182,6 +195,16 @@ let router = new Router({
           component: ScanView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Scan',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+
+          path: 'propose',
+          name: 'propose-question',
+          component: ProposeQuestionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Propose Question',
             requiredAuth: 'Student'
           }
         }
