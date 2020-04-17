@@ -69,13 +69,13 @@ public class User implements UserDetails, DomainEntity {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy="enrolled")
     private Set<Tournament> tournamentsEnrolled = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true, fetch=FetchType.LAZY)
     private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true, fetch=FetchType.LAZY)
     private List<ClarificationResponse> clarification_responses = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true, fetch=FetchType.LAZY)
     private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public User() {

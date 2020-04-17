@@ -2,6 +2,7 @@
   <v-card class="table">
     <v-data-table
             :headers="headers"
+            :items="tournaments"
             :search="search"
             disable-pagination
             :hide-default-footer="true"
@@ -28,6 +29,7 @@
       v-if="tournament"
       v-model="createTournamentDialog"
       :tournament="tournament"
+      :topics="topics"
       v-on:new-tournament="onCreateTournament"
       v-on:close-dialog="onCloseDialog"
     />
@@ -38,6 +40,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Tournament } from '@/models/user/Tournament';
 import CreateTournamentDialog from '@/views/student/tournaments/CreateTournamentDialog.vue';
+import RemoteServices from '@/services/RemoteServices';
+import Topic from '@/models/management/Topic';
 
 @Component({
   components: {
@@ -47,60 +51,61 @@ import CreateTournamentDialog from '@/views/student/tournaments/CreateTournament
 export default class TournamentsListView extends Vue {
   createTournamentDialog: boolean = true;
   tournament : Tournament | null = null;
+  tournaments: Tournament[] = [];
+  topics: Topic[] = [];
   search: string = '';
   headers: object = [
     {
-      text: 'Course Type',
-      value: 'courseType',
-      align: 'center',
-      width: '10%'
-    },
-    { text: 'Name', value: 'name', align: 'left', width: '30%' },
-    {
-      text: 'Execution Type',
-      value: 'courseExecutionType',
+      text: 'Tournament Name',
+      value: 'name',
       align: 'center',
       width: '10%'
     },
     {
-      text: 'Acronym',
-      value: 'acronym',
+      text: 'Start date',
+      value: 'startDate',
       align: 'center',
       width: '10%'
     },
     {
-      text: 'Academic Term',
-      value: 'academicTerm',
+      text: 'End date',
+      value: 'endDate',
       align: 'center',
       width: '10%'
     },
     {
-      text: 'Status',
-      value: 'status',
+      text: 'Question Number',
+      value: 'numberOfQuestions',
       align: 'center',
       width: '10%'
     },
-    {
-      text: 'Actions',
-      value: 'action',
-      align: 'center',
-      sortable: false,
-      width: '20%'
-    }
   ];
 
+async created(){
+  await this.$store.dispatch('loading');
+  try {
+    this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
+    this.topics = await RemoteServices.getTopics();
+  } catch (error) {
+    await this.$store.dispatch('error', error);
+  }
+  await this.$store.dispatch('clearLoading');
+}
 
-  createTournament() {
+  async createTournament() {
     this.tournament = new Tournament();
     this.createTournamentDialog = true;
   }
 
   onCloseDialog() {
     this.createTournamentDialog = false;
+    this.tournament = null;
   }
 
-  onCreateTournament(){
+  onCreateTournament(tournament: Tournament){
+    this.tournaments.unshift(tournament);
     this.createTournamentDialog = false;
+    this.tournament = null;
   }
 
 

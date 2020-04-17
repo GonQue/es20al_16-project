@@ -126,21 +126,16 @@ import StatementQuiz from '@/models/statement/StatementQuiz';
 export default class CreateTournamentDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: Tournament, required: true }) readonly tournament!: Tournament;
+  @Prop({ type: Array, required: true }) readonly topics!: Topic;
+
   createTournament!: Tournament;
-  topics: Topic[] = [];
+  //topics: Topic[] = [];
   //quizzes: Quiz[] = [];//JSON.parse(JSON.stringify(this.question.topics));
   quizzes: StatementQuiz[] = [];
 
   async created() {
-    this.createTournament = new Tournament();
+    this.createTournament = new Tournament(this.tournament);
     this.createTournament.status = 'CREATED';
-    await this.$store.dispatch('loading');
-    try {
-      this.topics = await RemoteServices.getTopics();
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');
     /*await this.$store.dispatch('loading');
     try {
       this.quizzes = await RemoteServices.getNonGeneratedQuizzes();
