@@ -74,9 +74,17 @@ public class ProposedQuestionService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ProposedQuestionDto> getProposedQuestions(int id) {
+    public List<ProposedQuestionDto> getStudentProposedQuestions(int id) {
         User student = findStudentById(id);
         return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).
+                sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
+                collect(Collectors.toList());
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ProposedQuestionDto> getCourseProposedQuestions(int courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
+        return course.getProposedQuestions().stream().map(ProposedQuestionDto::new).
                 sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
                 collect(Collectors.toList());
     }
@@ -131,4 +139,7 @@ public class ProposedQuestionService {
         return proposedQuestion.getQuestion().getCourse();
     }
 
+    public void setEvaluation(int pqId, ProposedQuestion.Evaluation evaluation){
+        pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setEvaluation(evaluation);
+    }
 }

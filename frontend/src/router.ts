@@ -27,6 +27,9 @@ import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 
+import ProposedQuestionsView from "@/views/teacher/proposedQuestions/ProposedQuestionsView.vue";
+
+
 Vue.use(Router);
 
 let router = new Router({
@@ -68,6 +71,15 @@ let router = new Router({
           component: QuestionsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Questions',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
+          path: 'proposedQuestions',
+          name: 'proposed-questions-management',
+          component: ProposedQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Proposed Questions',
             requiredAuth: 'Teacher'
           }
         },
@@ -187,6 +199,7 @@ let router = new Router({
           }
         },
         {
+
           path: 'propose',
           name: 'propose-question',
           component: ProposeQuestionView,
