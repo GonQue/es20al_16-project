@@ -116,11 +116,10 @@ public class ProposedQuestionService {
     }
 
     private User getTeacher(ProposedQuestionDto pqDto) {
-        if (pqDto.getTeacherId() == null) {
+        if (pqDto.getTeacher() == null) {
             throw new TutorException(ErrorMessage.USER_IS_EMPTY);
         }
-        int teacherId = pqDto.getTeacherId();
-        return userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
+        return userRepository.findByUsername(pqDto.getTeacher().getUsername());
     }
 
     private User findStudentById(int id){

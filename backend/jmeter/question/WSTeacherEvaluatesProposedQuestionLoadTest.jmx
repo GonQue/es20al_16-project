@@ -62,7 +62,7 @@
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username"></stringProp>
+          <stringProp name="username">goncalo</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -255,7 +255,9 @@ INSERT INTO proposed_questions(id, student_id, question_id, evaluation) VALUES (
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
                     <stringProp name="Argument.value">{&#xd;
 	&quot;id&quot;: ${proposedQuestionId},&#xd;
-	&quot;teacherId&quot;: 677,&#xd;
+	&quot;teacher&quot;: {&#xd;
+    		&quot;username&quot;: &quot;Demo-Teacher&quot; &#xd;
+  	},&#xd;
 	&quot;justification&quot;: &quot;Justification&quot;,&#xd;
 	&quot;evaluation&quot;: &quot;APPROVED&quot;&#xd;
 }</stringProp>
@@ -385,7 +387,7 @@ INSERT INTO proposed_questions(id, student_id, question_id, evaluation) VALUES (
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username"></stringProp>
+          <stringProp name="username">goncalo</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">

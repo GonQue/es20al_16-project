@@ -134,13 +134,13 @@ class GetProposedQuestionsTest extends Specification {
 
         def approvedProposedQuestion = result.get(1)
         approvedProposedQuestion.student.getId() == student.getId()
-        approvedProposedQuestion.teacherId == teacher.getId()
+        approvedProposedQuestion.teacher.getId() == teacher.getId()
         approvedProposedQuestion.evaluation == ProposedQuestion.Evaluation.APPROVED.name()
         approvedProposedQuestion.justification == " "
 
         def rejectedProposedQuestion = result.get(0)
         rejectedProposedQuestion.student.getId() == student.getId()
-        rejectedProposedQuestion.teacherId == teacher.getId()
+        rejectedProposedQuestion.teacher.getId() == teacher.getId()
         rejectedProposedQuestion.evaluation == ProposedQuestion.Evaluation.REJECTED.name()
         rejectedProposedQuestion.justification == "JUSTIFICATION"
     }
