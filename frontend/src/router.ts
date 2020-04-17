@@ -194,7 +194,7 @@ let router = new Router({
             title: process.env.VUE_APP_NAME + ' - Tournaments',
             requiredAuth: 'Student'
           }
-        },
+        }
       ]
     },
     {
