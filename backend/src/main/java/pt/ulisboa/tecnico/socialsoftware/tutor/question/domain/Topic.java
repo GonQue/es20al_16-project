@@ -21,10 +21,10 @@ public class Topic {
 
     private String name;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Question> questions = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TopicConjunction> topicConjunctions = new ArrayList<>();
 
     @ManyToOne
