@@ -22,8 +22,14 @@
         </v-card-title>
       </template>
 
-      <template v-slot:item.topics="{ item }">
-        <v-chip></v-chip>
+      <template v-slot:item.question.topics="{ item }">
+        <v-chip
+          v-for="topic in item.question.topics"
+          :key="topic.id"
+          :color="'blue lighten-1'"
+        >
+          {{ topic.name }}
+        </v-chip>
       </template>
 
       <template v-slot:item.evaluation="{ item }">
@@ -43,12 +49,28 @@
         </v-btn>
       </template>
 
-      <template v-slot:item.action="{}">
+      <template v-slot:item.question.image="{ item }">
+        <v-file-input
+          show-size
+          dense
+          small-chips
+          @change="handleFileUpload($event, item)"
+          accept="image/*"
+        />
+      </template>
+
+      <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on">visibility</v-icon>
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="showQuestionDialog(item)"
+              >visibility</v-icon
+            >
           </template>
-          <span>View justification</span>
+          <span>Show Question</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -57,6 +79,12 @@
       v-model="editPropQuestionDialog"
       :proposedQuestion="currentPropQuestion"
       v-on:save-proposed-question="onSaveProposedQuestion"
+    />
+    <show-question-dialog
+      v-if="currentPropQuestion"
+      v-model="questionDialog"
+      :question="currentPropQuestion.question"
+      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
     />
     <show-justification-dialog
       v-if="currentPropQuestion"
@@ -73,9 +101,13 @@ import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
 import ShowJustificationDialog from './ShowJustificationDialog.vue';
 import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDialog.vue';
+import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
+import Question from '@/models/management/Question';
+import Image from '@/models/management/Image';
 
 @Component({
   components: {
+    'show-question-dialog': ShowQuestionDialog,
     'show-justification-dialog': ShowJustificationDialog,
     'edit-question-dialog': EditPropQuestionDialog
   }
@@ -85,6 +117,7 @@ export default class ProposeQuestionView extends Vue {
   currentPropQuestion: ProposedQuestion | null = null;
   justificationDialog: boolean = false;
   editPropQuestionDialog: boolean = false;
+  questionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
@@ -104,6 +137,7 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
+    { text: 'Image', value: 'image', align: 'center' },
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
 
@@ -118,9 +152,18 @@ export default class ProposeQuestionView extends Vue {
   }
 
   getEvaluationColor(evaluation: string) {
-    if (evaluation === 'AWAITING') return 'grey';
+    if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
     else return 'red';
+  }
+
+  showQuestionDialog(proposedQuestion: ProposedQuestion) {
+    this.currentPropQuestion = proposedQuestion;
+    this.questionDialog = true;
+  }
+
+  onCloseShowQuestionDialog() {
+    this.questionDialog = false;
   }
 
   showJustificationDialog(propQuestion: ProposedQuestion) {

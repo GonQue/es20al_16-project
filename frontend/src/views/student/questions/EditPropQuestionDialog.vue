@@ -88,6 +88,22 @@
         </v-col>
       </v-layout>
 
+      <v-layout row>
+        <v-col cols="5" offset="1">
+          <span
+            style="position: relative; top: 45%; right: 60%; font-size: large"
+            >Image:</span
+          >
+          <v-file-input
+            show-size
+            dense
+            small-chips
+            @change="handleFileUpload($event, editPropQuestion)"
+            accept="image/*"
+          />
+        </v-col>
+      </v-layout>
+
       <v-card-actions>
         <v-spacer />
         <v-btn color="blue darken-1" @click="$emit('dialog', false)"
@@ -104,6 +120,7 @@ import { Component, Model, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import Topic from '@/models/management/Topic';
+import Image from '@/models/management/Image';
 
 @Component
 export default class EditPropQuestionDialog extends Vue {
@@ -114,6 +131,7 @@ export default class EditPropQuestionDialog extends Vue {
   editPropQuestion!: ProposedQuestion;
   topics: Topic[] = [];
   questionTopics: Topic[] = [];
+  image: File | null = null;
 
   async created() {
     this.editPropQuestion = new ProposedQuestion(this.proposedQuestion);
@@ -171,6 +189,16 @@ export default class EditPropQuestionDialog extends Vue {
         const result = await RemoteServices.createProposedQuestion(
           this.editPropQuestion
         );
+        console.log(result.question.id);
+        if (this.image != null && result.question.id) {
+          const imageURL = await RemoteServices.uploadImage(
+            this.image,
+            result.question.id
+          );
+          this.editPropQuestion.question.image = new Image();
+          this.editPropQuestion.question.image.url = imageURL;
+          confirm('Image ' + imageURL + ' was uploaded!');
+        }
         this.$emit('save-proposed-question', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
