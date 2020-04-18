@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <v-dialog
     :value="dialog"
     @input="$emit('dialog', false)"
@@ -116,4 +116,4 @@ export default class EditJustificationDialog extends Vue {
     else return 'red';
   }
 }
-</script>
+</script> -->
