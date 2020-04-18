@@ -22,6 +22,10 @@
         </v-card-title>
       </template>
 
+      <template v-slot:item.topics="{ item }">
+        <v-chip></v-chip>
+      </template>
+
       <template v-slot:item.evaluation="{ item }">
         <v-chip :color="getEvaluationColor(item.evaluation)">
           <span>{{ item.evaluation }}</span>
@@ -86,7 +90,12 @@ export default class ProposeQuestionView extends Vue {
   headers: object = [
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
-    { text: 'Topics', value: 'topics', align: 'center', sortable: false },
+    {
+      text: 'Topics',
+      value: 'question.topics',
+      align: 'center',
+      sortable: false
+    },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
     {
       text: 'Justification',

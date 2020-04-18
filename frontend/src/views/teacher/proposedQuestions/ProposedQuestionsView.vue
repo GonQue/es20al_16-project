@@ -98,7 +98,7 @@ export default class ProposeQuestionView extends Vue {
   headers: object = [
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
-    { text: 'Topics', value: 'topics', align: 'center', sortable: false },
+    { text: 'Topics', value: 'question.topics', align: 'center', sortable: false },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
     { text: 'Image', value: 'image', align: 'center', sortable: false },

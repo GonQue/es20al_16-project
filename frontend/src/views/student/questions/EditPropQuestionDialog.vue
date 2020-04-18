@@ -8,13 +8,7 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">
-          {{
-            editPropQuestion && editPropQuestion.id === null
-              ? 'New Proposed Question'
-              : 'Edit Proposed Question'
-          }}
-        </span>
+        <span class="headline">New Proposed Question</span>
       </v-card-title>
 
       <v-card-text class="text-left" v-if="editPropQuestion">
@@ -57,6 +51,43 @@
         </v-container>
       </v-card-text>
 
+      <v-layout row>
+        <v-col cols="5" offset="1">
+          <span
+            style="position: relative; top: 45%; right: 60%; font-size: large"
+            >Topics:</span
+          >
+          <v-form>
+            <v-autocomplete
+              v-model="questionTopics"
+              :items="topics"
+              multiple
+              return-object
+              item-text="name"
+              item-value="name"
+              @change="selectTopics"
+            >
+              <template v-slot:selection="data">
+                <v-chip
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  close
+                  @click="data.select"
+                  @click:close="removeTopic(data.item)"
+                >
+                  {{ data.item.name }}
+                </v-chip>
+              </template>
+              <template v-slot:item="data">
+                <v-list-item-content>
+                  <v-list-item-title v-html="data.item.name" />
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </v-form>
+        </v-col>
+      </v-layout>
+
       <v-card-actions>
         <v-spacer />
         <v-btn color="blue darken-1" @click="$emit('dialog', false)"
@@ -72,6 +103,7 @@
 import { Component, Model, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
+import Topic from '@/models/management/Topic';
 
 @Component
 export default class EditPropQuestionDialog extends Vue {
@@ -80,9 +112,18 @@ export default class EditPropQuestionDialog extends Vue {
   readonly proposedQuestion!: ProposedQuestion;
 
   editPropQuestion!: ProposedQuestion;
+  topics: Topic[] = [];
+  questionTopics: Topic[] = [];
 
-  created() {
+  async created() {
     this.editPropQuestion = new ProposedQuestion(this.proposedQuestion);
+    await this.$store.dispatch('loading');
+    try {
+      this.topics = await RemoteServices.getTopics();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
   }
 
   // TODO use EasyMDE with these configs
@@ -93,6 +134,15 @@ export default class EditPropQuestionDialog extends Vue {
   //     image: ['![image][image]', '']
   //   }
   // };
+  selectTopics() {
+    this.editPropQuestion.question.topics = this.questionTopics;
+  }
+
+  removeTopic(topic: Topic) {
+    this.questionTopics = this.questionTopics.filter(
+      element => element.id != topic.id
+    );
+  }
 
   async savePropQuestion() {
     if (
