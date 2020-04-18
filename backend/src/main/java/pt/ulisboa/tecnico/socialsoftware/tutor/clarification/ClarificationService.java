@@ -23,6 +23,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -144,7 +145,13 @@ public class ClarificationService {
     public void removeClarification(Integer clarificationQuestionId) {
         ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
 
-        clarificationQuestion.getResponses().forEach(response -> { response.remove(); clarificationResponseRepository.delete(response); } );
+        List<ClarificationResponse> responses = clarificationQuestion.getResponses();
+
+        while(!responses.isEmpty()){
+            ClarificationResponse response = responses.remove(0);
+            response.remove();
+            clarificationResponseRepository.delete(response);
+        }
 
         clarificationQuestion.remove();
 
@@ -257,4 +264,21 @@ public class ClarificationService {
     private List<ClarificationQuestionDto> listOfAllClarificationQuestionsDto() {
         return clarificationQuestionRepository.findAll().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void removeClarificationResponse(Integer clarificationResponseId) {
+        ClarificationResponse clarificationResponse = getClarificationResponse(clarificationResponseId);
+
+        clarificationResponse.remove();
+
+        clarificationResponseRepository.delete(clarificationResponse);
+    }
+
+    private ClarificationResponse getClarificationResponse(Integer clarificationResponseId){
+        return clarificationResponseRepository.findById(clarificationResponseId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_RESPONSE_NOT_FOUND, clarificationResponseId));
+    }
+
 }

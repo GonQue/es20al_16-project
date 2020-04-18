@@ -114,7 +114,7 @@ class RemoveClarificationQuestionTest extends Specification {
         teacher.setKey(2)
         teacher.setRole(User.Role.TEACHER)
         userRepository.save(teacher)
-        and: "2 reponses"
+        and: "2 responses"
         def firstClarificationResponse = new ClarificationResponse()
         firstClarificationResponse.setTeacher(teacher)
         firstClarificationResponse.setTeacherResponse(TEACHER_RESPONSE)

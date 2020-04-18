@@ -104,4 +104,16 @@ public class ClarificationController {
 
         return clarificationService.listAllClarificationQuestions();
     }
+
+    @DeleteMapping("/management/clarifications/{clarificationResponseId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public void removeClarificationResponse(Principal principal, @PathVariable Integer clarificationResponseId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.removeClarificationResponse(clarificationResponseId);
+    }
 }
