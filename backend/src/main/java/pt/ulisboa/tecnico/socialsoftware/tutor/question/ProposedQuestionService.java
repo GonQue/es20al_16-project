@@ -98,9 +98,9 @@ public class ProposedQuestionService {
     }
 
     private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
+        proposedQuestionDto.getQuestion().setCreationDate(LocalDateTime.now().format(Course.formatter));
         Question question = new Question(course, proposedQuestionDto.getQuestion());
         question.setStatus(Question.Status.SUBMITTED);
-        question.setCreationDate(LocalDateTime.now());
         questionRepository.save(question);
         return question;
     }

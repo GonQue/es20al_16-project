@@ -29,7 +29,6 @@ import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 
 import ProposedQuestionsView from '@/views/teacher/proposedQuestions/ProposedQuestionsView.vue';
 
-
 Vue.use(Router);
 
 let router = new Router({
@@ -199,7 +198,6 @@ let router = new Router({
           }
         },
         {
-
           path: 'propose',
           name: 'propose-question',
           component: ProposeQuestionView,

@@ -1,4 +1,4 @@
-<template>
+<!--<template>
   <v-card class="table">
     <v-data-table
       :headers="headers"
@@ -140,5 +140,4 @@ export default class ProposeQuestionView extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
