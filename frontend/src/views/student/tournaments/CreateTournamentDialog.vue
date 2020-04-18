@@ -33,26 +33,25 @@
                                 </v-datetime-picker>
                             </v-col>
                             <v-spacer></v-spacer>
-                            <v-col cols="12" sm="6">
+                            <v-col cols="12" sm="6" data-cy="endDate">
                                 <v-datetime-picker
                                         label="End Date"
                                         format="yyyy-MM-dd HH:mm"
                                         v-model="createTournament.endDate"
                                         date-format="yyyy-MM-dd"
                                         time-format="HH:mm"
-                                        data-cy="endDate"
                                 >
                                 </v-datetime-picker>
                             </v-col>
                         </v-row>
 
-                       <v-col cols="12">
+                       <v-col cols="12" data-cy="numberOfQuestions">
                            <v-slider
                             v-model="createTournament.numberOfQuestions"
                             step="1"
                             label="Number of questions"
                             thumb-label="always"
-                            data-cy="numberOfQuestions"></v-slider>
+                            ></v-slider>
                        </v-col>
 
 
@@ -131,21 +130,12 @@ export default class CreateTournamentDialog extends Vue {
   @Prop({ type: Array, required: true }) readonly topics!: Topic;
 
   createTournament!: Tournament;
-  //topics: Topic[] = [];
-  //quizzes: Quiz[] = [];//JSON.parse(JSON.stringify(this.question.topics));
+
   quizzes: StatementQuiz[] = [];
 
   async created() {
     this.createTournament = new Tournament(this.tournament);
     this.createTournament.status = 'CREATED';
-    /*await this.$store.dispatch('loading');
-    try {
-      this.quizzes = await RemoteServices.getNonGeneratedQuizzes();
-
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');*/
   }
 
 
