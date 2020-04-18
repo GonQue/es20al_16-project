@@ -4,6 +4,7 @@
       :headers="headers"
       :items="proposedQuestions"
       :search="search"
+      :sort-by="['evaluation']"
       mobile-breakpoint="0"
       multi-sort
       :items-per-page="15"
@@ -19,6 +20,12 @@
           />
           <v-spacer />
         </v-card-title>
+      </template>
+
+      <template v-slot:item.evaluation="{ item }">
+        <v-chip :color="getEvaluationColor(item.evaluation)">
+          <span>{{ item.evaluation }}</span>
+        </v-chip>
       </template>
 
       <template v-slot:item.content="{ item }">
@@ -78,6 +85,7 @@ import RemoteServices from '@/services/RemoteServices';
 import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
 import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
+import User from '@/models/user/User';
 
 @Component({
   components: {
@@ -86,6 +94,7 @@ import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue
   }
 })
 export default class ProposeQuestionView extends Vue {
+  student: string = '';
   proposedQuestions: ProposedQuestion[] = [];
   currentQuestion: Question | null = null;
   topics: Topic[] = [];
@@ -96,6 +105,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
+    { text: 'Student', value: 'student.name', align: 'center' },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
     { text: 'Topics', value: 'topics', align: 'center', sortable: false },
@@ -141,6 +151,12 @@ export default class ProposeQuestionView extends Vue {
     this.proposedQuestions.unshift(propQuestion);
     this.evaluateDialog = false;
     this.currentPropQuestion = null;
+  }
+
+  getEvaluationColor(evaluation: string) {
+    if (evaluation === 'AWAITING') return 'grey';
+    else if (evaluation === 'APPROVED') return 'green';
+    else return 'red';
   }
 }
 </script>
