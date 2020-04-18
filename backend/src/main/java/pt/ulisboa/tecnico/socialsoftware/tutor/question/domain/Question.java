@@ -61,7 +61,7 @@ public class Question implements DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "question", orphanRemoval=true)
     private Set<QuizQuestion> quizQuestions = new HashSet<>();
 
-    @ManyToMany(mappedBy = "questions")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "questions")
     private Set<Topic> topics = new HashSet<>();
 
     @ManyToOne
@@ -227,6 +227,7 @@ public class Question implements DomainEntity {
 
     public void addTopic(Topic topic) {
         topics.add(topic);
+        topic.addQuestion(this);
     }
 
     public void remove() {
