@@ -128,3 +128,48 @@ Cypress.Commands.add('successMessage', (name, acronym, academicTerm) => {
         .find('button')
         .click()
 })
+
+// Teacher
+
+Cypress.Commands.add('demoTeacherLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="teacherButton"]').click()
+})
+
+Cypress.Commands.add('checkClarificationQuestions', () => {
+    cy.contains('Management').click()
+    cy.contains('Clarifications').click()
+})
+
+Cypress.Commands.add('createClarificationResponse', (questionContent,responseContent) => {
+    cy.contains(questionContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 6)
+      .find('[data-cy="AnswerClarification"]').click()
+    cy.get('[data-cy="TeacherResponse"]').clear().type(responseContent)
+    cy.get('[data-cy="saveButton"]').click()
+
+})
+
+Cypress.Commands.add('deleteClarificationResponse', (questionContent, responseContent) => {
+    cy.contains(questionContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 6)
+      .find('[data-cy="ShowResponses"]').click()
+    cy.contains(responseContent)
+      .first()
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 3)
+      .find('[data-cy="DeleteClarificationResponseIcon"]')
+      .click()
+})
+
+
+
+
