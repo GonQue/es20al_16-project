@@ -165,25 +165,6 @@
           </v-list>
         </v-menu>
 
-        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
-          <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
-              Proposed Questions
-              <v-icon>fas fa-user</v-icon>
-            </v-btn>
-          </template>
-          <v-list dense>
-            <v-list-item to="/student/listProposedQuestions">
-              <v-list-item-action>
-                <v-icon>assignment</v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>Proposed Questions</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
         <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
           Stats
           <v-icon>fas fa-user</v-icon>
@@ -349,13 +330,6 @@
               <v-icon>done</v-icon>
             </v-list-item-action>
             <v-list-item-content>Solved Quizzes</v-list-item-content>
-          </v-list-item>
-
-          <v-list-item to="/student/listProposedQuestions">
-            <v-list-item-action>
-              <v-icon>fas fa-user</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>Proposed Questions</v-list-item-content>
           </v-list-item>
 
           <v-list-item to="/student/stats">

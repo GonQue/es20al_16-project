@@ -51,6 +51,7 @@
 import { Component, Model, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
+import Store from '@/store';
 
 
 @Component
@@ -59,56 +60,15 @@ export default class EditJustificationDialog extends Vue {
   @Prop({ type: ProposedQuestion, required: true }) readonly evaluate!: ProposedQuestion;
   evaluationsList = ['AWAITING', 'APPROVED', 'REJECTED'];
 
-  async setEvaluation(proposedQuestionId: number, evaluation: string) {
+  async saveEvaluation() {
+    this.evaluate.teacher = Store.getters.getUser;
     try {
-      await RemoteServices.setProposedQuestionEvaluation(proposedQuestionId, evaluation);
-      let proposedQuestion = this.proposedQuestions.find(
-              proposedQuestion => proposedQuestion.id === proposedQuestionId
-      );
-      if (proposedQuestion) {
-        proposedQuestion.evaluation = evaluation;
-      }
+      const result = await RemoteServices.evaluate(this.evaluate);
+      this.$emit('save-evaluation', result);
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
   }
-
-  async saveEvaluation() {
-      try {
-        const result = await RemoteServices.saveEvaluation(this.evaluate);
-        this.$emit('save-justification', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-  }
-
-  async saveEvaluation() {
-    if ( this.evaluate && (this.evaluate.title || !this.editQuestion.content)
-    ) {
-      await this.$store.dispatch(
-              'error',
-              'Question must have title and content'
-      );
-      return;
-    }
-
-    if (this.editQuestion && this.editQuestion.id != null) {
-      try {
-        const result = await RemoteServices.updateQuestion(this.editQuestion);
-        this.$emit('save-question', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    } else if (this.editQuestion) {
-      try {
-        const result = await RemoteServices.createQuestion(this.editQuestion);
-        this.$emit('save-question', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    }
-  }
-}
 
   getEvaluationColor(evaluation: string) {
     if (evaluation === 'AWAITING') return 'grey';

@@ -27,7 +27,7 @@ import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 
-import ProposedQuestionsView from "@/views/teacher/proposedQuestions/ProposedQuestionsView.vue";
+import ProposedQuestionsView from '@/views/teacher/proposedQuestions/ProposedQuestionsView.vue';
 
 
 Vue.use(Router);

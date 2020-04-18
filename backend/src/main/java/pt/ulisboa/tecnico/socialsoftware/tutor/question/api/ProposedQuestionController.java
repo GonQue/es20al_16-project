@@ -58,10 +58,4 @@ public class ProposedQuestionController {
         return proposedQuestionService.getCourseProposedQuestions(courseId);
     }
 
-    @PostMapping("/proposed-questions/{proposedQuestionId}/set-evaluation")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#proposedQuestionId, 'PQ.ACCESS')")
-    public ResponseEntity proposedQuestionSetStatus(@PathVariable Integer proposedQuestionId, @Valid @RequestBody String evaluation) {
-        proposedQuestionService.setEvaluation(proposedQuestionId, ProposedQuestion.Evaluation.valueOf(evaluation));
-        return ResponseEntity.ok().build();
-    }
 }
