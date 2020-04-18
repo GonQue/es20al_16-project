@@ -19,11 +19,10 @@
                 <v-container grid-list-md fluid>
                     <v-layout column wrap>
                         <v-flex xs24 sm12 md8>
-                            <v-text-field v-model="createTournament.name" label="Title" />
-                            <p>Name is {{createTournament.name}}</p>
+                            <v-text-field v-model="createTournament.name" label="Title" data-cy="Name"/>
                         </v-flex>
                         <v-row>
-                            <v-col cols="12" sm="6">
+                            <v-col cols="12" sm="6" data-cy="startDate">
                                 <v-datetime-picker
                                         label="*Start Date"
                                         format="yyyy-MM-dd HH:mm"
@@ -41,6 +40,7 @@
                                         v-model="createTournament.endDate"
                                         date-format="yyyy-MM-dd"
                                         time-format="HH:mm"
+                                        data-cy="endDate"
                                 >
                                 </v-datetime-picker>
                             </v-col>
@@ -51,7 +51,8 @@
                             v-model="createTournament.numberOfQuestions"
                             step="1"
                             label="Number of questions"
-                            thumb-label="always"></v-slider>
+                            thumb-label="always"
+                            data-cy="numberOfQuestions"></v-slider>
                        </v-col>
 
 
@@ -64,6 +65,7 @@
                                 item-text="name"
                                 item-value="name"
                                 label="Topics"
+                                data-cy="topics"
                         >
                             <template v-slot:selection="data">
                                 <v-chip
