@@ -20,6 +20,21 @@
                     <v-spacer />
                 </v-card-title>
             </template>
+
+            <template v-slot:item.deleteClarificationResponse="{ item }">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-icon
+                                class="mr-2"
+                                v-on="on"
+                                @click="deleteClarificationResponse(item.id)"
+                                color="#D32F2F"
+                                data-cy="DeleteClarificationResponseIcon"
+                        >delete</v-icon>
+                    </template>
+                    <span>Remove Response</span>
+                </v-tooltip>
+            </template>
         </v-data-table>
     </v-card>
 </template>
@@ -28,9 +43,6 @@
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import StatementClarificationResponse from '@/models/statement/StatementClarificationResponse';
   import RemoteServices from '@/services/RemoteServices';
-  import StatementClarificationQuestion from '@/models/statement/StatementClarificationQuestion';
-  import ClarificationQuestion from '@/models/management/ClarificationQuestion';
-
 
   @Component
   export default class ListClarificationResponses extends Vue {
@@ -49,15 +61,21 @@
         value: 'responseDate',
         align: 'center',
         width: '15%'
+      },
+      {
+        text: 'Remove',
+        value: 'deleteClarificationResponse',
+        align: 'center',
+        width: '5%'
       }
     ];
 
     async created() {
       await this.$store.dispatch('loading');
       try {
-        if(this.$router.currentRoute.fullPath.includes("management")) {
+        if (this.$router.currentRoute.fullPath.includes("management")) {
           this.clarificationResponses = await RemoteServices.getTeacherClarificationResponse(parseInt(this.clarificationQuestionId));
-        }else
+        } else
           this.clarificationResponses = await RemoteServices.getStudentClarificationResponse(parseInt(this.clarificationQuestionId));
       } catch (error) {
         await this.$store.dispatch('error', error);
@@ -65,6 +83,19 @@
       await this.$store.dispatch('clearLoading');
     }
 
+    async deleteClarificationResponse(clarificationResponseId: number) {
+      if (confirm('Are you sure you want to delete this clarification response?')) {
+        try {
+          await RemoteServices.deleteClarificationResponse(clarificationResponseId);
+          this.clarificationResponses = this.clarificationResponses.filter(
+            clarificationResponse => clarificationResponse.id != clarificationResponseId
+          );
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
+        await this.$store.dispatch('clearLoading');
+      }
+    }
   }
 
 </script>

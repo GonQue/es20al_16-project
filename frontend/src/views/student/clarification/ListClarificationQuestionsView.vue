@@ -35,7 +35,10 @@
       <template v-slot:item.responses = {item}>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon class="mr-2" v-on="on" @click="showResponse(item)"
+            <v-icon class="mr-2"
+                    v-on="on"
+                    @click="showResponse(item)"
+                    data-cy="ShowResponses"
               >mdi-comment-text-multiple</v-icon
             >
           </template>

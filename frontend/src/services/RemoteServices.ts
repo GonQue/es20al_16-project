@@ -658,6 +658,16 @@ export default class RemoteServices {
       });
   }
 
+  static async deleteClarificationResponse(
+    clarificationResponseId: number | undefined
+  ) {
+    return httpClient
+      .delete('/management/clarifications/' + clarificationResponseId)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
