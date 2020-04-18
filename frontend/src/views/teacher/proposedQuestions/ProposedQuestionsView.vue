@@ -22,6 +22,16 @@
         </v-card-title>
       </template>
 
+      <template v-slot:item.question.topics="{ item }">
+        <v-chip
+                v-for="topic in item.question.topics"
+                :key="topic.id"
+                :color="'blue lighten-1'"
+        >
+          {{ topic.name }}
+        </v-chip>
+      </template>
+
       <template v-slot:item.evaluation="{ item }">
         <v-chip :color="getEvaluationColor(item.evaluation)">
           <span>{{ item.evaluation }}</span>
@@ -51,8 +61,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon small class="mr-2" v-on="on" @click="evaluate(item)"
-              >edit</v-icon
-            >
+              >edit</v-icon>
           </template>
           <span>Evaluate</span>
         </v-tooltip>
@@ -97,7 +106,6 @@ export default class ProposeQuestionView extends Vue {
   student: string = '';
   proposedQuestions: ProposedQuestion[] = [];
   currentQuestion: Question | null = null;
-  topics: Topic[] = [];
   currentPropQuestion: ProposedQuestion | null = null;
   evaluateDialog: boolean = false;
   questionDialog: boolean = false;
@@ -111,7 +119,7 @@ export default class ProposeQuestionView extends Vue {
     { text: 'Topics', value: 'question.topics', align: 'center', sortable: false },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'image', align: 'center', sortable: false },
+    { text: 'Image', value: 'question.image.url', align: 'center', sortable: false },
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
 
@@ -154,7 +162,7 @@ export default class ProposeQuestionView extends Vue {
   }
 
   getEvaluationColor(evaluation: string) {
-    if (evaluation === 'AWAITING') return 'grey';
+    if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
     else return 'red';
   }

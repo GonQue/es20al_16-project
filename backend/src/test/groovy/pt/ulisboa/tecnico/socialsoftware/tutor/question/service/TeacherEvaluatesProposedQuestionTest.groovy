@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -168,11 +167,10 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         approvedQuestionDto.setTeacher(teacherDto)
 
         when:
-        proposedQuestionService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
+        def result = proposedQuestionService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
 
         then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.PQ_ALREADY_EVALUATED
+        result.getEvaluation() == ProposedQuestion.Evaluation.APPROVED.name()
     }
 
 
@@ -195,7 +193,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         hasTeacher | justification | evaluation                             || errorMessage
         false      | JUSTIFICATION | ProposedQuestion.Evaluation.AWAITING   || USER_IS_EMPTY
         true       | "           " | ProposedQuestion.Evaluation.REJECTED   || JUSTIFICATION_IS_BLANK
-        true       | null          | ProposedQuestion.Evaluation.AWAITING   || JUSTIFICATION_IS_EMPTY
+        true       | null          | ProposedQuestion.Evaluation.REJECTED   || JUSTIFICATION_IS_EMPTY
     }
 
     def addTeacher(Boolean hasTeacher) {
