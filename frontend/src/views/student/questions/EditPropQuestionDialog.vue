@@ -117,7 +117,6 @@ export default class EditPropQuestionDialog extends Vue {
       }
     } */
     if (this.editPropQuestion) {
-      this.editPropQuestion.question.creationDate
       try {
         const result = await RemoteServices.createProposedQuestion(
           this.editPropQuestion
