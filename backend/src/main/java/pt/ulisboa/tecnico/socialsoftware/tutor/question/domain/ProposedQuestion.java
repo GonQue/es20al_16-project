@@ -67,7 +67,7 @@ public class ProposedQuestion {
     }
 
     public void evaluate (String justification, Evaluation evaluation){
-        if (justification == null) {
+        if (evaluation == Evaluation.REJECTED && justification == null) {
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_EMPTY);
         }
         if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){

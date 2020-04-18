@@ -101,7 +101,7 @@ export default class ProposeQuestionView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.proposedQuestions = await RemoteServices.getProposedQuestions();
+      this.proposedQuestions = await RemoteServices.getStudentProposedQuestions();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

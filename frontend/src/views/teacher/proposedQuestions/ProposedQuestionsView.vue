@@ -21,57 +21,75 @@
         </v-card-title>
       </template>
 
-      <template v-slot:item.evaluation="{ item }">
-        <v-chip :color="getEvaluationColor(item.evaluation)">
-          <span>{{ item.evaluation }}</span>
-        </v-chip>
-      </template>
+      <template v-slot:item.content="{ item }">
+        <p
+                v-html="convertMarkDownNoFigure(item.content, null)"
+                @click="showQuestionDialog(item)"
+        /></template>
 
-      <template v-slot:item.justification="{ item }">
-        <v-btn
-          icon
-          bottom
-          v-if="item.justification != null"
-          @click="showJustificationDialog(item)"
-        >
-          <v-icon small class="mr-2">visibility</v-icon>
-        </v-btn>
-      </template>
-
-      <template v-slot:item.action="{}">
+      <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on">visibility</v-icon>
+            <v-icon small class="mr-2" v-on="on"
+                    @click="showQuestionDialog(item)"
+            >visibility</v-icon>
           </template>
-          <span>View justification</span>
+          <span>View Question</span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon small class="mr-2" v-on="on"
+                  @click="evaluate(item)"
+            >edit</v-icon>
+        </template>
+          <span>Evaluate</span>
         </v-tooltip>
       </template>
     </v-data-table>
 
-    <show-justification-dialog
-      v-if="currentPropQuestion"
-      v-model="justificationDialog"
-      :proposedQuestion="currentPropQuestion"
-      v-on:close-show-justification-dialog="onCloseShowJustificationDialog"
+    <evaluate-dialog
+            v-if="currentPropQuestion"
+            v-model="evaluateDialog"
+            :evaluate="currentPropQuestion"
+            v-on:save-evaluation="onSaveEvaluation"
+     />
+
+    <show-question-dialog
+            v-if="currentPropQuestion"
+            v-model="questionDialog"
+            :question="currentPropQuestion.question"
+            v-on:close-show-question-dialog="onCloseShowQuestionDialog"
     />
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import Question from '@/models/management/Question';
+import Image from '@/models/management/Image';
+import Topic from '@/models/management/Topic';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
-import ShowJustificationDialog from './ShowJustificationDialog.vue';
+import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
+import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
+import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
 
 @Component({
   components: {
-    'show-justification-dialog': ShowJustificationDialog
+    'show-question-dialog': ShowQuestionDialog,
+    'evaluate-dialog': EvaluateDialog
   }
 })
+
 export default class ProposeQuestionView extends Vue {
   proposedQuestions: ProposedQuestion[] = [];
+  currentQuestion: Question | null = null;
+  topics: Topic[] = [];
   currentPropQuestion: ProposedQuestion | null = null;
-  justificationDialog: boolean = false;
+  evaluateDialog: boolean = false;
+  questionDialog: boolean = false;
+  justification: string = '';
   search: string = '';
 
   headers: object = [
@@ -79,36 +97,47 @@ export default class ProposeQuestionView extends Vue {
     { text: 'Question', value: 'question.content', align: 'left' },
     { text: 'Topics', value: 'topics', align: 'center', sortable: false },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
-    { text: 'Justification', value: 'justification', align: 'center', sortable: false },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
+    { text: 'Image', value: 'image', align: 'center', sortable: false},
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
 
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.proposedQuestions = await RemoteServices.getProposedQuestions();
+      this.proposedQuestions = await RemoteServices.getCourseProposedQuestions();
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
   }
 
-  getEvaluationColor(evaluation: string) {
-    if (evaluation === 'AWAITING') return 'grey';
-    else if (evaluation === 'APPROVED') return 'green';
-    else return 'red';
+  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
+    return convertMarkDownNoFigure(text, image);
   }
 
-  showJustificationDialog(propQuestion: ProposedQuestion) {
+  showQuestionDialog(propQuestion: ProposedQuestion) {
     this.currentPropQuestion = propQuestion;
-    this.justificationDialog = true;
+    this.currentQuestion = propQuestion.question;
+    this.questionDialog = true;
   }
 
-  onCloseShowJustificationDialog() {
-    this.justificationDialog = false;
+  onCloseShowQuestionDialog() {
+    this.questionDialog = false;
+  }
+
+  evaluate(propQuestion: ProposedQuestion) {
+    this.currentPropQuestion = propQuestion;
+    this.evaluateDialog = true;
+  }
+
+  async onSaveEvaluation(propQuestion: ProposedQuestion) {
+    this.proposedQuestions = this.proposedQuestions.filter(pq => pq.id !== propQuestion.id);
+    this.proposedQuestions.unshift(propQuestion);
+    this.evaluateDialog = false;
+    this.currentPropQuestion = null;
   }
 }
 </script>
 
-<style lang="scss" scoped></style> -->
+<style lang="scss" scoped></style>

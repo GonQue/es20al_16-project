@@ -332,13 +332,6 @@
             <v-list-item-content>Solved Quizzes</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/listProposedQuestions">
-            <v-list-item-action>
-              <v-icon>fas fa-user</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>Proposed Questions</v-list-item-content>
-          </v-list-item>
-
           <v-list-item to="/student/stats">
             <v-list-item-action>
               <v-icon>fas fa-user</v-icon>

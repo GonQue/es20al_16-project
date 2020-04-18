@@ -142,4 +142,8 @@ public class ProposedQuestionService {
     public void setEvaluation(int pqId, ProposedQuestion.Evaluation evaluation){
         pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setEvaluation(evaluation);
     }
+
+    public void setJustification(Integer pqId, String justification) {
+        pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setJustification(justification);
+    }
 }
