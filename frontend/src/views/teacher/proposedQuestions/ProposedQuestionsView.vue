@@ -1,4 +1,4 @@
-<!--<template>
+<template>
   <v-card class="table">
     <v-data-table
       :headers="headers"
@@ -23,43 +23,47 @@
 
       <template v-slot:item.content="{ item }">
         <p
-                v-html="convertMarkDownNoFigure(item.content, null)"
-                @click="showQuestionDialog(item)"
-        /></template>
+          v-html="convertMarkDownNoFigure(item.content, null)"
+          @click="showQuestionDialog(item)"
+      /></template>
 
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on"
-                    @click="showQuestionDialog(item)"
-            >visibility</v-icon>
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="showQuestionDialog(item)"
+              >visibility</v-icon
+            >
           </template>
           <span>View Question</span>
         </v-tooltip>
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on"
-                  @click="evaluate(item)"
-            >edit</v-icon>
-        </template>
+            <v-icon small class="mr-2" v-on="on" @click="evaluate(item)"
+              >edit</v-icon
+            >
+          </template>
           <span>Evaluate</span>
         </v-tooltip>
       </template>
     </v-data-table>
 
     <evaluate-dialog
-            v-if="currentPropQuestion"
-            v-model="evaluateDialog"
-            :evaluate="currentPropQuestion"
-            v-on:save-evaluation="onSaveEvaluation"
-     />
+      v-if="currentPropQuestion"
+      v-model="evaluateDialog"
+      :evaluate="currentPropQuestion"
+      v-on:save-evaluation="onSaveEvaluation"
+    />
 
     <show-question-dialog
-            v-if="currentPropQuestion"
-            v-model="questionDialog"
-            :question="currentPropQuestion.question"
-            v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+      v-if="currentPropQuestion"
+      v-model="questionDialog"
+      :question="currentPropQuestion.question"
+      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
     />
   </v-card>
 </template>
@@ -81,7 +85,6 @@ import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue
     'evaluate-dialog': EvaluateDialog
   }
 })
-
 export default class ProposeQuestionView extends Vue {
   proposedQuestions: ProposedQuestion[] = [];
   currentQuestion: Question | null = null;
@@ -98,7 +101,7 @@ export default class ProposeQuestionView extends Vue {
     { text: 'Topics', value: 'topics', align: 'center', sortable: false },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'image', align: 'center', sortable: false},
+    { text: 'Image', value: 'image', align: 'center', sortable: false },
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
 
@@ -132,7 +135,9 @@ export default class ProposeQuestionView extends Vue {
   }
 
   async onSaveEvaluation(propQuestion: ProposedQuestion) {
-    this.proposedQuestions = this.proposedQuestions.filter(pq => pq.id !== propQuestion.id);
+    this.proposedQuestions = this.proposedQuestions.filter(
+      pq => pq.id !== propQuestion.id
+    );
     this.proposedQuestions.unshift(propQuestion);
     this.evaluateDialog = false;
     this.currentPropQuestion = null;

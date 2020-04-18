@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <v-dialog
     :value="dialog"
     @input="$emit('dialog', false)"
@@ -9,38 +9,39 @@
     <v-card>
       <v-container grid-list-md fluid>
         <v-layout column wrap>
-      <v-card-title>
-        <span class="headline"> {{ 'Edit Evaluation' }} </span>
-      </v-card-title>
+          <v-card-title>
+            <span class="headline"> {{ 'Edit Evaluation' }} </span>
+          </v-card-title>
           <v-col cols="12">
-      <v-select
+            <v-select
               outlined
               v-model="evaluate.evaluation"
               :items="evaluationsList"
-              :color="getEvaluationColor(evaluate.evaluation)" small>
-            <span>{{evaluate.evaluation}}</span>
-      </v-select>
-            </v-col>
+              :color="getEvaluationColor(evaluate.evaluation)"
+              small
+            >
+              <span>{{ evaluate.evaluation }}</span>
+            </v-select>
+          </v-col>
 
-      <v-card-text class="text-left" v-if="evaluate">
-        <v-flex xs24 sm12 md12>
-          <v-textarea
-           outline
-           rows="5"
-           v-model="evaluate.justification"
-           label="Justification"
-         ></v-textarea>
-        </v-flex>
-      </v-card-text>
+          <v-card-text class="text-left" v-if="evaluate">
+            <v-flex xs24 sm12 md12>
+              <v-textarea
+                outline
+                rows="5"
+                v-model="evaluate.justification"
+                label="Justification"
+              ></v-textarea>
+            </v-flex>
+          </v-card-text>
 
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn color="blue darken-1" @click="$emit('dialog', false)"
-          >Cancel</v-btn
-        >
-        <v-btn color="blue darken-1" @click="saveEvaluation">Save</v-btn>
-      </v-card-actions>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn color="blue darken-1" @click="$emit('dialog', false)"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" @click="saveEvaluation">Save</v-btn>
+          </v-card-actions>
         </v-layout>
       </v-container>
     </v-card>
@@ -53,11 +54,11 @@ import RemoteServices from '@/services/RemoteServices';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import Store from '@/store';
 
-
 @Component
 export default class EditJustificationDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: ProposedQuestion, required: true }) readonly evaluate!: ProposedQuestion;
+  @Prop({ type: ProposedQuestion, required: true })
+  readonly evaluate!: ProposedQuestion;
   evaluationsList = ['AWAITING', 'APPROVED', 'REJECTED'];
 
   async saveEvaluation() {
@@ -76,4 +77,4 @@ export default class EditJustificationDialog extends Vue {
     else return 'red';
   }
 }
-</script> -->
+</script>

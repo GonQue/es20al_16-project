@@ -591,44 +591,48 @@ export default class RemoteServices {
       });
   }
 
-  static async createProposedQuestion(proposedQuestion: ProposedQuestion): Promise<ProposedQuestion> {
+  static async createProposedQuestion(
+    proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
     return httpClient
-        .post(
-            `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions/`,
-            proposedQuestion
-        )
-        .then(response => {
-          return new ProposedQuestion(response.data);
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions/`,
+        proposedQuestion
+      )
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async getCourseProposedQuestions(): Promise<ProposedQuestion[]> {
     return httpClient
-        .get(
-            `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions`
-        )
-        .then(response => {
-          return response.data.map((propQuestion: any) => {
-            return new ProposedQuestion(propQuestion);
-          });
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions`
+      )
+      .then(response => {
+        return response.data.map((propQuestion: any) => {
+          return new ProposedQuestion(propQuestion);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
-  static async evaluate(proposedQuestion: ProposedQuestion): Promise<ProposedQuestion> {
+  static async evaluate(
+    proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
     return httpClient
-        .put(`/proposed-questions/${proposedQuestion.id}`, proposedQuestion)
-        .then(response => {
-          return new ProposedQuestion(response.data);
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .put(`/proposed-questions/${proposedQuestion.id}`, proposedQuestion)
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async errorMessage(error: any): Promise<string> {
