@@ -123,11 +123,11 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
       .parent()
       .should('have.length', numberOfTournaments)
       .children()
-      .should('have.length', 4)
+      .should('have.length', 7)
 })
 Cypress.Commands.add('removeTournamentFromDB', (name) => {
-    cy.exec('PGPASSWORD=12345 psql -d tutordb -U joana -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
-    cy.exec('PGPASSWORD=12345 psql -d tutordb -U joana -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
-    cy.exec('PGPASSWORD=12345 psql -d tutordb -U joana -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"', {env: {name: name}})
+    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
+    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
+    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"', {env: {name: name}})
 
 })
