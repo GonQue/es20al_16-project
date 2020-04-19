@@ -70,13 +70,11 @@ Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) 
 })
 
 
-
-
-
 Cypress.Commands.add('demoStudentLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="studentButton"]').click()
-    cy.contains('Tournaments').click().wait(5000)
+    cy.contains('Tournaments').click().wait(20000)
+
 })
 Cypress.Commands.add('createTournament', (name, topics, day1, day2, nextMonth, pickQuestionNumber) => {
     cy.get('[data-cy="createButton"]').click()
@@ -109,6 +107,15 @@ Cypress.Commands.add('createTournament', (name, topics, day1, day2, nextMonth, p
     cy.get('[data-cy="saveButton"]').click().wait(200);
 })
 
+Cypress.Commands.add('enrollStudent', (name) => {
+    cy.contains(name)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 7)
+      .find('[data-cy="enrollButton"]')
+      .click()
+})
 Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
     cy.contains(name)
       .parent()
@@ -117,6 +124,7 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
       .should('have.length', 4)
 })
 Cypress.Commands.add('removeTournamentFromDB', (name) => {
-    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
-    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"', {env: {name: name}})
+    cy.exec('PGPASSWORD=12345 psql -d tutordb -U joana -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
+    cy.exec('PGPASSWORD=12345 psql -d tutordb -U joana -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
+    cy.exec('PGPASSWORD=12345 psql -d tutordb -U joana -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"', {env: {name: name}})
 })
