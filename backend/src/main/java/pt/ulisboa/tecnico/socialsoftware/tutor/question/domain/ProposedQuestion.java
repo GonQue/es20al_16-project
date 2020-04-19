@@ -108,4 +108,8 @@ public class ProposedQuestion {
         topics.forEach(question::addTopic);
         this.question = question;
     }
+
+    public boolean canBeRemoved() {
+        return this.evaluation != Evaluation.APPROVED;
+    }
 }

@@ -28,6 +28,9 @@ import java.time.LocalDateTime
 class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
 
     @Autowired
+    QuestionService questionService
+
+    @Autowired
     ProposedQuestionService proposedQuestionService
 
     @Autowired
@@ -121,6 +124,10 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
 
     @TestConfiguration
     static class TeacherEvaluateTestContextConfiguration {
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService questionProposalService() {

@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -34,6 +35,9 @@ import spock.lang.Specification
 @DataJpaTest
 class TeacherEvaluatesProposedQuestionTest extends Specification {
     static final String JUSTIFICATION = "JUSTIFICATION"
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     ProposedQuestionService proposedQuestionService
@@ -210,6 +214,10 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
 
     @TestConfiguration
     static class TeacherEvaluateTestContextConfiguration {
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService proposedQuestionService() {

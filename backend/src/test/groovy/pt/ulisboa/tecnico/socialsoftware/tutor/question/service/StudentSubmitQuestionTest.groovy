@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
@@ -40,6 +41,9 @@ class StudentSubmitQuestionTest extends Specification {
     static final String COURSE_NAME = "Course name"
     static final String COURSE_ACRONYM = "AC"
     static final String COURSE_ACADEMIC_TERM = "2S"
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     ProposedQuestionService proposedQuestionService
@@ -213,6 +217,11 @@ class StudentSubmitQuestionTest extends Specification {
 
     @TestConfiguration
     static class PropQuestionServiceImplTestContextConfiguration {
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService questionPropService() {
