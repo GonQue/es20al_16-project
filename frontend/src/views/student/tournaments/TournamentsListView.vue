@@ -9,6 +9,10 @@
             :hide-default-footer="true"
             :mobile-breakpoint="0"
             multi-sort
+            :single-expand="true"
+            item-key="id"
+            show-expand
+            class="elevation-1"
     >
 
       <template v-slot:top>
@@ -24,6 +28,8 @@
 
         </v-card-title>
       </template>
+
+
 
       <!-- <template v-slot:item.action="{ item }">
         <template v-slot:activator="{ on }">
@@ -48,6 +54,13 @@
               </template>
           </v-tooltip>
       </template>
+
+
+      <template v-slot:expanded-item="{ headers, item }">
+        <td >Topics: {{ item.topics.name }}</td>
+      </template>
+
+
 
     </v-data-table>
     <create-tournament-dialog
@@ -99,8 +112,14 @@
         width: '10%'
       },
       {
-        text: 'Question Number',
+        text: 'Number of Questions',
         value: 'numberOfQuestions',
+        align: 'center',
+        width: '10%'
+      },
+      {
+        text: 'Number of Students',
+        value: 'enrolled.length',
         align: 'center',
         width: '10%'
       },
@@ -111,7 +130,10 @@
         width: '7%',
         sortable: false
       },
+      {text:'topics', value:'data-table-expand'}
     ];
+
+
 
     enrollButtons: number[] = [];
 

@@ -2,7 +2,7 @@
 node_modules/
 dist/
 coverage/
-cypress/
+#cypress/
 
 # local env files
 .env
