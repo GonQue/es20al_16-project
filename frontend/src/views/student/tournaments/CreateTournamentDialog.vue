@@ -122,6 +122,9 @@ export default class CreateTournamentDialog extends Vue {
 
   createTournament!: Tournament;
 
+  //topics: Topic[] = [];
+  //quizzes: Quiz[] = [];//JSON.parse(JSON.stringify(this.question.topics));
+
   quizzes: StatementQuiz[] = [];
 
   async created() {
