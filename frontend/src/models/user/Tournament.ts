@@ -9,7 +9,7 @@ export class Tournament {
   endDate: string = '';
   numberOfQuestions: number | null = null;
   topics: Topic[] = [];
-  enrolled: User[] = [];
+  enrolled: string[] = [];
   //quiz!: Quiz | null=null;
   status: string = 'CREATED';
 
@@ -22,8 +22,9 @@ export class Tournament {
       this.numberOfQuestions = jsonObj.numberOfQuestions;
       //this.quiz = new Quiz(jsonObj.quiz);
       this.status = jsonObj.status;
+      this.enrolled = jsonObj.enrolled;
 
-      this.enrolled = jsonObj.enrolled.map((user:User) => new User(user));
+      //console.log('DTO:', jsonObj.name, jsonObj.numberOfQuestions,jsonObj.topics, jsonObj.enrolled)
       this.topics = jsonObj.topics.map((topic: Topic) => new Topic(topic));
 
     }

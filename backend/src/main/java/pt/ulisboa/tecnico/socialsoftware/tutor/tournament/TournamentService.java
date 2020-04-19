@@ -130,7 +130,7 @@ public class TournamentService {
 
       List<UserDto> enrolled = getUserDtos(tournament);
       TournamentDto tDto = new TournamentDto(tournament);
-      tDto.setEnrolled(enrolled);
+      //tDto.setEnrolled(enrolled);
 
       return tDto;
 

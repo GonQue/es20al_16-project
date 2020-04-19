@@ -33,8 +33,17 @@
       <template v-slot:item.enrollment="{ item }">
           <v-tooltip>
               <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark @click="enrolled(item)" data-cy="enrollButton" v-on="on" v-show="f(item)">Enroll</v-btn>
-                <v-btn color="primary" dark @click="enrolled(item)" data-cy="enrollButton" v-on="on" v-show="!f(item)">Enrolled</v-btn>
+                <v-btn
+                        color="primary"
+                        :disabled="enrollButtons.includes(item.id)"
+                        @click="enrolled(item)"
+                        data-cy="enrollButton"
+                        v-on="on"
+                        v-show="!checkIfEnrolled(item)"
+                >
+                  Enroll
+                </v-btn>
+                <v-btn disabled v-show="checkIfEnrolled(item)">Enrolled</v-btn>
               </template>
           </v-tooltip>
       </template>
@@ -64,16 +73,6 @@
     }
   })
   export default class TournamentsListView extends Vue {
-   /* data: {
-      firstname: 'Luca';
-      lastname: 'Rossi';
-    } | null=null;
-    computed: {
-      fullname: function() {
-      return this.firstname + ' ' + this.lastname;
-    }
-    } | null=null;*/
-    //enrollStudentBool:boolean=true;
     createTournamentDialog: boolean = true;
     tournament : Tournament | null = null;
     tournaments: Tournament[] = [];
@@ -113,6 +112,8 @@
       },
     ];
 
+    enrollButtons: number[] = [];
+
     async created(){
       await this.$store.dispatch('loading');
       try {
@@ -146,15 +147,21 @@
         await this.$store.dispatch('error', error);
       }
       await this.$store.dispatch('clearLoading');
+      this.enrollButtons.push(tournament.id);
     }
-    f(tournament:Tournament):boolean{
+
+    checkIfEnrolled(tournament: Tournament):boolean{
       let user= this.$store.getters.getUser;
       let usersMap = tournament.enrolled;
-      for(let u in usersMap){
-        if(u==user.username){
+      //console.log('OK', tournament.name, tournament.enrolled[0], tournament.topics, tournament.numberOfQuestions)
+      console.log('TEST');
+      for(let i = 0;i < usersMap.length; i++){
+        console.log(usersMap[i], user.username)
+        if(usersMap[i] == user.username){
           return true;
         }
       }
+      console.log('FALSE')
       return false;
     }
 
