@@ -43,6 +43,8 @@ public class ProposedQuestionService {
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private QuestionService questionService;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ProposedQuestionDto studentSubmitQuestion(int courseId, ProposedQuestionDto proposedQuestionDto) {
@@ -62,7 +64,7 @@ public class ProposedQuestionService {
     public ProposedQuestionDto teacherEvaluatesProposedQuestion(ProposedQuestionDto pqDto) {
         Course course = getCourse(pqDto.getId());
         User teacher = getTeacher(pqDto);
-        ProposedQuestion pq = findProposedQuestion(pqDto);
+        ProposedQuestion pq = findProposedQuestion(pqDto.getId());
 
         String justification = pqDto.getJustification();
         String evaluation = pqDto.getEvaluation();
@@ -119,8 +121,9 @@ public class ProposedQuestionService {
         return topics;
     }
 
-    private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
-        return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestion findProposedQuestion(int id) {
+        return pqRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
     }
 
     private User getTeacher(ProposedQuestionDto pqDto) {
@@ -134,16 +137,19 @@ public class ProposedQuestionService {
         return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Course getCourse(int pqId) {
         ProposedQuestion proposedQuestion = pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
         return proposedQuestion.getQuestion().getCourse();
     }
 
-    public void setEvaluation(int pqId, ProposedQuestion.Evaluation evaluation){
-        pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setEvaluation(evaluation);
-    }
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void deleteProposedQuestion(int proposedQuestionId) {
+        ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
+        Course course = getCourse(proposedQuestionId);
+        course.removeProposedQuestion(proposedQuestion);
 
-    public void setJustification(Integer pqId, String justification) {
-        pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setJustification(justification);
+        pqRepository.delete(proposedQuestion);
+        questionService.deleteQuestion(proposedQuestion.getQuestion());
     }
 }

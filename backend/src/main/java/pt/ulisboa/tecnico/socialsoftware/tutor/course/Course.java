@@ -106,6 +106,8 @@ public class Course {
         proposedQuestions.add(proposedQuestion);
     }
 
+    public void removeProposedQuestion(ProposedQuestion proposedQuestion) { proposedQuestions.remove(proposedQuestion); }
+
     public void addTopic(Topic topic) {
         topics.add(topic);
     }

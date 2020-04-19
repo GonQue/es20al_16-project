@@ -58,4 +58,10 @@ public class ProposedQuestionController {
         return proposedQuestionService.getCourseProposedQuestions(courseId);
     }
 
+    @DeleteMapping("/proposed-questions/{proposedQuestionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#proposedQuestionId, 'PQ.CREATOR')")
+    public ResponseEntity deleteProposedQuestion(@PathVariable Integer proposedQuestionId) {
+        proposedQuestionService.deleteProposedQuestion(proposedQuestionId);
+        return  ResponseEntity.ok().build();
+    }
 }

@@ -98,7 +98,7 @@
             show-size
             dense
             small-chips
-            @change="handleFileUpload($event, editPropQuestion)"
+            @change="saveImage($event)"
             accept="image/*"
           />
         </v-col>
@@ -144,14 +144,6 @@ export default class EditPropQuestionDialog extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  // TODO use EasyMDE with these configs
-  // markdownConfigs: object = {
-  //   status: false,
-  //   spellChecker: false,
-  //   insertTexts: {
-  //     image: ['![image][image]', '']
-  //   }
-  // };
   selectTopics() {
     this.editPropQuestion.question.topics = this.questionTopics;
   }
@@ -175,21 +167,11 @@ export default class EditPropQuestionDialog extends Vue {
       return;
     }
 
-    /*
-    if (this.editProposedQuestion && this.editProposedQuestion.id != null) {
-      try {
-        const result = await RemoteServices.updateProposedQuestion(this.editPropQuestion);
-        this.$emit('save-proposed-question', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
-      }
-    } */
     if (this.editPropQuestion) {
       try {
         const result = await RemoteServices.createProposedQuestion(
           this.editPropQuestion
         );
-        console.log(result.question.id);
         if (this.image != null && result.question.id) {
           const imageURL = await RemoteServices.uploadImage(
             this.image,
@@ -204,6 +186,10 @@ export default class EditPropQuestionDialog extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  async saveImage(file: File) {
+    this.image = file;
   }
 }
 </script>

@@ -607,6 +607,14 @@ export default class RemoteServices {
       });
   }
 
+  static async deleteProposedQuestion(proposedQuestionId: number) {
+    return httpClient
+      .delete(`/proposed-questions/${proposedQuestionId}`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getCourseProposedQuestions(): Promise<ProposedQuestion[]> {
     return httpClient
       .get(

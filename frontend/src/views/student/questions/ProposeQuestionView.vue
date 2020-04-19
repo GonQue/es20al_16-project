@@ -22,6 +22,12 @@
         </v-card-title>
       </template>
 
+      <template v-slot:item.question.content="{ item }">
+        <p
+          v-html="convertMarkDownNoFigure(item.question.content, null)"
+          @click="showQuestionDialog(item)"
+      /></template>
+
       <template v-slot:item.question.topics="{ item }">
         <v-chip
           v-for="topic in item.question.topics"
@@ -49,15 +55,7 @@
         </v-btn>
       </template>
 
-      <template v-slot:item.question.image="{ item }">
-        <v-file-input
-          show-size
-          dense
-          small-chips
-          @change="handleFileUpload($event, item)"
-          accept="image/*"
-        />
-      </template>
+      <template v-slot:item.question.image="{}"> </template>
 
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
@@ -71,6 +69,19 @@
             >
           </template>
           <span>Show Question</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="deleteProposedQuestion(item)"
+              color="red"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Proposed Question</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -104,6 +115,7 @@ import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDi
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
+import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 
 @Component({
   components: {
@@ -137,7 +149,7 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'image', align: 'center' },
+    { text: 'Image', value: 'question.image.url', align: 'center' },
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
 
@@ -166,6 +178,10 @@ export default class ProposeQuestionView extends Vue {
     this.questionDialog = false;
   }
 
+  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
+    return convertMarkDownNoFigure(text, image);
+  }
+
   showJustificationDialog(propQuestion: ProposedQuestion) {
     this.currentPropQuestion = propQuestion;
     this.justificationDialog = true;
@@ -178,6 +194,22 @@ export default class ProposeQuestionView extends Vue {
   newProposedQuestion() {
     this.currentPropQuestion = new ProposedQuestion();
     this.editPropQuestionDialog = true;
+  }
+
+  async deleteProposedQuestion(proposedQuestion: ProposedQuestion) {
+    if (
+      proposedQuestion.id &&
+      confirm('Are you sure you want to delete this proposed question?')
+    ) {
+      try {
+        await RemoteServices.deleteProposedQuestion(proposedQuestion.id);
+        this.proposedQuestions = this.proposedQuestions.filter(
+          pQuestion => pQuestion.id != proposedQuestion.id
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 
   async onSaveProposedQuestion(proposedQuestion: ProposedQuestion) {

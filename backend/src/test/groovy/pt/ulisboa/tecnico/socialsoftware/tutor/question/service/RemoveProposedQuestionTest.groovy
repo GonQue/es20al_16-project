@@ -1,29 +1,32 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import spock.lang.Specification
 
-import java.time.LocalDateTime;
+import java.time.LocalDateTime
 
 @DataJpaTest
-class StudentSubmitQuestionPerformanceTest extends Specification {
+class RemoveProposedQuestionTest extends Specification {
+    static final String COURSE_NAME = "Course name"
+    static final String COURSE_ACRONYM = "AC"
+    static final String COURSE_ACADEMIC_TERM = "2S"
 
     @Autowired
     QuestionService questionService
@@ -43,46 +46,25 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
     @Autowired
     QuestionRepository questionRepository
 
-    def student
-    def course
+    @Autowired
+    ProposedQuestionRepository proposedQuestionRepository
+
+    def proposedQuestion
 
     def setup() {
-        student = new User("name", "username", 1, User.Role.STUDENT)
+        def student = new User("name", "username", 1, User.Role.STUDENT)
         userRepository.save(student)
 
-        course = new Course("Course_name", Course.Type.TECNICO)
+        def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
 
-        def courseExecution = new CourseExecution(course, "AC12", "1SEM", Course.Type.TECNICO)
-        course.addCourseExecution(courseExecution)
+        def courseExecution = new CourseExecution(course, COURSE_ACRONYM, COURSE_ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecution.addUser(student)
         student.addCourse(courseExecution)
         courseExecutionRepository.save(courseExecution)
-    }
 
-    def "performance testing to create 300000 proposed questions"() {
-        given: "a list for proposed questions"
-        def list = new ArrayList<ProposedQuestionDto>()
-        and: "300000 proposedQuestionDto"
-        1.upto(1, {
-            def propQuestionDto = new ProposedQuestionDto()
-            propQuestionDto.setQuestion(createQuestionDto(it))
-            propQuestionDto.setStudent(new UserDto(student))
-            list.add(propQuestionDto)
-        })
-
-        when:
-        1.upto(1, {
-            proposedQuestionService.studentSubmitQuestion(course.getId(), list.get((it as int) - 1))
-        })
-
-        then:
-        true
-    }
-
-    def createQuestionDto(key) {
         def questionDto = new QuestionDto()
-        questionDto.setKey(key)
+        questionDto.setKey(1)
         questionDto.setTitle("QUESTION_TITLE")
         questionDto.setContent("QUESTION_CONTENT")
         questionDto.setStatus(Question.Status.SUBMITTED.name())
@@ -93,11 +75,27 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         options.add(optionDto)
         questionDto.setOptions(options)
         questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
-        return questionDto
+
+        def question = new Question(course, questionDto)
+        questionRepository.save(question)
+
+        proposedQuestion = new ProposedQuestion()
+        proposedQuestion.setQuestion(question)
+        proposedQuestion.setStudent(student)
+        proposedQuestionRepository.save(proposedQuestion)
+    }
+
+    def "remove a proposed question"() {
+        when:
+        proposedQuestionService.deleteProposedQuestion(proposedQuestion.getId())
+
+        then: "the proposed question is removed"
+        proposedQuestionRepository.count() == 0L
     }
 
     @TestConfiguration
     static class PropQuestionServiceImplTestContextConfiguration {
+
         @Bean
         QuestionService questionService() {
             return new QuestionService()
@@ -109,4 +107,3 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         }
     }
 }
-

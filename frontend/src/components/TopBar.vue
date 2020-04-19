@@ -301,6 +301,13 @@
             <v-list-item-title>Student</v-list-item-title>
           </template>
 
+          <v-list-item to="/student/propose" v-if="isStudent && currentCourse">
+            <v-list-item-action>
+              <v-icon>question_answer</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Propose Question</v-list-item-content>
+          </v-list-item>
+
           <v-list-item
             to="/student/available"
             v-if="isStudent && currentCourse"
