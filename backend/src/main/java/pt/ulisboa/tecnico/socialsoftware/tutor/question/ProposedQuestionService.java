@@ -146,10 +146,14 @@ public class ProposedQuestionService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deleteProposedQuestion(int proposedQuestionId) {
         ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
-        Course course = getCourse(proposedQuestionId);
-        course.removeProposedQuestion(proposedQuestion);
 
-        pqRepository.delete(proposedQuestion);
-        questionService.deleteQuestion(proposedQuestion.getQuestion());
+        if (proposedQuestion.canBeRemoved()) {
+            Course course = getCourse(proposedQuestionId);
+            course.removeProposedQuestion(proposedQuestion);
+            pqRepository.delete(proposedQuestion);
+            questionService.deleteQuestion(proposedQuestion.getQuestion());
+        }
+        else
+            throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_REMOVED);
     }
 }

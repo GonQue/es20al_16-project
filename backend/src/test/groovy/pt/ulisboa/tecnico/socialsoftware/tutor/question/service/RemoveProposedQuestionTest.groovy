@@ -8,6 +8,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion
@@ -50,17 +52,23 @@ class RemoveProposedQuestionTest extends Specification {
     ProposedQuestionRepository proposedQuestionRepository
 
     def proposedQuestion
+    def teacher
 
     def setup() {
-        def student = new User("name", "username", 1, User.Role.STUDENT)
+        def student = new User("name", "student", 1, User.Role.STUDENT)
         userRepository.save(student)
 
         def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
 
+        teacher = new User("name", "teacher", 2, User.Role.TEACHER)
+        userRepository.save(teacher)
+
         def courseExecution = new CourseExecution(course, COURSE_ACRONYM, COURSE_ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecution.addUser(student)
+        courseExecution.addUser(teacher)
         student.addCourse(courseExecution)
+        teacher.addCourse(courseExecution)
         courseExecutionRepository.save(courseExecution)
 
         def questionDto = new QuestionDto()
@@ -85,7 +93,33 @@ class RemoveProposedQuestionTest extends Specification {
         proposedQuestionRepository.save(proposedQuestion)
     }
 
-    def "remove a proposed question"() {
+    def "remove a proposed question with evaluation AWAITING"() {
+        when:
+        proposedQuestionService.deleteProposedQuestion(proposedQuestion.getId())
+
+        then: "the proposed question is removed"
+        proposedQuestionRepository.count() == 0L
+    }
+
+    def "remove a proposed question with evaluation APPROVED"() {
+        given: "an APPROVED evaluation"
+        proposedQuestion.setTeacher(teacher)
+        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.APPROVED)
+
+        when:
+        proposedQuestionService.deleteProposedQuestion(proposedQuestion.getId())
+
+        then: "the proposed question in not removed"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.PROPQUESTION_CANT_BE_REMOVED
+    }
+
+    def "remove a proposed question with evaluation REJECTED"() {
+        given: "a REJECTED evaluation"
+        proposedQuestion.setTeacher(teacher)
+        proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.REJECTED)
+        proposedQuestion.setJustification("Justification")
+
         when:
         proposedQuestionService.deleteProposedQuestion(proposedQuestion.getId())
 
