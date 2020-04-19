@@ -605,15 +605,13 @@ export default class RemoteServices {
       });
   }
 
-  static async enrollStudent(tournament : Tournament): Promise<Tournament[]>{
+  static async enrollStudent(tournament : Tournament): Promise<Tournament>{
     return httpClient
         .get(
             `/tournament/${tournament.id}/enroll-student`
         )
         .then(response => {
-          return response.data.map((tournament: any) => {
-            return new Tournament(tournament);
-          });
+          return new Tournament(response.data);
         })
         .catch(async error => {
           throw Error(await this.errorMessage(error));
