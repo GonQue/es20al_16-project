@@ -32,26 +32,19 @@
           >
         </v-card-title>
       </template>
-      <!-- <template v-slot:item.action="{ item }">
-        <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark @click="enrollStudent(item)" data-cy="enrollButton" v-on="on" v-show="!enrollStudentBool">Enroll</v-btn>
-          <v-btn color="primary" dark @click="enrollStudent(item)" data-cy="enrollButton" v-on="on" v-show="enrollStudentBool">Enrolled</v-btn>
-        </template>
-      </template> -->
       <template v-slot:item.enrollment="{ item }">
         <v-tooltip>
           <template v-slot:activator="{ on }">
             <v-btn
               color="primary"
-              :disabled="enrollButtons.includes(item.id)"
               @click="enrolled(item)"
               data-cy="enrollButton"
               v-on="on"
-              v-show="!checkIfEnrolled(item)"
+              v-show="!checkIfEnrolled(item) && !enrollButtons.includes(item.id)"
             >
               Enroll
             </v-btn>
-            <v-btn disabled v-show="checkIfEnrolled(item)">Enrolled</v-btn>
+            <v-btn disabled v-show="checkIfEnrolled(item) || enrollButtons.includes(item.id)">Enrolled</v-btn>
           </template>
         </v-tooltip>
       </template>
@@ -183,14 +176,14 @@ export default class TournamentsListView extends Vue {
     let user = this.$store.getters.getUser;
     let usersMap = tournament.enrolled;
     //console.log('OK', tournament.name, tournament.enrolled[0], tournament.topics, tournament.numberOfQuestions)
-    console.log('TEST');
+    //console.log('TEST');
     for (let i = 0; i < usersMap.length; i++) {
-      console.log(usersMap[i], user.username);
+      //console.log(usersMap[i], user.username);
       if (usersMap[i] == user.username) {
         return true;
       }
     }
-    console.log('FALSE');
+    //console.log('FALSE');
     return false;
   }
 
