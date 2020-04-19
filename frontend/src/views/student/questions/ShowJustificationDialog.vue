@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">
+        <span class="headline" v-if="proposedQuestion.teacher">
           Justification from {{ proposedQuestion.teacher.name }}</span
         >
       </v-card-title>

@@ -14,7 +14,9 @@ export default class ProposedQuestion {
     if (jsonObj) {
       this.id = jsonObj.id;
       this.student = jsonObj.student;
-      this.teacher = jsonObj.teacher;
+      if (jsonObj.teacher) {
+        this.teacher = jsonObj.teacher;
+      }
       this.question = new Question(jsonObj.question);
       this.justification = jsonObj.justification;
       this.evaluation = jsonObj.evaluation;

@@ -5,6 +5,7 @@
     @keydown.esc="$emit('dialog', false)"
     max-width="75%"
     max-height="80%"
+    data-cy="dialog"
   >
     <v-card>
       <v-card-title>
@@ -18,14 +19,16 @@
               <v-text-field
                 v-model="editPropQuestion.question.title"
                 label="Title"
+                data-cy="Title"
               />
             </v-flex>
             <v-flex xs24 sm12 md12>
               <v-textarea
                 outline
-                rows="10"
+                rows="5"
                 v-model="editPropQuestion.question.content"
                 label="Question"
+                data-cy="Question"
               ></v-textarea>
             </v-flex>
             <v-flex
@@ -38,13 +41,15 @@
               <v-switch
                 v-model="editPropQuestion.question.options[index - 1].correct"
                 class="ma-4"
-                label="Correct"
+                :label="`Correct ${index}`"
+                data-cy="CorrectOption"
               />
               <v-textarea
                 outline
                 rows="1"
                 v-model="editPropQuestion.question.options[index - 1].content"
                 :label="`Option ${index}`"
+                data-cy="Option"
               ></v-textarea>
             </v-flex>
           </v-layout>
@@ -106,10 +111,18 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn color="blue darken-1" @click="$emit('dialog', false)"
+        <v-btn
+          color="blue darken-1"
+          @click="$emit('dialog', false)"
+          data-cy="cancelButton"
           >Cancel</v-btn
         >
-        <v-btn color="blue darken-1" @click="savePropQuestion">Save</v-btn>
+        <v-btn
+          color="blue darken-1"
+          @click="savePropQuestion"
+          data-cy="saveButton"
+          >Save</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>

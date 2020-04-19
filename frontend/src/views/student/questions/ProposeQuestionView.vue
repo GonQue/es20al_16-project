@@ -16,7 +16,11 @@
             class="mx-2"
           />
           <v-spacer />
-          <v-btn color="primary" dark @click="newProposedQuestion"
+          <v-btn
+            color="primary"
+            dark
+            @click="newProposedQuestion"
+            data-cy="proposeQuestionButton"
             >Propose Question</v-btn
           >
         </v-card-title>
@@ -48,7 +52,7 @@
         <v-btn
           icon
           bottom
-          v-if="item.justification != null"
+          v-if="item.justification"
           @click="showJustificationDialog(item)"
         >
           <v-icon small class="mr-2">visibility</v-icon>
@@ -78,6 +82,7 @@
               v-on="on"
               @click="deleteProposedQuestion(item)"
               color="red"
+              data-cy="deleteProposedQuestion"
               >delete</v-icon
             >
           </template>
