@@ -17,7 +17,7 @@ describe('Propose Question walkthrough', () => {
   it('login creates a proposed question without title', () => {
     cy.createProposedQuestion(null, 'Content_test', 'Option', 2)
 
-    cy.closeQuestionErrorMessage()
+    cy.closeQuestionMessage()
     cy.get('[data-cy="cancelButton"]').click()
   });
 

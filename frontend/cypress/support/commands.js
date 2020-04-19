@@ -112,7 +112,7 @@ Cypress.Commands.add('deleteProposedQuestion', (title) => {
       .click()
 })
 
-Cypress.Commands.add('closeQuestionErrorMessage', () => {
+Cypress.Commands.add('closeQuestionMessage', () => {
     cy.contains('Question must have title and content')
       .parent()
       .find('button')
