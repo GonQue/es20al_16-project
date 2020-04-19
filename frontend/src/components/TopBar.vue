@@ -104,7 +104,12 @@
           </v-list>
         </v-menu>
 
-        <v-btn to="/student/tournaments" v-if="isStudent && currentCourse" text dark>
+        <v-btn
+          to="/student/tournaments"
+          v-if="isStudent && currentCourse"
+          text
+          dark
+        >
           Tournaments
           <v-icon>fas fa-user</v-icon>
         </v-btn>
@@ -156,8 +161,6 @@
           Stats
           <v-icon>fas fa-user</v-icon>
         </v-btn>
-
-
 
         <v-btn
           v-if="isLoggedIn && moreThanOneCourse"

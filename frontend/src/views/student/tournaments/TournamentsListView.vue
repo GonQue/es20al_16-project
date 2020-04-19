@@ -1,30 +1,33 @@
 <template>
   <v-card class="table">
     <v-data-table
-            data-cy="tournamentsTable"
-            :headers="headers"
-            :items="tournaments"
-            :search="search"
-            disable-pagination
-            :hide-default-footer="true"
-            :mobile-breakpoint="0"
-            multi-sort
+      data-cy="tournamentsTable"
+      :headers="headers"
+      :items="tournaments"
+      :search="search"
+      disable-pagination
+      :hide-default-footer="true"
+      :mobile-breakpoint="0"
+      multi-sort
     >
-    <template v-slot:top>
-      <v-card-title>
-        <v-text-field
-          v-model="search"
-          append-icon="search"
-          label="Search"
-          class="mx-2"
-        />
-        <v-spacer />
-        <v-btn color="primary" dark @click="createTournament" data-cy="createButton">New Tournament</v-btn>
-
-      </v-card-title>
-    </template>
-
-
+      <template v-slot:top>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            class="mx-2"
+          />
+          <v-spacer />
+          <v-btn
+            color="primary"
+            dark
+            @click="createTournament"
+            data-cy="createButton"
+            >New Tournament</v-btn
+          >
+        </v-card-title>
+      </template>
     </v-data-table>
     <create-tournament-dialog
       v-if="tournament"
@@ -46,12 +49,12 @@ import Topic from '@/models/management/Topic';
 
 @Component({
   components: {
-    'create-tournament-dialog': CreateTournamentDialog,
+    'create-tournament-dialog': CreateTournamentDialog
   }
 })
 export default class TournamentsListView extends Vue {
   createTournamentDialog: boolean = true;
-  tournament : Tournament | null = null;
+  tournament: Tournament | null = null;
   tournaments: Tournament[] = [];
   topics: Topic[] = [];
   search: string = '';
@@ -79,19 +82,19 @@ export default class TournamentsListView extends Vue {
       value: 'numberOfQuestions',
       align: 'center',
       width: '10%'
-    },
+    }
   ];
 
-async created(){
-  await this.$store.dispatch('loading');
-  try {
-    this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
-    this.topics = await RemoteServices.getTopics();
-  } catch (error) {
-    await this.$store.dispatch('error', error);
+  async created() {
+    await this.$store.dispatch('loading');
+    try {
+      this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
+      this.topics = await RemoteServices.getTopics();
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
   }
-  await this.$store.dispatch('clearLoading');
-}
 
   async createTournament() {
     this.tournament = new Tournament();
@@ -103,13 +106,11 @@ async created(){
     this.tournament = null;
   }
 
-  onCreateTournament(tournament: Tournament){
+  onCreateTournament(tournament: Tournament) {
     this.tournaments.unshift(tournament);
     this.createTournamentDialog = false;
     this.tournament = null;
   }
-
-
 }
 </script>
 
