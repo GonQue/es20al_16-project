@@ -76,7 +76,6 @@ Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) 
 Cypress.Commands.add('demoStudentLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="studentButton"]').click()
-    cy.contains('Tournaments').click().wait(5000)
 })
 Cypress.Commands.add('createTournament', (name, topics, day1, day2, nextMonth, pickQuestionNumber) => {
     cy.get('[data-cy="createButton"]').click()
