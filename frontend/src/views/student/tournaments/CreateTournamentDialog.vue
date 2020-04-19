@@ -19,11 +19,10 @@
                 <v-container grid-list-md fluid>
                     <v-layout column wrap>
                         <v-flex xs24 sm12 md8>
-                            <v-text-field v-model="createTournament.name" label="Title" />
-                            <p>Name is {{createTournament.name}}</p>
+                            <v-text-field v-model="createTournament.name" label="Title" data-cy="Name"/>
                         </v-flex>
                         <v-row>
-                            <v-col cols="12" sm="6">
+                            <v-col cols="12" sm="6" data-cy="startDate">
                                 <v-datetime-picker
                                         label="*Start Date"
                                         format="yyyy-MM-dd HH:mm"
@@ -34,7 +33,7 @@
                                 </v-datetime-picker>
                             </v-col>
                             <v-spacer></v-spacer>
-                            <v-col cols="12" sm="6">
+                            <v-col cols="12" sm="6" data-cy="endDate">
                                 <v-datetime-picker
                                         label="End Date"
                                         format="yyyy-MM-dd HH:mm"
@@ -46,12 +45,13 @@
                             </v-col>
                         </v-row>
 
-                       <v-col cols="12">
+                       <v-col cols="12" data-cy="numberOfQuestions">
                            <v-slider
                             v-model="createTournament.numberOfQuestions"
                             step="1"
                             label="Number of questions"
-                            thumb-label="always"></v-slider>
+                            thumb-label="always"
+                            ></v-slider>
                        </v-col>
 
 
@@ -64,6 +64,7 @@
                                 item-text="name"
                                 item-value="name"
                                 label="Topics"
+                                data-cy="topics"
                         >
                             <template v-slot:selection="data">
                                 <v-chip
@@ -129,21 +130,12 @@ export default class CreateTournamentDialog extends Vue {
   @Prop({ type: Array, required: true }) readonly topics!: Topic;
 
   createTournament!: Tournament;
-  //topics: Topic[] = [];
-  //quizzes: Quiz[] = [];//JSON.parse(JSON.stringify(this.question.topics));
+
   quizzes: StatementQuiz[] = [];
 
   async created() {
     this.createTournament = new Tournament(this.tournament);
     this.createTournament.status = 'CREATED';
-    /*await this.$store.dispatch('loading');
-    try {
-      this.quizzes = await RemoteServices.getNonGeneratedQuizzes();
-
-    } catch (error) {
-      await this.$store.dispatch('error', error);
-    }
-    await this.$store.dispatch('clearLoading');*/
   }
 
 

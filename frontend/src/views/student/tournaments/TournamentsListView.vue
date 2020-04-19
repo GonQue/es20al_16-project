@@ -1,6 +1,7 @@
 <template>
   <v-card class="table">
     <v-data-table
+            data-cy="tournamentsTable"
             :headers="headers"
             :items="tournaments"
             :search="search"
