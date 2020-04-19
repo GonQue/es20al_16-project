@@ -605,6 +605,21 @@ export default class RemoteServices {
       });
   }
 
+
+  static async enrollStudent(tournament : Tournament): Promise<Tournament>{
+    return httpClient
+        .post(
+            `/tournaments/${tournament.id}/enroll-student`
+        )
+        .then(response => {
+          return new Tournament(response.data);
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {
       return 'Unable to connect to server';
