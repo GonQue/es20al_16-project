@@ -23,7 +23,7 @@ export class Tournament {
       //this.quiz = new Quiz(jsonObj.quiz);
       this.status = jsonObj.status;
       this.enrolled = jsonObj.enrolled;
-      
+
       this.topics = jsonObj.topics.map((topic: Topic) => new Topic(topic));
     }
   }
