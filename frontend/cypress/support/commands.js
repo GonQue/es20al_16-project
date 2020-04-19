@@ -164,8 +164,6 @@ Cypress.Commands.add('deleteClarificationResponse', (questionContent, responseCo
       .first()
       .parent()
       .should('have.length', 1)
-      .children()
-      .should('have.length', 3)
       .find('[data-cy="DeleteClarificationResponseIcon"]')
       .click()
 })

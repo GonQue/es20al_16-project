@@ -1,7 +1,7 @@
 <template>
     <v-card class="table">
         <v-data-table
-                :headers="headers"
+                :headers="getHeader()"
                 :items="clarificationResponses"
                 :search="search"
                 disable-pagination
@@ -48,33 +48,29 @@
   export default class ListClarificationResponses extends Vue {
     @Prop(String) readonly clarificationQuestionId!: string;
     clarificationResponses: StatementClarificationResponse[] = [];
+    isTeacher: boolean = false;
     search: string = '';
-    headers: object = [
-      {
-        text: 'Response Content',
-        value: 'teacherResponse',
-        align: 'center',
-        width: '35%'
-      },
-      {
-        text: 'Response Date',
-        value: 'responseDate',
-        align: 'center',
-        width: '15%'
-      },
-      {
-        text: 'Remove',
-        value: 'deleteClarificationResponse',
-        align: 'center',
-        width: '5%'
-      }
+    headersTeacher: object = [
+      {text: 'Response Content',value: 'teacherResponse',align: 'center',width: '35%'},
+      {text: 'Response Date',value: 'responseDate',align: 'center',width: '15%'},
+      {text: 'Remove',value: 'deleteClarificationResponse',align: 'center',width: '5%',}
     ];
+    headersStudent : object = [
+      {text: 'Response Content',value: 'teacherResponse',align: 'center',width: '35%'},
+      {text: 'Response Date',value: 'responseDate',align: 'center',width: '15%'}
+    ];
+
+    getHeader(){
+      if(this.isTeacher) {return this.headersTeacher;}
+      else return this.headersStudent;
+    }
 
     async created() {
       await this.$store.dispatch('loading');
       try {
         if (this.$router.currentRoute.fullPath.includes("management")) {
           this.clarificationResponses = await RemoteServices.getTeacherClarificationResponse(parseInt(this.clarificationQuestionId));
+          this.isTeacher = true;
         } else
           this.clarificationResponses = await RemoteServices.getStudentClarificationResponse(parseInt(this.clarificationQuestionId));
       } catch (error) {

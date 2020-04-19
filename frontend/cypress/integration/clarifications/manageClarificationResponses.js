@@ -19,24 +19,24 @@ describe('Clarification Response Tests', () => {
     cy.contains('Logout').click()
   })
 
-  it('create a clarification response deleted by the teacher', () => {
+  it('create a clarification response, teacher deletes the response', () => {
     cy.checkClarificationQuestions()
     cy.createClarificationResponse(/^test question$/,'test answer')
     cy.deleteClarificationResponse(/^test question$/, 'test answer')
     cy.contains('Management').click()
   });
 
-  it('create a clarification response deleted by the student', () => {
+  it('create two clarification responses, teacher deletes both responses', () => {
     cy.checkClarificationQuestions()
     cy.createClarificationResponse(/^test question$/,'test answer')
-    cy.contains('Management').click()
-    cy.contains('Logout').click()
-    cy.demoStudentLogin()
-    cy.get('[data-cy="Clarifications"]').click()
+    cy.createClarificationResponse(/^test question$/,'test answer 2')
     cy.deleteClarificationResponse(/^test question$/, 'test answer')
+    cy.checkClarificationQuestions()
+    cy.deleteClarificationResponse(/^test question$/,'test answer 2')
+    cy.contains('Management').click()
   });
 
-  it('teacher creates two responses to two clarification questions then deletes', () => {
+  it('teacher creates two responses to two clarification questions then deletes both responses', () => {
     cy.demoTeacherLogin()
     cy.checkClarificationQuestions()
     cy.createClarificationResponse(/^test question$/,'test answer')
