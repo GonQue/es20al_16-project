@@ -44,7 +44,7 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="saveButton"]').click()
 })
 
-Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
+Cypress.Commands.add('closeErrorMessage', () => {
     cy.contains('Error')
         .parent()
         .find('button')
@@ -91,6 +91,17 @@ Cypress.Commands.add('createProposedQuestion', (title, content, optionsText, cor
     cy.get('[data-cy="saveButton"]').click()
 })
 
+Cypress.Commands.add('showProposedQuestion', (title) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 8)
+      .find('[data-cy="showProposedQuestion"]')
+      .click()
+    cy.get('[data-cy="closeButton"]').click()
+})
+
 Cypress.Commands.add('deleteProposedQuestion', (title) => {
     cy.contains(title)
       .parent()
@@ -98,6 +109,13 @@ Cypress.Commands.add('deleteProposedQuestion', (title) => {
       .children()
       .should('have.length', 8)
       .find('[data-cy="deleteProposedQuestion"]')
+      .click()
+})
+
+Cypress.Commands.add('closeQuestionErrorMessage', () => {
+    cy.contains('Question must have title and content')
+      .parent()
+      .find('button')
       .click()
 })
 
