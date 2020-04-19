@@ -3,6 +3,8 @@ describe('Student walkthrough', () => {
 
   beforeEach(() => {
     cy.demoStudentLogin()
+    cy.contains('Tournaments').click().wait(5000)
+
     tournamentName = 'Demo Tournament';
     topics = ['Adventure Builder'];
     startDay = 20;
@@ -22,7 +24,8 @@ describe('Student walkthrough', () => {
     cy.removeTournamentFromDB(tournamentName)
   });
 
-  it('Login creates tournament with wrong date ', () => {
+
+  it('Login creates tournament with wrong date', () => {
     nextMonth = false;
     endDay = 10;
 

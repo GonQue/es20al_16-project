@@ -32,7 +32,6 @@
           >
         </v-card-title>
       </template>
-
       <!-- <template v-slot:item.action="{ item }">
         <template v-slot:activator="{ on }">
           <v-btn color="primary" dark @click="enrollStudent(item)" data-cy="enrollButton" v-on="on" v-show="!enrollStudentBool">Enroll</v-btn>
@@ -169,6 +168,7 @@ export default class TournamentsListView extends Vue {
     this.createTournamentDialog = false;
     this.tournament = null;
   }
+
   async enrolled(tournament: Tournament) {
     try {
       await RemoteServices.enrollStudent(tournament);
@@ -193,6 +193,7 @@ export default class TournamentsListView extends Vue {
     console.log('FALSE');
     return false;
   }
+
 }
 </script>
 

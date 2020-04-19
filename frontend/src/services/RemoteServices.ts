@@ -13,7 +13,7 @@ import Assessment from '@/models/management/Assessment';
 import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
-import { Tournament } from '@/models/user/Tournament'
+import { Tournament } from '@/models/user/Tournament';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 50000;
@@ -576,7 +576,7 @@ export default class RemoteServices {
       });
   }
 
-  static async createTournament(tournament : Tournament): Promise<Tournament> {
+  static async createTournament(tournament: Tournament): Promise<Tournament> {
     return httpClient
       .post(
         `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/create-tournament`,
@@ -605,6 +605,7 @@ export default class RemoteServices {
       });
   }
 
+
   static async enrollStudent(tournament : Tournament): Promise<Tournament>{
     return httpClient
         .post(
@@ -617,7 +618,6 @@ export default class RemoteServices {
           throw Error(await this.errorMessage(error));
         });
   }
-
 
 
   static async errorMessage(error: any): Promise<string> {
