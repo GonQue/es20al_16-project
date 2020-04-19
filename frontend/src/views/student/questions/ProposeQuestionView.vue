@@ -16,10 +16,30 @@
             class="mx-2"
           />
           <v-spacer />
-          <v-btn color="primary" dark @click="newProposedQuestion"
+          <v-btn
+            color="primary"
+            dark
+            @click="newProposedQuestion"
+            data-cy="proposeQuestionButton"
             >Propose Question</v-btn
           >
         </v-card-title>
+      </template>
+
+      <template v-slot:item.question.content="{ item }">
+        <p
+          v-html="convertMarkDownNoFigure(item.question.content, null)"
+          @click="showQuestionDialog(item)"
+      /></template>
+
+      <template v-slot:item.question.topics="{ item }">
+        <v-chip
+          v-for="topic in item.question.topics"
+          :key="topic.id"
+          :color="'blue lighten-1'"
+        >
+          {{ topic.name }}
+        </v-chip>
       </template>
 
       <template v-slot:item.evaluation="{ item }">
@@ -32,19 +52,42 @@
         <v-btn
           icon
           bottom
-          v-if="item.justification != null"
+          v-if="item.justification"
           @click="showJustificationDialog(item)"
         >
           <v-icon small class="mr-2">visibility</v-icon>
         </v-btn>
       </template>
 
-      <template v-slot:item.action="{}">
+      <template v-slot:item.question.image="{}"> </template>
+
+      <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon small class="mr-2" v-on="on">visibility</v-icon>
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="showQuestionDialog(item)"
+              data-cy="showProposedQuestion"
+              >visibility</v-icon
+            >
           </template>
-          <span>View justification</span>
+          <span>Show Question</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="deleteProposedQuestion(item)"
+              color="red"
+              data-cy="deleteProposedQuestion"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Proposed Question</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -53,6 +96,12 @@
       v-model="editPropQuestionDialog"
       :proposedQuestion="currentPropQuestion"
       v-on:save-proposed-question="onSaveProposedQuestion"
+    />
+    <show-question-dialog
+      v-if="currentPropQuestion"
+      v-model="questionDialog"
+      :question="currentPropQuestion.question"
+      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
     />
     <show-justification-dialog
       v-if="currentPropQuestion"
@@ -69,9 +118,14 @@ import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
 import ShowJustificationDialog from './ShowJustificationDialog.vue';
 import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDialog.vue';
+import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
+import Question from '@/models/management/Question';
+import Image from '@/models/management/Image';
+import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 
 @Component({
   components: {
+    'show-question-dialog': ShowQuestionDialog,
     'show-justification-dialog': ShowJustificationDialog,
     'edit-question-dialog': EditPropQuestionDialog
   }
@@ -81,12 +135,18 @@ export default class ProposeQuestionView extends Vue {
   currentPropQuestion: ProposedQuestion | null = null;
   justificationDialog: boolean = false;
   editPropQuestionDialog: boolean = false;
+  questionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
-    { text: 'Topics', value: 'topics', align: 'center', sortable: false },
+    {
+      text: 'Topics',
+      value: 'question.topics',
+      align: 'center',
+      sortable: false
+    },
     { text: 'Evaluation', value: 'evaluation', align: 'center' },
     {
       text: 'Justification',
@@ -95,6 +155,7 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
+    { text: 'Image', value: 'question.image.url', align: 'center' },
     { text: 'Actions', value: 'action', align: 'center', sortable: false }
   ];
 
@@ -109,9 +170,22 @@ export default class ProposeQuestionView extends Vue {
   }
 
   getEvaluationColor(evaluation: string) {
-    if (evaluation === 'AWAITING') return 'grey';
+    if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
     else return 'red';
+  }
+
+  showQuestionDialog(proposedQuestion: ProposedQuestion) {
+    this.currentPropQuestion = proposedQuestion;
+    this.questionDialog = true;
+  }
+
+  onCloseShowQuestionDialog() {
+    this.questionDialog = false;
+  }
+
+  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
+    return convertMarkDownNoFigure(text, image);
   }
 
   showJustificationDialog(propQuestion: ProposedQuestion) {
@@ -126,6 +200,22 @@ export default class ProposeQuestionView extends Vue {
   newProposedQuestion() {
     this.currentPropQuestion = new ProposedQuestion();
     this.editPropQuestionDialog = true;
+  }
+
+  async deleteProposedQuestion(proposedQuestion: ProposedQuestion) {
+    if (
+      proposedQuestion.id &&
+      confirm('Are you sure you want to delete this proposed question?')
+    ) {
+      try {
+        await RemoteServices.deleteProposedQuestion(proposedQuestion.id);
+        this.proposedQuestions = this.proposedQuestions.filter(
+          pQuestion => pQuestion.id != proposedQuestion.id
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 
   async onSaveProposedQuestion(proposedQuestion: ProposedQuestion) {

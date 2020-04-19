@@ -7,8 +7,13 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">{{ proposedQuestion.justification }}</span>
+        <span class="headline" v-if="proposedQuestion.teacher">
+          Justification from {{ proposedQuestion.teacher.name }}</span
+        >
       </v-card-title>
+      <v-card-text class="text-left">
+        <span>{{ proposedQuestion.justification }}</span>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>

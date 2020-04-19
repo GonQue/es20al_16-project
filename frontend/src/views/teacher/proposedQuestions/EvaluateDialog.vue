@@ -1,10 +1,10 @@
 <template>
   <v-dialog
-    :value="dialog"
-    @input="$emit('dialog', false)"
-    @keydown.esc="$emit('dialog', false)"
-    max-width="55%"
-    max-height="80%"
+          :value="dialog"
+          @input="$emit('dialog', false)"
+          @keydown.esc="$emit('dialog', false)"
+          max-width="55%"
+          max-height="80%"
   >
     <v-card>
       <v-container grid-list-md fluid>
@@ -14,11 +14,12 @@
           </v-card-title>
           <v-col cols="12">
             <v-select
-              outlined
-              v-model="evaluate.evaluation"
-              :items="evaluationsList"
-              :color="getEvaluationColor(evaluate.evaluation)"
-              small
+                    outlined
+                    v-model="evaluate.evaluation"
+                    :items="evaluationsList"
+                    :color="getEvaluationColor(evaluate.evaluation)"
+                    small
+                    data-cy="evaluation"
             >
               <span>{{ evaluate.evaluation }}</span>
             </v-select>
@@ -27,20 +28,21 @@
           <v-card-text class="text-left" v-if="evaluate">
             <v-flex xs24 sm12 md12>
               <v-textarea
-                outline
-                rows="5"
-                v-model="evaluate.justification"
-                label="Justification"
+                      outline
+                      rows="5"
+                      v-model="evaluate.justification"
+                      label="Justification"
+                      data-cy="justification"
               ></v-textarea>
             </v-flex>
           </v-card-text>
 
           <v-card-actions>
             <v-spacer />
-            <v-btn color="blue darken-1" @click="$emit('dialog', false)"
-              >Cancel</v-btn
+            <v-btn color="blue darken-1" @click="$emit('dialog', false)" data-cy="cancelButton"
+            >Cancel</v-btn
             >
-            <v-btn color="blue darken-1" @click="saveEvaluation">Save</v-btn>
+            <v-btn color="blue darken-1" @click="saveEvaluation" data-cy="saveButton">Save</v-btn>
           </v-card-actions>
         </v-layout>
       </v-container>
@@ -49,32 +51,32 @@
 </template>
 
 <script lang="ts">
-import { Component, Model, Prop, Vue } from 'vue-property-decorator';
-import RemoteServices from '@/services/RemoteServices';
-import ProposedQuestion from '@/models/management/ProposedQuestion';
-import Store from '@/store';
+  import { Component, Model, Prop, Vue } from 'vue-property-decorator';
+  import RemoteServices from '@/services/RemoteServices';
+  import ProposedQuestion from '@/models/management/ProposedQuestion';
+  import Store from '@/store';
 
-@Component
-export default class EditJustificationDialog extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: ProposedQuestion, required: true })
-  readonly evaluate!: ProposedQuestion;
-  evaluationsList = ['AWAITING', 'APPROVED', 'REJECTED'];
+  @Component
+  export default class EditJustificationDialog extends Vue {
+    @Model('dialog', Boolean) dialog!: boolean;
+    @Prop({ type: ProposedQuestion, required: true })
+    readonly evaluate!: ProposedQuestion;
+    evaluationsList = ['AWAITING', 'APPROVED', 'REJECTED'];
 
-  async saveEvaluation() {
-    this.evaluate.teacher = Store.getters.getUser;
-    try {
-      const result = await RemoteServices.evaluate(this.evaluate);
-      this.$emit('save-evaluation', result);
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+    async saveEvaluation() {
+      this.evaluate.teacher = Store.getters.getUser;
+      try {
+        const result = await RemoteServices.evaluate(this.evaluate);
+        this.$emit('save-evaluation', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+
+    getEvaluationColor(evaluation: string) {
+      if (evaluation === 'AWAITING') return 'grey';
+      else if (evaluation === 'APPROVED') return 'green';
+      else return 'red';
     }
   }
-
-  getEvaluationColor(evaluation: string) {
-    if (evaluation === 'AWAITING') return 'grey';
-    else if (evaluation === 'APPROVED') return 'green';
-    else return 'red';
-  }
-}
 </script>

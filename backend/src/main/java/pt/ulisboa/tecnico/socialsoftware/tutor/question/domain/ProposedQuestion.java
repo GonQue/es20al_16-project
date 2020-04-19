@@ -73,10 +73,6 @@ public class ProposedQuestion {
         if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
         }
-        if (this.evaluation != Evaluation.AWAITING && this.teacher != null){
-            throw new TutorException(ErrorMessage.PQ_ALREADY_EVALUATED);
-        }
-
         setJustification(justification);
         setEvaluation(evaluation);
     }
@@ -111,5 +107,9 @@ public class ProposedQuestion {
         }
         topics.forEach(question::addTopic);
         this.question = question;
+    }
+
+    public boolean canBeRemoved() {
+        return this.evaluation != Evaluation.APPROVED;
     }
 }

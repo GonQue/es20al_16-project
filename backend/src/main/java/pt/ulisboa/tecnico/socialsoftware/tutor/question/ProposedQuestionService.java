@@ -43,6 +43,9 @@ public class ProposedQuestionService {
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private QuestionService questionService;
+
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ProposedQuestionDto studentSubmitQuestion(int courseId, ProposedQuestionDto proposedQuestionDto) {
@@ -62,7 +65,7 @@ public class ProposedQuestionService {
     public ProposedQuestionDto teacherEvaluatesProposedQuestion(ProposedQuestionDto pqDto) {
         Course course = getCourse(pqDto.getId());
         User teacher = getTeacher(pqDto);
-        ProposedQuestion pq = findProposedQuestion(pqDto);
+        ProposedQuestion pq = findProposedQuestion(pqDto.getId());
 
         String justification = pqDto.getJustification();
         String evaluation = pqDto.getEvaluation();
@@ -119,8 +122,8 @@ public class ProposedQuestionService {
         return topics;
     }
 
-    private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
-        return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    private ProposedQuestion findProposedQuestion(int pqId) {
+        return pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
     }
 
     private User getTeacher(ProposedQuestionDto pqDto) {
@@ -139,11 +142,17 @@ public class ProposedQuestionService {
         return proposedQuestion.getQuestion().getCourse();
     }
 
-    public void setEvaluation(int pqId, ProposedQuestion.Evaluation evaluation){
-        pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setEvaluation(evaluation);
-    }
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void deleteProposedQuestion(int proposedQuestionId) {
+        ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
 
-    public void setJustification(Integer pqId, String justification) {
-        pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND)).setJustification(justification);
+        if (proposedQuestion.canBeRemoved()) {
+            Course course = getCourse(proposedQuestionId);
+            course.removeProposedQuestion(proposedQuestion);
+            pqRepository.delete(proposedQuestion);
+            questionService.deleteQuestion(proposedQuestion.getQuestion());
+        }
+        else
+            throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_REMOVED);
     }
 }

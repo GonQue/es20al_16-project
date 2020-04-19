@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -23,6 +24,9 @@ import java.time.LocalDateTime
 
 @DataJpaTest
 class GetProposedQuestionsPerformanceTest extends Specification {
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     ProposedQuestionService proposedQuestionService
@@ -135,6 +139,10 @@ class GetProposedQuestionsPerformanceTest extends Specification {
 
     @TestConfiguration
     static class GetProposedQuestionTestContextConfiguration {
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService proposedQuestionService() {
