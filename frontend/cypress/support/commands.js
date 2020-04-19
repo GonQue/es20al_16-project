@@ -118,6 +118,16 @@ Cypress.Commands.add('enrollStudent', (name) => {
       .click()
 })
 
+Cypress.Commands.add('getTopics', (name) => {
+    cy.contains(name)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 7)
+      .find('td[class="text-start"]')
+      .click()
+})
+
 Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
     cy.contains(name)
       .parent()

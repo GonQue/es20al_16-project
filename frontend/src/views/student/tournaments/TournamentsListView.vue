@@ -32,6 +32,7 @@
           >
         </v-card-title>
       </template>
+
       <template v-slot:item.enrollment="{ item }">
         <v-tooltip>
           <template v-slot:activator="{ on }">
