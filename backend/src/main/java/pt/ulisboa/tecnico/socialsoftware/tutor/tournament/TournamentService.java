@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto;
 
@@ -59,9 +60,11 @@ public class TournamentService {
 
       Set<Topic> topics = getTopics(tournamentDto);
 
+      //StatementQuizDto statementQuizDto = statementService.generateStudentQuiz(); TODO Quiz generation
+
       Tournament tournament = saveTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
       creatorUser.addTournament(tournament);
-      quiz.addTournament(tournament);
+      if(quiz!=null)quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
 
       return new TournamentDto(new UserDto(creatorUser), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
@@ -70,7 +73,8 @@ public class TournamentService {
 
    private Quiz getQuiz(TournamentDto tournamentDto) {
       if(tournamentDto.getQuiz()==null){
-         throw new TutorException(TOURNAMENT_QUIZ_NOT_FOUND);
+         return null;
+         //throw new TutorException(TOURNAMENT_QUIZ_NOT_FOUND);
       }
       return quizRepository.findById(tournamentDto.getQuiz().getId()).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, tournamentDto.getQuiz().getId()));
    }
@@ -126,7 +130,7 @@ public class TournamentService {
 
       List<UserDto> enrolled = getUserDtos(tournament);
       TournamentDto tDto = new TournamentDto(tournament);
-      tDto.setEnrolled(enrolled);
+      //tDto.setEnrolled(enrolled);
 
       return tDto;
 

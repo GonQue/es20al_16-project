@@ -21,7 +21,7 @@ public class ClarificationController {
     @Autowired
     private ClarificationService clarificationService;
 
-    @PostMapping("/clarifications/{questionId}/submit")
+    @PostMapping("/student/clarifications/{questionId}/submit")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ClarificationQuestionDto createClarificationQuestion(Principal principal, @PathVariable Integer questionId, @RequestBody ClarificationQuestionDto clarificationQuestionDto) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -33,7 +33,19 @@ public class ClarificationController {
         return clarificationService.createClarification(questionId, user.getId(), clarificationQuestionDto);
     }
 
-    @GetMapping("/clarifications/status")
+    @DeleteMapping("/student/clarifications/{clarificationQuestionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public void removeClarificationQuestion(Principal principal, @PathVariable Integer clarificationQuestionId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.removeClarification(clarificationQuestionId);
+    }
+
+    @GetMapping("/student/clarifications/status")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public List<ClarificationQuestionDto> getClarificationQuestions(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -44,7 +56,20 @@ public class ClarificationController {
 
         return clarificationService.listClarificationQuestions(user.getId());
     }
-    @PostMapping("clarifications/{clarificationId}/answer")
+
+    @GetMapping("/student/clarifications/{clarificationId}/responses")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<ClarificationResponseDto> listStudentResponses(Principal principal, @PathVariable Integer clarificationId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return clarificationService.listResponses(clarificationId);
+    }
+
+    @PostMapping("/management/clarifications/{clarificationId}/answer")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ClarificationResponseDto createClarificationResponse(Principal principal, @PathVariable Integer clarificationId, @RequestBody ClarificationResponseDto clarificationResponseDto) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -56,9 +81,9 @@ public class ClarificationController {
         return clarificationService.answerClarification(clarificationId, user.getId(), clarificationResponseDto);
     }
 
-    @GetMapping("clarifications/{clarificationId}/responses")
+    @GetMapping("/management/clarifications/{clarificationId}/responses")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    public List<ClarificationResponseDto> listResponses(Principal principal, @PathVariable Integer clarificationId) {
+    public List<ClarificationResponseDto> listTeacherResponses(Principal principal, @PathVariable Integer clarificationId) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
         if(user == null){
@@ -68,4 +93,27 @@ public class ClarificationController {
         return clarificationService.listResponses(clarificationId);
     }
 
+    @GetMapping("/management/clarifications/status")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public List<ClarificationQuestionDto> getAllClarificationQuestions(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if (user == null) {
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return clarificationService.listAllClarificationQuestions();
+    }
+
+    @DeleteMapping("/management/clarifications/{clarificationResponseId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public void removeClarificationResponse(Principal principal, @PathVariable Integer clarificationResponseId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.removeClarificationResponse(clarificationResponseId);
+    }
 }

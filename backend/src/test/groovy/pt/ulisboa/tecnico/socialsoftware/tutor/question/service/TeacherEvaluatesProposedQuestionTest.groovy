@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Unroll
 
 import java.time.LocalDateTime
@@ -36,6 +37,9 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
     static final String JUSTIFICATION = "JUSTIFICATION"
 
     @Autowired
+    QuestionService questionService
+
+    @Autowired
     ProposedQuestionService proposedQuestionService
 
     @Autowired
@@ -54,6 +58,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
     UserRepository userRepository
 
     def teacher
+    def teacherDto
     def course
     def courseExecution
     def question
@@ -63,6 +68,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
     def setup() {
         teacher = new User("teacher", "teacher", 1, User.Role.TEACHER)
         userRepository.save(teacher)
+        teacherDto = new UserDto(teacher)
 
         def student = new User("student", "student", 2, User.Role.STUDENT)
         userRepository.save(student)
@@ -104,11 +110,10 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         given: "a admin"
         def admin = new User("admin", "admin", 3, User.Role.ADMIN)
         userRepository.save(admin)
-        def adminId = admin.getId()
 
         and: "a proposed question"
         proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-        proposedQuestionDto.setTeacherId(adminId)
+        proposedQuestionDto.setTeacher(new UserDto(admin))
         proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
         proposedQuestionDto.setJustification(" ")
 
@@ -124,7 +129,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
     def 'the teacher teaches the course'() {
         given: "a proposed question"
         proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-        proposedQuestionDto.setTeacherId(teacher.getId())
+        proposedQuestionDto.setTeacher(teacherDto)
         proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
         proposedQuestionDto.setJustification(JUSTIFICATION)
 
@@ -132,7 +137,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         def result = proposedQuestionService.teacherEvaluatesProposedQuestion(proposedQuestionDto)
 
         then:
-        result.getTeacherId() == teacher.getId()
+        result.getTeacher().getId() == teacher.getId()
         teacher.getCourseExecutions().size() == 1
         teacher.getCourseExecutions().contains(courseExecution) == true
     }
@@ -141,7 +146,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
     def 'the question is approved'() {
         given: "a proposed question"
         proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-        proposedQuestionDto.setTeacherId(teacher.getId())
+        proposedQuestionDto.setTeacher(teacherDto)
         proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
         proposedQuestionDto.setJustification(" ")
 
@@ -163,14 +168,13 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
 
         and: "a repeated evaluation"
         approvedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.APPROVED.name())
-        approvedQuestionDto.setTeacherId(teacher.getId())
+        approvedQuestionDto.setTeacher(teacherDto)
 
         when:
-        proposedQuestionService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
+        def result = proposedQuestionService.teacherEvaluatesProposedQuestion(approvedQuestionDto)
 
         then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.PQ_ALREADY_EVALUATED
+        result.getEvaluation() == ProposedQuestion.Evaluation.APPROVED.name()
     }
 
 
@@ -193,7 +197,7 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         hasTeacher | justification | evaluation                             || errorMessage
         false      | JUSTIFICATION | ProposedQuestion.Evaluation.AWAITING   || USER_IS_EMPTY
         true       | "           " | ProposedQuestion.Evaluation.REJECTED   || JUSTIFICATION_IS_BLANK
-        true       | null          | ProposedQuestion.Evaluation.AWAITING   || JUSTIFICATION_IS_EMPTY
+        true       | null          | ProposedQuestion.Evaluation.REJECTED   || JUSTIFICATION_IS_EMPTY
     }
 
     def addTeacher(Boolean hasTeacher) {
@@ -201,15 +205,19 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
             def courseExecution = new CourseExecution(course, "ES", "1S", Course.Type.TECNICO)
             courseExecution.addUser(teacher)
             teacher.addCourse(courseExecution)
-            proposedQuestionDto.setTeacherId(teacher.getId())
+            proposedQuestionDto.setTeacher(teacherDto)
         }
         else {
-            proposedQuestionDto.setTeacherId(null)
+            proposedQuestionDto.setTeacher(null)
         }
     }
 
     @TestConfiguration
     static class TeacherEvaluateTestContextConfiguration {
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService proposedQuestionService() {

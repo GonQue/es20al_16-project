@@ -68,6 +68,13 @@ public class ClarificationResponse {
         this.responseDate = responseDate;
     }
 
+    public void remove() {
+        getTeacher().getClarification_responses().remove(this);
+        getClarificationQuestion().getResponses().remove(this);
+        this.teacher = null;
+        this.clarificationQuestion = null;
+    }
+
     @Override
     public String toString() {
         return "ClarificationResponse{" +

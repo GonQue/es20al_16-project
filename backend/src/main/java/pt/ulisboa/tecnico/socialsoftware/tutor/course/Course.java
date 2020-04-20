@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 
@@ -15,7 +16,6 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CO
 @Entity
 @Table(name = "courses")
 public class Course {
-    public static final String DEMO_COURSE = "Demo Course";
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public enum Type {TECNICO, EXTERNAL}
@@ -37,6 +37,9 @@ public class Course {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<Topic> topics = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public Course() {}
 
@@ -89,6 +92,8 @@ public class Course {
         return topics;
     }
 
+    public Set<ProposedQuestion> getProposedQuestions() {return proposedQuestions; }
+
     public void addCourseExecution(CourseExecution courseExecution) {
         courseExecutions.add(courseExecution);
     }
@@ -96,6 +101,12 @@ public class Course {
     public void addQuestion(Question question) {
         questions.add(question);
     }
+
+    public void addProposedQuestion(ProposedQuestion proposedQuestion) {
+        proposedQuestions.add(proposedQuestion);
+    }
+
+    public void removeProposedQuestion(ProposedQuestion proposedQuestion) { proposedQuestions.remove(proposedQuestion); }
 
     public void addTopic(Topic topic) {
         topics.add(topic);

@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarificatio
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
@@ -22,6 +23,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,8 +58,6 @@ public class ClarificationService {
         checkStudentId(studentId);
 
         checkQuestionId(questionId);
-
-        checkAnswerId(answerId);
 
         Question question = getQuestion(questionId);
 
@@ -111,7 +111,7 @@ public class ClarificationService {
                 List<QuestionAnswer> questionAnswers = iQuizAnswer.getQuestionAnswers();
                 if(!questionAnswers.isEmpty())
                     for (QuestionAnswer iAnswer: questionAnswers) {
-                        if(iAnswer.getOption().getQuestion().getId() == questionId) {
+                        if(iAnswer.getQuizQuestion() != null && iAnswer.getQuizQuestion().getQuestion() != null && iAnswer.getQuizQuestion().getQuestion().getId() == questionId) {
                             valid = true;
                             break;
                         }
@@ -136,6 +136,26 @@ public class ClarificationService {
         answer.addClarificationQuestion(clarificationQuestion);
 
         return clarificationQuestion;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void removeClarification(Integer clarificationQuestionId) {
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        List<ClarificationResponse> responses = clarificationQuestion.getResponses();
+
+        while(!responses.isEmpty()){
+            ClarificationResponse response = responses.remove(0);
+            response.remove();
+            clarificationResponseRepository.delete(response);
+        }
+
+        clarificationQuestion.remove();
+
+        clarificationQuestionRepository.delete(clarificationQuestion);
     }
 
     @Retryable(
@@ -232,4 +252,33 @@ public class ClarificationService {
     private List<ClarificationResponseDto> listOfResponsesDto(ClarificationQuestion clarificationQuestion) {
         return clarificationQuestion.getResponses().stream().map(ClarificationResponseDto::new).collect(Collectors.toList());
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationQuestionDto> listAllClarificationQuestions() {
+        return listOfAllClarificationQuestionsDto();
+    }
+
+    private List<ClarificationQuestionDto> listOfAllClarificationQuestionsDto() {
+        return clarificationQuestionRepository.findAll().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void removeClarificationResponse(Integer clarificationResponseId) {
+        ClarificationResponse clarificationResponse = getClarificationResponse(clarificationResponseId);
+
+        clarificationResponse.remove();
+
+        clarificationResponseRepository.delete(clarificationResponse);
+    }
+
+    private ClarificationResponse getClarificationResponse(Integer clarificationResponseId){
+        return clarificationResponseRepository.findById(clarificationResponseId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_RESPONSE_NOT_FOUND, clarificationResponseId));
+    }
+
 }

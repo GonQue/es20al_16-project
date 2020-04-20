@@ -184,7 +184,7 @@ INSERT INTO proposed_questions(id, student_id, question_id, evaluation, teacher_
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/courses/${courseId}/proposed-questions</stringProp>
+            <stringProp name="HTTPSampler.path">/courses/${courseId}/student/proposed-questions</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -196,7 +196,7 @@ INSERT INTO proposed_questions(id, student_id, question_id, evaluation, teacher_
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert student id" enabled="true">
-              <stringProp name="JSON_PATH">$[0].studentId</stringProp>
+              <stringProp name="JSON_PATH">$[0].student.id</stringProp>
               <stringProp name="EXPECTED_VALUE">676</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
@@ -205,7 +205,7 @@ INSERT INTO proposed_questions(id, student_id, question_id, evaluation, teacher_
             </JSONPathAssertion>
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert teacher id" enabled="true">
-              <stringProp name="JSON_PATH">$[0].teacherId</stringProp>
+              <stringProp name="JSON_PATH">$[0].teacher.id</stringProp>
               <stringProp name="EXPECTED_VALUE">677</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
