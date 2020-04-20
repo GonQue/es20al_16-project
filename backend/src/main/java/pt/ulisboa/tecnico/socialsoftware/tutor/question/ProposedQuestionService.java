@@ -122,7 +122,8 @@ public class ProposedQuestionService {
         return topics;
     }
 
-    private ProposedQuestion findProposedQuestion(int pqId) {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestion findProposedQuestion(int pqId) {
         return pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
     }
 
@@ -137,6 +138,7 @@ public class ProposedQuestionService {
         return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Course getCourse(int pqId) {
         ProposedQuestion proposedQuestion = pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
         return proposedQuestion.getQuestion().getCourse();

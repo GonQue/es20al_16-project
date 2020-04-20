@@ -61,9 +61,12 @@
                 <v-list-item-title>Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item to="/management/proposedQuestions" data-cy="ProposedQuestions">
+            <v-list-item
+              to="/management/proposedQuestions"
+              data-cy="ProposedQuestions"
+            >
               <v-list-item-action>
-                <v-icon>question_answer</v-icon>
+                <v-icon>fas fa-question-circle</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>Proposed Questions</v-list-item-title>
@@ -241,9 +244,12 @@
               <v-list-item-title>Questions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item to="/management/proposedQuestions" data-cy="ProposedQuestions">
+          <v-list-item
+            to="/management/proposedQuestions"
+            data-cy="ProposedQuestions"
+          >
             <v-list-item-action>
-              <v-icon>question_answer</v-icon>
+              <v-icon>fas fa-question-circle</v-icon>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Proposed Questions</v-list-item-title>
