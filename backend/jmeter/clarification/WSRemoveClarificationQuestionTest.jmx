@@ -29,13 +29,8 @@
             <stringProp name="Argument.value">8080</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="questionId" elementType="Argument">
-            <stringProp name="Argument.name">questionId</stringProp>
-            <stringProp name="Argument.value">999999</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="answerId" elementType="Argument">
-            <stringProp name="Argument.name">answerId</stringProp>
+          <elementProp name="clarificationQuestionId" elementType="Argument">
+            <stringProp name="Argument.name">clarificationQuestionId</stringProp>
             <stringProp name="Argument.value">999999</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -85,7 +80,11 @@ INSERT INTO quiz_questions VALUES (999999, 0, 999999, 5373);
 
 INSERT INTO options VALUES (999999, &apos;test_content&apos;, &apos;f&apos;, 999999, 0);
 
-INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);</stringProp>
+INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);
+
+INSERT INTO users VALUES (999999, &apos;2019-05-31 12:09:56.442416&apos;, &apos;TestUser1&apos;, &apos;STUDENT&apos;, &apos;tu1&apos;, 1,1,1,1, &apos;&apos;, &apos;2019-06-01 19:00:00.123456&apos;, 999999, 1,1,1,1,1);
+
+INSERT INTO clarifications VALUES (999999, &apos;test_content&apos;, &apos;2020-01-01 15:30:40.912034&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 999999);</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
@@ -189,29 +188,16 @@ INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);<
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to create clarification questions" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: 1,&#xd;
-	&quot;content&quot;: &quot;CONTENT_1&quot;,&#xd;
-	&quot;status&quot;: &quot;NOT_ANSWERED&quot;,&#xd;
-	&quot;answerId&quot;: &quot;${answerId}&quot;&#xd;
-}&#xd;
-</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to remove clarification questions" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
             </elementProp>
             <stringProp name="HTTPSampler.domain">${server}</stringProp>
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/student/clarifications/${questionId}/submit</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <stringProp name="HTTPSampler.path">/student/clarifications/${clarificationQuestionId}</stringProp>
+            <stringProp name="HTTPSampler.method">DELETE</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -220,44 +206,7 @@ INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);<
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
-          <hashTree>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert content" enabled="true">
-              <stringProp name="JSON_PATH">$.content</stringProp>
-              <stringProp name="EXPECTED_VALUE">CONTENT_1</stringProp>
-              <boolProp name="JSONVALIDATION">true</boolProp>
-              <boolProp name="EXPECT_NULL">false</boolProp>
-              <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">false</boolProp>
-            </JSONPathAssertion>
-            <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert status" enabled="true">
-              <stringProp name="JSON_PATH">$.status</stringProp>
-              <stringProp name="EXPECTED_VALUE">NOT_ANSWERED</stringProp>
-              <boolProp name="JSONVALIDATION">true</boolProp>
-              <boolProp name="EXPECT_NULL">false</boolProp>
-              <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">false</boolProp>
-            </JSONPathAssertion>
-            <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert creation date" enabled="true">
-              <stringProp name="JSON_PATH">$.creationDate</stringProp>
-              <stringProp name="EXPECTED_VALUE"></stringProp>
-              <boolProp name="JSONVALIDATION">false</boolProp>
-              <boolProp name="EXPECT_NULL">false</boolProp>
-              <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">true</boolProp>
-            </JSONPathAssertion>
-            <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert answer id" enabled="true">
-              <stringProp name="JSON_PATH">$.answerId</stringProp>
-              <stringProp name="EXPECTED_VALUE">${answerId}</stringProp>
-              <boolProp name="JSONVALIDATION">true</boolProp>
-              <boolProp name="EXPECT_NULL">false</boolProp>
-              <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">true</boolProp>
-            </JSONPathAssertion>
-            <hashTree/>
-          </hashTree>
+          <hashTree/>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -369,9 +318,7 @@ INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);<
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM clarifications WHERE content = &apos;CONTENT_1&apos;;
-
-DELETE FROM question_answers WHERE id = 999999;
+          <stringProp name="query">DELETE FROM question_answers WHERE id = 999999;
 
 DELETE FROM options WHERE id = 999999;
 
@@ -379,7 +326,9 @@ DELETE FROM quiz_questions WHERE id = 999999;
 
 DELETE FROM quiz_answers WHERE id = 999999;
 
-DELETE FROM questions WHERE id = 999999;</stringProp>
+DELETE FROM questions WHERE id = 999999;
+
+DELETE FROM users WHERE id = 999999;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
