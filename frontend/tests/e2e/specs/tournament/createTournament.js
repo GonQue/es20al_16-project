@@ -37,7 +37,7 @@ describe('Student walkthrough', () => {
     cy.log('close dialog')
     cy.get('[data-cy="cancelButton"]').click()
 
-    cy.removeTournamentFromDB(tournamentName)//not needed
+    cy.removeTournamentFromDB(tournamentName)
   });
 
   it('Login creates tournament with 0 questions', () => {
@@ -51,7 +51,7 @@ describe('Student walkthrough', () => {
     cy.log('close dialog')
     cy.get('[data-cy="cancelButton"]').click()
 
-    cy.removeTournamentFromDB(tournamentName)//not needed
+    cy.removeTournamentFromDB(tournamentName)
   });
 
   it('Login creates 2 tournaments with multiple topics', () => {
@@ -61,9 +61,7 @@ describe('Student walkthrough', () => {
     cy.createTournament(tournamentName,topics, startDay, endDay, nextMonth, pickQuestionNumber);
     cy.createTournament(tournamentName,topics, startDay, endDay, nextMonth, pickQuestionNumber);
 
-    //cy.checkTournament(tournamentName, 2)
-
-    cy.removeTournamentFromDB(tournamentName)//not needed
+    cy.removeTournamentFromDB(tournamentName)
   });
 
 });
