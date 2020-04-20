@@ -92,6 +92,7 @@ public enum ErrorMessage {
     JUSTIFICATION_IS_BLANK("The justification is blank"),
     PROPQUESTION_MISSING_QUESTION("Proposed Question have empty question"),
     TOPIC_NOT_BELONGING_TO_COURSE("Topic does not belong to the course"),
+    PROPQUESTION_CANT_BE_REMOVED("The Proposed Question was approved so it can't be removed"),
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file");

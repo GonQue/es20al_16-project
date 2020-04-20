@@ -29,6 +29,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     private QuestionService questionService;
 
     @Autowired
+    private ProposedQuestionService proposedQuestionService;
+
+    @Autowired
     private TopicService topicService;
 
     @Autowired
@@ -39,8 +42,6 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     @Autowired
     private TournamentService tournamentService;
 
-    @Autowired
-    private ProposedQuestionService proposedQuestionService;
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -80,6 +81,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                     return userHasThisExecution(username, quizService.findQuizCourseExecution(id).getCourseExecutionId());
                 case "PQ.ACCESS":
                     return userHasAnExecutionOfTheCourse(username, proposedQuestionService.getCourse(id).getId());
+                case "PQ.CREATOR":
+                    return studentCreatedProposedQuestion(username, id);
                 default: return false;
             }
         }
@@ -96,7 +99,12 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 .anyMatch(course -> course.getCourseExecutionId() == id);
     }
 
-     @Override
+    private boolean studentCreatedProposedQuestion(String username, int pqId) {
+        return proposedQuestionService.findProposedQuestion(pqId).getStudent()
+                .getUsername().equals(username);
+    }
+
+    @Override
     public boolean hasPermission(Authentication authentication, Serializable serializable, String s, Object o) {
         return false;
     }
