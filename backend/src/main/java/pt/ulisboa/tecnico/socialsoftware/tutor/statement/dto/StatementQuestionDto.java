@@ -9,12 +9,14 @@ import java.util.stream.Collectors;
 
 
 public class StatementQuestionDto implements Serializable {
+    private Integer questionId;
     private String content;
     private List<StatementOptionDto> options;
     private ImageDto image;
     private Integer sequence;
 
     public StatementQuestionDto(QuestionAnswer questionAnswer) {
+        this.questionId = questionAnswer.getQuizQuestion().getQuestion().getId();
         this.content = questionAnswer.getQuizQuestion().getQuestion().getContent();
         if (questionAnswer.getQuizQuestion().getQuestion().getImage() != null) {
             this.image = new ImageDto(questionAnswer.getQuizQuestion().getQuestion().getImage());
@@ -22,6 +24,10 @@ public class StatementQuestionDto implements Serializable {
         this.options = questionAnswer.getQuizQuestion().getQuestion().getOptions().stream().map(StatementOptionDto::new).collect(Collectors.toList());
         this.sequence = questionAnswer.getSequence();
     }
+
+    public Integer getQuestionId() { return questionId; }
+
+    public void setQuestionId(Integer questionId) { this.questionId = questionId; }
 
     public String getContent() {
         return content;

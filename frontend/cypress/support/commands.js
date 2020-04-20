@@ -57,7 +57,7 @@ Cypress.Commands.add('deleteCourseExecution', (acronym) => {
 })
 
 Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) => {
-    cy.contains(name)
+    cy.get(td).contains(name)
         .parent()
         .should('have.length', 1)
         .children()
@@ -68,4 +68,3 @@ Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) 
     cy.get('[data-cy="AcademicTerm"]').type(academicTerm)
     cy.get('[data-cy="saveButton"]').click()
 })
-

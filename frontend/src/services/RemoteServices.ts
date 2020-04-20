@@ -13,9 +13,13 @@ import Assessment from '@/models/management/Assessment';
 import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+import { Tournament } from '@/models/user/Tournament';
+import StatementClarificationQuestion from '@/models/statement/StatementClarificationQuestion';
+import StatementClarificationResponse from '@/models/statement/StatementClarificationResponse';
+import ClarificationQuestion from '@/models/management/ClarificationQuestion';
 
 const httpClient = axios.create();
-httpClient.defaults.timeout = 10000;
+httpClient.defaults.timeout = 50000;
 httpClient.defaults.baseURL = process.env.VUE_APP_ROOT_API;
 httpClient.defaults.headers.post['Content-Type'] = 'application/json';
 httpClient.interceptors.request.use(
@@ -553,6 +557,117 @@ export default class RemoteServices {
       });
   }
 
+  static getClarificationQuestions(): Promise<
+    StatementClarificationQuestion[]
+  > {
+    return httpClient
+      .get('/student/clarifications/status')
+      .then(response => {
+        return response.data.map((clarificationQuestion: any) => {
+          return new StatementClarificationQuestion(clarificationQuestion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createClarificationQuestion(
+    questionId: number | undefined,
+    clarificationQuestion: StatementClarificationQuestion | null
+  ): Promise<StatementClarificationQuestion> {
+    return httpClient
+      .post(
+        '/student/clarifications/' + questionId + '/submit',
+        clarificationQuestion
+      )
+      .then(response => {
+        return new StatementClarificationQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
+  static async deleteClarificationQuestion(
+    clarificationId: number | undefined
+  ) {
+    return httpClient
+      .delete('/student/clarifications/' + clarificationId)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static getAllClarificationQuestions(): Promise<StatementClarificationQuestion[]> {
+    return httpClient
+      .get('/management/clarifications/status')
+      .then(response => {
+        return response.data.map((clarificationQuestion: any) => {
+          return new StatementClarificationQuestion(clarificationQuestion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static getStudentClarificationResponse(clarificationQuestionId : number)
+    : Promise<StatementClarificationResponse[]> {
+    return httpClient
+      .get(`/student/clarifications/${clarificationQuestionId}/responses`)
+      .then(response => {
+        return response.data.map((clarificationResponse: any) => {
+          return new StatementClarificationResponse(clarificationResponse);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static getTeacherClarificationResponse(clarificationQuestionId : number)
+    : Promise<StatementClarificationResponse[]> {
+    return httpClient
+      .get(`/management/clarifications/${clarificationQuestionId}/responses`)
+      .then(response => {
+        return response.data.map((clarificationResponse: any) => {
+          return new StatementClarificationResponse(clarificationResponse);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createClarificationResponse(
+    clarificationId: number | null,
+    clarificationResponse: StatementClarificationResponse | null
+  ): Promise<StatementClarificationResponse> {
+    return httpClient
+      .post(
+        '/management/clarifications/' + clarificationId + '/answer',
+        clarificationResponse
+      )
+      .then(response => {
+        return new StatementClarificationResponse(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteClarificationResponse(
+    clarificationResponseId: number | undefined
+  ) {
+    return httpClient
+      .delete('/management/clarifications/' + clarificationResponseId)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
@@ -574,6 +689,50 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  static async createTournament(tournament: Tournament): Promise<Tournament> {
+    return httpClient
+      .post(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/create-tournament`,
+        tournament
+      )
+      .then(response => {
+        return new Tournament(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getOpenTournaments(): Promise<Tournament[]> {
+    return httpClient
+      .get(
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/list-tournament`
+      )
+      .then(response => {
+        return response.data.map((tournament: any) => {
+          return new Tournament(tournament);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
+  static async enrollStudent(tournament : Tournament): Promise<Tournament>{
+    return httpClient
+        .post(
+            `/tournaments/${tournament.id}/enroll-student`
+        )
+        .then(response => {
+          return new Tournament(response.data);
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
 
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {
