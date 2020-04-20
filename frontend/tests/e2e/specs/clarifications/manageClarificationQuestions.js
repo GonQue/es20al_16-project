@@ -9,6 +9,7 @@ describe('Student walkthrough - Clarifications', () => {
   });
 
   afterEach(() => {
+    cy.get('[data-cy="Questions"]').click();
     cy.contains('Logout').click();
   });
 
