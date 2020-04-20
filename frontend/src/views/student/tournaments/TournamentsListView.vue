@@ -41,11 +41,17 @@
               @click="enrolled(item)"
               data-cy="enrollButton"
               v-on="on"
-              v-show="!checkIfEnrolled(item) && !enrollButtons.includes(item.id)"
+              v-show="
+                !checkIfEnrolled(item) && !enrollButtons.includes(item.id)
+              "
             >
               Enroll
             </v-btn>
-            <v-btn disabled v-show="checkIfEnrolled(item) || enrollButtons.includes(item.id)">Enrolled</v-btn>
+            <v-btn
+              disabled
+              v-show="checkIfEnrolled(item) || enrollButtons.includes(item.id)"
+              >Enrolled</v-btn
+            >
           </template>
         </v-tooltip>
       </template>
@@ -187,7 +193,6 @@ export default class TournamentsListView extends Vue {
     //console.log('FALSE');
     return false;
   }
-
 }
 </script>
 

@@ -18,6 +18,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
+
 import java.util.Comparator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +43,9 @@ public class ProposedQuestionService {
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private QuestionService questionService;
+
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ProposedQuestionDto studentSubmitQuestion(int courseId, ProposedQuestionDto proposedQuestionDto) {
@@ -60,7 +65,7 @@ public class ProposedQuestionService {
     public ProposedQuestionDto teacherEvaluatesProposedQuestion(ProposedQuestionDto pqDto) {
         Course course = getCourse(pqDto.getId());
         User teacher = getTeacher(pqDto);
-        ProposedQuestion pq = findProposedQuestion(pqDto);
+        ProposedQuestion pq = findProposedQuestion(pqDto.getId());
 
         String justification = pqDto.getJustification();
         String evaluation = pqDto.getEvaluation();
@@ -72,25 +77,33 @@ public class ProposedQuestionService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ProposedQuestionDto> getProposedQuestions(int id) {
+    public List<ProposedQuestionDto> getStudentProposedQuestions(int id) {
         User student = findStudentById(id);
         return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).
                 sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
                 collect(Collectors.toList());
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ProposedQuestionDto> getCourseProposedQuestions(int courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(ErrorMessage.COURSE_NOT_FOUND, courseId));
+        return course.getProposedQuestions().stream().map(ProposedQuestionDto::new).
+                sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
+                collect(Collectors.toList());
+    }
+
     private User getStudent(ProposedQuestionDto proposedQuestionDto) {
-        Integer studentId = proposedQuestionDto.getStudentId();
-        if (studentId == null) {
+        UserDto student = proposedQuestionDto.getStudent();
+        if (student == null) {
             throw new TutorException(ErrorMessage.USER_IS_EMPTY);
         }
-        return userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
+        return userRepository.findByUsername(student.getUsername());
     }
 
     private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
+        proposedQuestionDto.getQuestion().setCreationDate(LocalDateTime.now().format(Course.formatter));
         Question question = new Question(course, proposedQuestionDto.getQuestion());
         question.setStatus(Question.Status.SUBMITTED);
-        question.setCreationDate(LocalDateTime.now());
         questionRepository.save(question);
         return question;
     }
@@ -109,25 +122,39 @@ public class ProposedQuestionService {
         return topics;
     }
 
-    private ProposedQuestion findProposedQuestion(ProposedQuestionDto pqDto) {
-        return pqRepository.findById(pqDto.getId()).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestion findProposedQuestion(int pqId) {
+        return pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
     }
 
     private User getTeacher(ProposedQuestionDto pqDto) {
-        if (pqDto.getTeacherId() == null) {
+        if (pqDto.getTeacher() == null) {
             throw new TutorException(ErrorMessage.USER_IS_EMPTY);
         }
-        int teacherId = pqDto.getTeacherId();
-        return userRepository.findById(teacherId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, teacherId));
+        return userRepository.findByUsername(pqDto.getTeacher().getUsername());
     }
 
     private User findStudentById(int id){
         return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Course getCourse(int pqId) {
         ProposedQuestion proposedQuestion = pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
         return proposedQuestion.getQuestion().getCourse();
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void deleteProposedQuestion(int proposedQuestionId) {
+        ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
+
+        if (proposedQuestion.canBeRemoved()) {
+            Course course = getCourse(proposedQuestionId);
+            course.removeProposedQuestion(proposedQuestion);
+            pqRepository.delete(proposedQuestion);
+            questionService.deleteQuestion(proposedQuestion.getQuestion());
+        }
+        else
+            throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_REMOVED);
+    }
 }
