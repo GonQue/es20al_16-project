@@ -25,7 +25,6 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 /// <reference types="Cypress" />
 Cypress.Commands.add('demoAdminLogin', () => {
-<<<<<<< HEAD
   cy.visit('/');
   cy.get('[data-cy="adminButton"]').click();
   cy.contains('Administration').click();
@@ -72,50 +71,7 @@ Cypress.Commands.add(
     cy.get('[data-cy="saveButton"]').click();
   }
 );
-=======
-    cy.visit('/')
-    cy.get('[data-cy="adminButton"]').click()
-    cy.contains('Administration').click()
-    cy.contains('Manage Courses').click()
-})
 
-Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
-    cy.get('[data-cy="createButton"]').click()
-    cy.get('[data-cy="Name"]').type(name)
-    cy.get('[data-cy="Acronym"]').type(acronym)
-    cy.get('[data-cy="AcademicTerm"]').type(academicTerm)
-    cy.get('[data-cy="saveButton"]').click()
-})
-
-Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
-    cy.contains('Error')
-        .parent()
-        .find('button')
-        .click()
-})
-
-Cypress.Commands.add('deleteCourseExecution', (acronym) => {
-    cy.contains(acronym)
-        .parent()
-        .should('have.length', 1)
-        .children()
-        .should('have.length', 7)
-        .find('[data-cy="deleteCourse"]')
-        .click()
-})
-
-Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) => {
-    cy.contains(name)
-        .parent()
-        .should('have.length', 1)
-        .children()
-        .should('have.length', 7)
-        .find('[data-cy="createFromCourse"]')
-        .click()
-    cy.get('[data-cy="Acronym"]').type(acronym)
-    cy.get('[data-cy="AcademicTerm"]').type(academicTerm)
-    cy.get('[data-cy="saveButton"]').click()
-})
 
 // Student
 
@@ -123,6 +79,67 @@ Cypress.Commands.add('demoStudentLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="studentButton"]').click()
 })
+
+Cypress.Commands.add('createTournament', (name, topics, day1, day2, nextMonth, pickQuestionNumber) => {
+    cy.get('[data-cy="createButton"]').click()
+
+    //Name
+    cy.get('[data-cy="Name"]').type(name)
+
+    //Start date
+    cy.get('[data-cy=startDate]').click()
+    cy.get('button').contains(day1).click().wait(500)
+    cy.contains('OK').click().wait(500)
+
+    //End date
+    cy.get('[data-cy=endDate]').click()
+    if(nextMonth)
+        cy.get('i[class="v-icon notranslate mdi mdi-chevron-right theme--light"]:visible').click().wait(500)
+    cy.get('button:visible').contains(day2).click().wait(500)
+    cy.get('button:visible').contains('OK').click()
+
+    //Number of questions
+    if(pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').click()
+
+    //Topics
+    cy.get('[data-cy="topics"]').click();
+    topics.forEach(function(topics){
+        cy.contains(topics).click().wait(100);
+    });
+
+    //Save
+    cy.get('[data-cy="saveButton"]').click().wait(200);
+})
+
+
+Cypress.Commands.add('enrollStudent', (name) => {
+    cy.contains(name)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 7)
+      .find('[data-cy="enrollButton"]')
+      .click()
+})
+
+Cypress.Commands.add('getTopics', (name) => {
+    cy.get('td[class="text-start"]').first().click()
+})
+
+Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
+    cy.contains(name)
+      .parent()
+      .should('have.length', numberOfTournaments)
+      .children()
+      .should('have.length', 7)
+})
+Cypress.Commands.add('removeTournamentFromDB', (name) => {
+    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
+    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"', {env: {name: name}})
+    cy.exec('PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"', {env: {name: name}})
+
+})
+
 
 Cypress.Commands.add('answerQuiz', () => {
     cy.get('[data-cy="Quizzes"]').click()
@@ -215,8 +232,3 @@ Cypress.Commands.add('deleteClarificationResponse', (questionContent, responseCo
         .find('[data-cy="DeleteClarificationResponseIcon"]')
         .click()
 })
-
-
-
-
->>>>>>> origin/develop

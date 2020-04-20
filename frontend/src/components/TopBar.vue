@@ -112,6 +112,16 @@
           </v-list>
         </v-menu>
 
+        <v-btn
+          to="/student/tournaments"
+          v-if="isStudent && currentCourse"
+          text
+          dark
+        >
+          Tournaments
+          <v-icon>fas fa-user</v-icon>
+        </v-btn>
+
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark data-cy="Quizzes">
