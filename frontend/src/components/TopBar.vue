@@ -119,7 +119,7 @@
           dark
         >
           Tournaments
-          <v-icon>fas fa-user</v-icon>
+          <v-icon>fas fa-trophy</v-icon>
         </v-btn>
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
@@ -350,6 +350,13 @@
             <v-list-item-content>Clarifications</v-list-item-content>
           </v-list-item>
 
+          <v-list-item to="/student/tournaments" data-cy="Tournaments">
+            <v-list-item-action>
+              <v-icon>fas fa-trophy</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Tournaments</v-list-item-content>
+          </v-list-item>
+
           <v-list-item to="/student/stats">
             <v-list-item-action>
               <v-icon>fas fa-user</v-icon>
@@ -384,7 +391,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-
 @Component
 export default class TopBar extends Vue {
   fenixUrl: string = process.env.VUE_APP_FENIX_URL;
