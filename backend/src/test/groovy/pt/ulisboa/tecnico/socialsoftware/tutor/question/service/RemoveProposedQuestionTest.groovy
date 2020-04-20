@@ -56,6 +56,7 @@ class RemoveProposedQuestionTest extends Specification {
         courseRepository.save(course)
 
         def courseExecution = new CourseExecution(course, "AC", "2S", Course.Type.TECNICO)
+
         courseExecution.addUser(student)
         student.addCourse(courseExecution)
         courseExecutionRepository.save(courseExecution)
