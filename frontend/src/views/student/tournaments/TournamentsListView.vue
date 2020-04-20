@@ -182,15 +182,11 @@ export default class TournamentsListView extends Vue {
   checkIfEnrolled(tournament: Tournament): boolean {
     let user = this.$store.getters.getUser;
     let usersMap = tournament.enrolled;
-    //console.log('OK', tournament.name, tournament.enrolled[0], tournament.topics, tournament.numberOfQuestions)
-    //console.log('TEST');
     for (let i = 0; i < usersMap.length; i++) {
-      //console.log(usersMap[i], user.username);
       if (usersMap[i] == user.username) {
         return true;
       }
     }
-    //console.log('FALSE');
     return false;
   }
 }
