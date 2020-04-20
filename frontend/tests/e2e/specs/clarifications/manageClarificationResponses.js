@@ -15,7 +15,7 @@ describe('Clarification Response Tests', () => {
     cy.demoStudentLogin();
     cy.deleteClarificationQuestion(/^test question$/);
     cy.deleteClarificationQuestion(/^test question 2$/);
-    cy.get('[data-cy="Clarifications"]').click({ force: true });
+    cy.get('[data-cy="Questions"]').click();
     cy.contains('Logout').click();
   });
 

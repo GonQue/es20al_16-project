@@ -333,7 +333,7 @@ Cypress.Commands.add(
       .children()
       .should('have.length', 6)
       .find('[data-cy="ShowResponses"]')
-      .click();
+      .click({force:true});
     cy.contains(responseContent)
       .first()
       .parent()
