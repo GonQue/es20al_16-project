@@ -1,7 +1,7 @@
 describe('Evaluation', () => {
   beforeEach(() => {
     cy.demoStudentLogin();
-    cy.contains('Questions').click();
+    cy.openProposeQuestionStudentMenu();
     cy.createProposedQuestion('TEST', 'Question', 'Options', 1);
     cy.showProposedQuestion('TEST');
     cy.contains('Logout').click();
@@ -13,7 +13,7 @@ describe('Evaluation', () => {
   afterEach(() => {
     cy.contains('Logout').click();
     cy.demoStudentLogin();
-    cy.contains('Questions').click();
+    cy.openProposeQuestionStudentMenu();
     cy.deleteProposedQuestion('TEST');
     cy.contains('Logout').click();
   });

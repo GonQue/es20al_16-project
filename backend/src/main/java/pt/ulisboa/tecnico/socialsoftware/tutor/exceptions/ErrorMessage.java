@@ -74,6 +74,7 @@ public enum ErrorMessage {
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
     QUESTION_CLARIFICATION_NOT_FOUND("Question clarification not found with id %d"),
+    QUESTION_CLARIFICATION_RESPONSE_NOT_FOUND("Clarification response not found with id %d"),
     RESPONSE_CONTENT("The response should have a valid content"),
     CLARIFICATION_CONTENT("The clarification should have a valid content"),
     USER_IS_NOT_A_TEACHER("The user is not a teacher"),

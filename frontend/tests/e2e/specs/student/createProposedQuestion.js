@@ -1,7 +1,7 @@
 describe('Propose Question walkthrough', () => {
   beforeEach(() => {
     cy.demoStudentLogin();
-    cy.contains('Questions').click();
+    cy.openProposeQuestionStudentMenu();
   });
 
   afterEach(() => {

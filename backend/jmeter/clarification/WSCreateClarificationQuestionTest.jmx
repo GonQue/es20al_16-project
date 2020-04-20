@@ -210,7 +210,7 @@ INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);<
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">clarifications/${questionId}/submit</stringProp>
+            <stringProp name="HTTPSampler.path">/student/clarifications/${questionId}/submit</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
