@@ -32,13 +32,14 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.responses = {item}>
+      <template v-slot:item.responses="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon class="mr-2"
-                    v-on="on"
-                    @click="showResponse(item)"
-                    data-cy="ShowResponses"
+            <v-icon
+              class="mr-2"
+              v-on="on"
+              @click="showResponse(item)"
+              data-cy="ShowResponses"
               >mdi-comment-text-multiple</v-icon
             >
           </template>
@@ -66,20 +67,20 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import StatementClarificationQuestion from '@/models/statement/StatementClarificationQuestion';
 import RemoteServices from '@/services/RemoteServices';
 import ClarificationQuestion from '@/models/management/ClarificationQuestion';
-  import EditClarificationResponseDialog from '@/views/teacher/clarifications/EditClarificationResponseDialog.vue';
-  import ListClarificationResponses from '@/views/teacher/clarifications/ListClarificationResponsesView.vue';
+import EditClarificationResponseDialog from '@/views/teacher/clarifications/EditClarificationResponseDialog.vue';
+import ListClarificationResponses from '@/views/teacher/clarifications/ListClarificationResponsesView.vue';
 
-  @Component({
-    components: {
-      'list-clarification-responses': ListClarificationResponses,
-    }
-  })
+@Component({
+  components: {
+    'list-clarification-responses': ListClarificationResponses
+  }
+})
 export default class ListClarificationQuestionsView extends Vue {
-  @Prop(ClarificationQuestion)  clarificationQuestion!: ClarificationQuestion;
+  @Prop(ClarificationQuestion) clarificationQuestion!: ClarificationQuestion;
   currentClarificationQuestion: ClarificationQuestion | null = null;
   clarificationQuestions: StatementClarificationQuestion[] = [];
   search: string = '';
@@ -136,7 +137,9 @@ export default class ListClarificationQuestionsView extends Vue {
   }
 
   async deleteClarificationQuestion(clarificationId: number) {
-    if (confirm('Are you sure you want to delete this clarification question?')) {
+    if (
+      confirm('Are you sure you want to delete this clarification question?')
+    ) {
       try {
         await RemoteServices.deleteClarificationQuestion(clarificationId);
         this.clarificationQuestions = this.clarificationQuestions.filter(
@@ -149,10 +152,15 @@ export default class ListClarificationQuestionsView extends Vue {
     }
   }
 
-  async showResponse(clarificationQuestion: ClarificationQuestion){
+  async showResponse(clarificationQuestion: ClarificationQuestion) {
     this.currentClarificationQuestion = clarificationQuestion;
-    if(this.currentClarificationQuestion.id != null)
-      await this.$router.push({ name: 'show-student-clarification-responses' , params: {clarificationQuestionId : this.currentClarificationQuestion.id.toString()},});
+    if (this.currentClarificationQuestion.id != null)
+      await this.$router.push({
+        name: 'show-student-clarification-responses',
+        params: {
+          clarificationQuestionId: this.currentClarificationQuestion.id.toString()
+        }
+      });
   }
 
   async created() {

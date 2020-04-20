@@ -24,7 +24,7 @@
           {{ calculateScore(quiz) }}
         </div>
         <div class="col last-col">
-          <i class="fas fa-chevron-circle-right" data-cy="SolvedQuiz"/>
+          <i class="fas fa-chevron-circle-right" data-cy="SolvedQuiz" />
         </div>
       </li>
     </ul>

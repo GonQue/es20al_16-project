@@ -61,6 +61,17 @@
                 <v-list-item-title>Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              to="/management/proposedQuestions"
+              data-cy="ProposedQuestions"
+            >
+              <v-list-item-action>
+                <v-icon>fas fa-question-circle</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Proposed Questions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item to="/management/topics">
               <v-list-item-action>
                 <v-icon>category</v-icon>
@@ -114,6 +125,36 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark data-cy="Questions">
+              Questions
+              <v-icon>question_answer</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/propose" data-cy="ProposeQuestion">
+              <v-list-item-action>
+                <v-icon>fas fa-question-circle</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Propose</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              to="/student/clarifications/status"
+              data-cy="Clarifications"
+            >
+              <v-list-item-action>
+                <v-icon>fas fa-file-alt</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>Clarifications</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark data-cy="Quizzes">
               Quizzes
               <v-icon>fas fa-file-alt</v-icon>
@@ -156,14 +197,13 @@
         </v-menu>
 
         <v-btn
-          to="/student/clarifications/status"
+          to="/student/tournaments"
           v-if="isStudent && currentCourse"
           text
           dark
-          data-cy="Clarifications"
         >
-          Clarifications
-          <v-icon>fas fa-file-alt</v-icon>
+          Tournaments
+          <v-icon>fa-trophy</v-icon>
         </v-btn>
 
         <v-btn to="/student/stats" v-if="isStudent && currentCourse" text dark>
@@ -242,6 +282,17 @@
               <v-list-item-title>Questions</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item
+            to="/management/proposedQuestions"
+            data-cy="ProposedQuestions"
+          >
+            <v-list-item-action>
+              <v-icon>fas fa-question-circle</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Proposed Questions</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item to="/management/topics">
             <v-list-item-action>
               <v-icon>category</v-icon>
@@ -302,6 +353,13 @@
             <v-list-item-title>Student</v-list-item-title>
           </template>
 
+          <v-list-item to="/student/propose" v-if="isStudent && currentCourse">
+            <v-list-item-action>
+              <v-icon>fas fa-question-circle</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Propose Question</v-list-item-content>
+          </v-list-item>
+
           <v-list-item
             to="/student/available"
             v-if="isStudent && currentCourse"
@@ -333,11 +391,21 @@
             <v-list-item-content>Solved Quizzes</v-list-item-content>
           </v-list-item>
 
-          <v-list-item to="/student/clarifications/status" data-cy="Clarifications">
+          <v-list-item
+            to="/student/clarifications/status"
+            data-cy="Clarifications"
+          >
             <v-list-item-action>
               <v-icon>fas fa-file-alt</v-icon>
             </v-list-item-action>
             <v-list-item-content>Clarifications</v-list-item-content>
+          </v-list-item>
+
+          <v-list-item to="/student/tournaments" data-cy="Tournaments">
+            <v-list-item-action>
+              <v-icon>fas fa-trophy</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Tournaments</v-list-item-content>
           </v-list-item>
 
           <v-list-item to="/student/stats">
@@ -374,7 +442,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-
 @Component
 export default class TopBar extends Vue {
   fenixUrl: string = process.env.VUE_APP_FENIX_URL;
