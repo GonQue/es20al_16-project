@@ -24,9 +24,6 @@ import java.time.LocalDateTime
 
 @DataJpaTest
 class RemoveProposedQuestionTest extends Specification {
-    static final String COURSE_NAME = "Course name"
-    static final String COURSE_ACRONYM = "AC"
-    static final String COURSE_ACADEMIC_TERM = "2S"
 
     @Autowired
     QuestionService questionService
@@ -55,10 +52,10 @@ class RemoveProposedQuestionTest extends Specification {
         def student = new User("name", "username", 1, User.Role.STUDENT)
         userRepository.save(student)
 
-        def course = new Course(COURSE_NAME, Course.Type.TECNICO)
+        def course = new Course("Course name", Course.Type.TECNICO)
         courseRepository.save(course)
 
-        def courseExecution = new CourseExecution(course, COURSE_ACRONYM, COURSE_ACADEMIC_TERM, Course.Type.TECNICO)
+        def courseExecution = new CourseExecution(course, "AC", "2S", Course.Type.TECNICO)
         courseExecution.addUser(student)
         student.addCourse(courseExecution)
         courseExecutionRepository.save(courseExecution)
