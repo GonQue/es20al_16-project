@@ -104,6 +104,18 @@ public class ClarificationQuestion {
         responses.add(clarificationResponse);
     }
 
+    public void remove() {
+        getStudent().getClarification_questions().remove(this);
+        getQuestion().getClarification_questions().remove(this);
+        getResponses().forEach(response -> response.setClarificationQuestion(null));
+        getResponses().clear();
+        responses = null;
+        question = null;
+        student = null;
+        answer = null;
+
+    }
+
     @Override
     public String toString() {
         return "QuestionDto{" +
