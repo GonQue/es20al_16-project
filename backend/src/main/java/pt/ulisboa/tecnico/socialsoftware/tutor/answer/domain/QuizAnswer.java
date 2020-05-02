@@ -51,8 +51,6 @@ public class QuizAnswer implements DomainEntity {
         setUser(user);
         setQuiz(quiz);
 
-        this.creationDate = LocalDateTime.now();
-
         List<QuizQuestion> quizQuestions = new ArrayList<>(quiz.getQuizQuestions());
         if (quiz.getScramble()) {
             Collections.shuffle(quizQuestions);
