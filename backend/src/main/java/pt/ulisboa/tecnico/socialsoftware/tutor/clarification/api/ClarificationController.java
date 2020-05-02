@@ -116,4 +116,16 @@ public class ClarificationController {
 
         clarificationService.removeClarificationResponse(clarificationResponseId);
     }
+
+    @PostMapping("/student/clarifications/{clarificationQuestionId}/additional")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public void askForAdditionalClarification(Principal principal, @PathVariable Integer clarificationQuestionId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.askForAdditionalClarification(clarificationQuestionId);
+    }
 }
