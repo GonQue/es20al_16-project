@@ -24,16 +24,6 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 /// <reference types="Cypress" />
-<<<<<<< HEAD
-Cypress.Commands.add('demoAdminLogin', () => {
-<<<<<<< HEAD
-  cy.visit('/');
-  cy.get('[data-cy="adminButton"]').click();
-  cy.contains('Administration').click();
-  cy.contains('Manage Courses').click();
-});
-=======
->>>>>>> reference/master
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="createButton"]').click();
@@ -75,12 +65,6 @@ Cypress.Commands.add(
     cy.get('[data-cy="saveButton"]').click();
   }
 );
-=======
-    cy.visit('/')
-    cy.get('[data-cy="adminButton"]').click()
-    cy.contains('Administration').click()
-    cy.contains('Manage Courses').click()
-})
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="createButton"]').click()
@@ -218,8 +202,3 @@ Cypress.Commands.add('deleteClarificationResponse', (questionContent, responseCo
         .find('[data-cy="DeleteClarificationResponseIcon"]')
         .click()
 })
-
-
-
-
->>>>>>> origin/develop

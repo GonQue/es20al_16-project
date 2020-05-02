@@ -209,14 +209,7 @@ export default class QuizList extends Vue {
       align: 'center',
       width: '10%'
     },
-<<<<<<< HEAD
-    { text: 'Type', value: 'type', align: 'center', width: '5%' },
-
-    { text: 'Series', value: 'series', align: 'center', width: '5%' },
-    { text: 'Version', value: 'version', align: 'center', width: '5%' },
-=======
     { text: 'Options', value: 'options', align: 'center', width: '150px' },
->>>>>>> reference/master
     {
       text: 'Questions',
       value: 'numberOfQuestions',

@@ -210,7 +210,7 @@ class GetAvailableQuizzesTest extends Specification {
 
         then: 'no quiz is returned'
         statementQuizDtos.size() == 0
-     }
+    }
 
     @TestConfiguration
     static class QuizServiceImplTestContextConfiguration {
