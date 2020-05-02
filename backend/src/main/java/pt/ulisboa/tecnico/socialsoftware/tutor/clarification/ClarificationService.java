@@ -210,6 +210,8 @@ public class ClarificationService {
     private ClarificationResponse createClarificationResponse(ClarificationResponseDto clarificationResponseDto, User teacher, ClarificationQuestion clarificationQuestion) {
         clarificationQuestion.setStatus(ClarificationQuestion.Status.ANSWERED);
 
+        clarificationQuestion.setNeedClarification(false);
+
         ClarificationResponse clarificationResponse = new ClarificationResponse(clarificationQuestion, teacher, clarificationResponseDto);
         clarificationResponseRepository.save(clarificationResponse);
 
@@ -279,6 +281,16 @@ public class ClarificationService {
 
     private ClarificationResponse getClarificationResponse(Integer clarificationResponseId){
         return clarificationResponseRepository.findById(clarificationResponseId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_RESPONSE_NOT_FOUND, clarificationResponseId));
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void askForAdditionalClarification(Integer clarificationQuestionId) {
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        clarificationQuestion.askForAdditionalClarification();
     }
 
 }

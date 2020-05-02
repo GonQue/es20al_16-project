@@ -13,6 +13,7 @@ public class ClarificationQuestionDto implements Serializable {
     private String questionContent;
     private String content;
     private String status;
+    private Boolean needClarification;
     private String creationDate = null;
 
     @Transient
@@ -27,6 +28,7 @@ public class ClarificationQuestionDto implements Serializable {
         this.questionContent = clarificationQuestion.getQuestion().getContent();
         this.content = clarificationQuestion.getContent();
         this.status = clarificationQuestion.getStatus().name();
+        this.needClarification = clarificationQuestion.getNeedClarification();
 
         if (clarificationQuestion.getCreationDate() != null)
             this.creationDate = clarificationQuestion.getCreationDate().format(formatter);
