@@ -63,7 +63,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -76,7 +76,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="deleteProposedQuestion(item)"
@@ -136,6 +136,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
+    { text: 'Actions', value: 'action', align: 'center', sortable: false },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
     {
@@ -152,8 +153,7 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'question.image.url', align: 'center' },
-    { text: 'Actions', value: 'action', align: 'center', sortable: false }
+    { text: 'Image', value: 'question.image.url', align: 'center' }
   ];
 
   async created() {

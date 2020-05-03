@@ -47,7 +47,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -60,7 +60,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="evaluate(item)"
@@ -117,6 +117,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
+    { text: 'Actions', value: 'action', align: 'center', sortable: false },
     { text: 'Student', value: 'student.name', align: 'center' },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
@@ -133,8 +134,7 @@ export default class ProposeQuestionView extends Vue {
       value: 'question.image.url',
       align: 'center',
       sortable: false
-    },
-    { text: 'Actions', value: 'action', align: 'center', sortable: false }
+    }
   ];
 
   async created() {
