@@ -21,7 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class AdditionalClarificationTest extends Specification {
+class MakeClarificationAvailableToOtherStudents extends Specification {
     public static final String CONTENT = "clarificationQuestion content"
     public static final String TEACHER_RESPONSE = "teacher response"
 
@@ -100,15 +100,14 @@ class AdditionalClarificationTest extends Specification {
         clarificationResponseRepository.save(clarificationResponse)
     }
 
-    def 'student asks for additional clarfications'() {
+    def 'teacher makes the question and its clarification available to other students'() {
         when:
-        clarificationService.askForAdditionalClarification(clarificationQuestion.getId())
+        clarificationService.makeClarificationAvailableToOtherStudents(clarificationQuestion.getId())
 
         then: 'now the question needs a clarification again'
         clarificationQuestionRepository.count() == 1L
         def result = clarificationQuestionRepository.findAll().get(0)
-        result.getStatus() == ClarificationQuestion.Status.ANSWERED
-        result.getNeedClarification()
+        result.getAvailableToOtherStudents()
     }
 
     @TestConfiguration

@@ -212,6 +212,8 @@ public class ClarificationService {
 
         clarificationQuestion.setNeedClarification(false);
 
+        clarificationQuestion.setAvailableToOtherStudents(false);
+
         ClarificationResponse clarificationResponse = new ClarificationResponse(clarificationQuestion, teacher, clarificationResponseDto);
         clarificationResponseRepository.save(clarificationResponse);
 
@@ -291,6 +293,16 @@ public class ClarificationService {
         ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
 
         clarificationQuestion.askForAdditionalClarification();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void makeClarificationAvailableToOtherStudents(Integer clarificationQuestionId) {
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        clarificationQuestion.setAvailableToOtherStudents(true);
     }
 
 }

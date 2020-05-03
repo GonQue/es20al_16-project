@@ -14,6 +14,7 @@ public class ClarificationQuestionDto implements Serializable {
     private String content;
     private String status;
     private Boolean needClarification;
+    private Boolean availableToOtherStudents;
     private String creationDate = null;
 
     @Transient
@@ -65,6 +66,10 @@ public class ClarificationQuestionDto implements Serializable {
     public Boolean getNeedClarification() { return needClarification; }
 
     public void setNeedClarification(Boolean needClarification) { this.needClarification = needClarification; }
+
+    public Boolean getAvailableToOtherStudents() { return availableToOtherStudents; }
+
+    public void setAvailableToOtherStudents(Boolean availableForOtherStudents) { this.availableToOtherStudents = availableForOtherStudents; }
 
     public String getCreationDate() {
         return creationDate;

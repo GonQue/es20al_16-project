@@ -38,6 +38,8 @@ public class ClarificationQuestion {
 
     private Boolean needClarification;
 
+    private Boolean availableToOtherStudents;
+
     @Column(name = "creation_date")
     private LocalDateTime creationDate = null;
 
@@ -53,6 +55,7 @@ public class ClarificationQuestion {
         answer = a;
         setStatus(Status.NOT_ANSWERED);
         setNeedClarification(true);
+        setAvailableToOtherStudents(false);
         content = clarificationQuestionDto.getContent();
         creationDate = LocalDateTime.now();
     }
@@ -100,6 +103,10 @@ public class ClarificationQuestion {
     public void setNeedClarification(Boolean b) {
         this.needClarification = b;
     }
+
+    public Boolean getAvailableToOtherStudents() { return availableToOtherStudents; }
+
+    public void setAvailableToOtherStudents(Boolean availableForOtherStudents) { this.availableToOtherStudents = availableForOtherStudents; }
 
     public LocalDateTime getCreationDate() {
         return creationDate;
