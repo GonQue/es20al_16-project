@@ -27,8 +27,7 @@
       </template>
 
       <template v-slot:item.question.content="{ item }">
-        <p
-          @click="showQuestionDialog(item)"
+        <p @click="showQuestionDialog(item)"
       /></template>
 
       <template v-slot:item.question.topics="{ item }">
