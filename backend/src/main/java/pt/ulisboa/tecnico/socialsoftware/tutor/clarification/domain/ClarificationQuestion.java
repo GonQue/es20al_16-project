@@ -138,6 +138,8 @@ public class ClarificationQuestion {
         this.needClarification = true;
     }
 
+    public void changeClarificationAvailability() { this.availableToOtherStudents = !this.availableToOtherStudents; }
+
     @Override
     public String toString() {
         return "QuestionDto{" +

@@ -30,6 +30,7 @@ public class ClarificationQuestionDto implements Serializable {
         this.content = clarificationQuestion.getContent();
         this.status = clarificationQuestion.getStatus().name();
         this.needClarification = clarificationQuestion.getNeedClarification();
+        this.availableToOtherStudents = clarificationQuestion.getAvailableToOtherStudents();
 
         if (clarificationQuestion.getCreationDate() != null)
             this.creationDate = clarificationQuestion.getCreationDate().format(formatter);
@@ -69,7 +70,7 @@ public class ClarificationQuestionDto implements Serializable {
 
     public Boolean getAvailableToOtherStudents() { return availableToOtherStudents; }
 
-    public void setAvailableToOtherStudents(Boolean availableForOtherStudents) { this.availableToOtherStudents = availableForOtherStudents; }
+    public void setAvailableToOtherStudents(Boolean availableToOtherStudents) { this.availableToOtherStudents = availableToOtherStudents; }
 
     public String getCreationDate() {
         return creationDate;

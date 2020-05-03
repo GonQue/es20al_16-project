@@ -299,10 +299,10 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void makeClarificationAvailableToOtherStudents(Integer clarificationQuestionId) {
+    public void changeClarificationAvailability(Integer clarificationQuestionId) {
         ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
 
-        clarificationQuestion.setAvailableToOtherStudents(true);
+        clarificationQuestion.changeClarificationAvailability();
     }
 
 }
