@@ -98,6 +98,7 @@ class StudentEnrollTournamentTest extends Specification {
 
         quiz = new Quiz()
         quiz.setKey(1)
+        quiz.setType(Quiz.QuizType.PROPOSED.toString())
         quizRepository.save(quiz)
         tournament.setQuiz(quiz)
         tournament.setStatus(Tournament.Status.STARTED)
