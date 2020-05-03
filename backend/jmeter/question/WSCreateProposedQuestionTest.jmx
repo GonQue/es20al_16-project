@@ -109,12 +109,7 @@
 			&quot;content&quot;: &quot;optionsContent&quot;,&#xd;
 			&quot;correct&quot;: true}],&#xd;
 		&quot;status&quot;: &quot;SUBMITTED&quot;,&#xd;
-		&quot;creationDate&quot;: &quot;2020-03-26 17:30&quot;,&#xd;
-		&quot;topics&quot;: [&#xd;
-      	{&#xd;
-        		&quot;id&quot;: 91,&#xd;
-        		&quot;name&quot;: &quot;Security&quot;&#xd;
-      	}]&#xd;
+		&quot;creationDate&quot;: &quot;2020-03-26 17:30&quot;	&#xd;
 	}&#xd;
 }&#xd;
 </stringProp>
@@ -158,15 +153,6 @@
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question content" enabled="true">
               <stringProp name="JSON_PATH">$.question.content</stringProp>
               <stringProp name="EXPECTED_VALUE">Question_Content</stringProp>
-              <boolProp name="JSONVALIDATION">true</boolProp>
-              <boolProp name="EXPECT_NULL">false</boolProp>
-              <boolProp name="INVERT">false</boolProp>
-              <boolProp name="ISREGEX">false</boolProp>
-            </JSONPathAssertion>
-            <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question topic" enabled="true">
-              <stringProp name="JSON_PATH">$.question.topics[0].name</stringProp>
-              <stringProp name="EXPECTED_VALUE">Security</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
