@@ -41,7 +41,6 @@
 
       <template v-slot:item.content="{ item }">
         <p
-          v-html="convertMarkDownNoFigure(item.content, null)"
           @click="showQuestionDialog(item)"
       /></template>
 
@@ -98,7 +97,6 @@ import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
 import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
 import User from '@/models/user/User';
@@ -148,10 +146,6 @@ export default class ProposeQuestionView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
   }
 
   showQuestionDialog(propQuestion: ProposedQuestion) {

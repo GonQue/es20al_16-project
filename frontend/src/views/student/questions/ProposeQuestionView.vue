@@ -28,7 +28,6 @@
 
       <template v-slot:item.question.content="{ item }">
         <p
-          v-html="convertMarkDownNoFigure(item.question.content, null)"
           @click="showQuestionDialog(item)"
       /></template>
 
@@ -121,7 +120,6 @@ import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDi
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 
 @Component({
   components: {
@@ -182,10 +180,6 @@ export default class ProposeQuestionView extends Vue {
 
   onCloseShowQuestionDialog() {
     this.questionDialog = false;
-  }
-
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
   }
 
   showJustificationDialog(propQuestion: ProposedQuestion) {

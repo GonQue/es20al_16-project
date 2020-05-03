@@ -101,7 +101,7 @@ public class ProposedQuestionService {
     }
 
     private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
-        proposedQuestionDto.getQuestion().setCreationDate(LocalDateTime.now().format(Course.formatter));
+        proposedQuestionDto.getQuestion().setCreationDate(LocalDateTime.now().toString());
         Question question = new Question(course, proposedQuestionDto.getQuestion());
         question.setStatus(Question.Status.SUBMITTED);
         questionRepository.save(question);
