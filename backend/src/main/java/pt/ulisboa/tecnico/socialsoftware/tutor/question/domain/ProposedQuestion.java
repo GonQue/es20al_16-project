@@ -42,6 +42,7 @@ public class ProposedQuestion {
         checkUserPermission(student, course, User.Role.STUDENT);
         this.student = student;
         student.addProposedQuestion(this);
+        course.addProposedQuestion(this);
     }
 
     public Integer getId() { return id; }
@@ -66,16 +67,12 @@ public class ProposedQuestion {
     }
 
     public void evaluate (String justification, Evaluation evaluation){
-        if (justification == null) {
+        if (evaluation == Evaluation.REJECTED && justification == null) {
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_EMPTY);
         }
         if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
         }
-        if (this.evaluation != Evaluation.AWAITING && this.teacher != null){
-            throw new TutorException(ErrorMessage.PQ_ALREADY_EVALUATED);
-        }
-
         setJustification(justification);
         setEvaluation(evaluation);
     }
@@ -110,5 +107,9 @@ public class ProposedQuestion {
         }
         topics.forEach(question::addTopic);
         this.question = question;
+    }
+
+    public boolean canBeRemoved() {
+        return this.evaluation != Evaluation.APPROVED;
     }
 }

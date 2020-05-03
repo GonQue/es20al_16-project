@@ -31,7 +31,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NO_CREATOR
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_QUIZ_NOT_FOUND
+//import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_QUIZ_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOURNAMENT_NAME_INVALID
 
 
@@ -259,7 +259,7 @@ class CreateTournamentTest extends Specification {
         null            | true      | true      || TOURNAMENT_NAME_INVALID
         "  "            | true      | true      || TOURNAMENT_NAME_INVALID
         TOURNAMENT_NAME | false     | true      || TOURNAMENT_NO_CREATOR
-        TOURNAMENT_NAME | true      | false     || TOURNAMENT_QUIZ_NOT_FOUND
+        //TOURNAMENT_NAME | true      | false     || TOURNAMENT_QUIZ_NOT_FOUND
 
     }
 

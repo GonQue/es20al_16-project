@@ -14,9 +14,7 @@ import QuizzesView from './views/teacher/quizzes/QuizzesView.vue';
 import StudentsView from './views/teacher/students/StudentsView.vue';
 import ListTeacherClarificationQuestionsView from './views/teacher/clarifications/ListTeacherClarificationQuestionsView.vue';
 import ListClarificationResponsesView from './views/teacher/clarifications/ListClarificationResponsesView.vue';
-
 import StudentView from '@/views/student/StudentView.vue';
-
 import ListClarificationQuestionsView from './views/student/clarification/ListClarificationQuestionsView.vue';
 import AvailableQuizzesView from '@/views/student/AvailableQuizzesView.vue';
 import SolvedQuizzesView from '@/views/student/SolvedQuizzesView.vue';
@@ -24,13 +22,15 @@ import QuizView from '@/views/student/quiz/QuizView.vue';
 import ResultsView from '@/views/student/quiz/ResultsView.vue';
 import StatsView from '@/views/student/StatsView.vue';
 import ScanView from '@/views/student/ScanView.vue';
-
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
 import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
+import TournamentsListView from '@/views/student/tournaments/TournamentsListView.vue';
+import ProposedQuestionsView from '@/views/teacher/proposedQuestions/ProposedQuestionsView.vue';
+import ProposeQuestionView from '@/views/student/questions/ProposeQuestionView.vue';
 
 Vue.use(Router);
 
@@ -73,6 +73,15 @@ let router = new Router({
           component: QuestionsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Questions',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
+          path: 'proposedQuestions',
+          name: 'proposed-questions-management',
+          component: ProposedQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Proposed Questions',
             requiredAuth: 'Teacher'
           }
         },
@@ -211,6 +220,15 @@ let router = new Router({
           }
         },
         {
+          path: 'tournaments',
+          name: 'list-tournaments',
+          component: TournamentsListView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Tournaments',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'clarifications/status',
           name: 'clarificationQuestions',
           component: ListClarificationQuestionsView,
@@ -226,6 +244,15 @@ let router = new Router({
           props: true,
           meta: {
             title: process.env.VUE_APP_NAME + ' - List Responses',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'propose',
+          name: 'propose-question',
+          component: ProposeQuestionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Propose Question',
             requiredAuth: 'Student'
           }
         }

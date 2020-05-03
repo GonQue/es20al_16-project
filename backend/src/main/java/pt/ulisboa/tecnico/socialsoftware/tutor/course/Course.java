@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 
@@ -37,6 +38,9 @@ public class Course implements DomainEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
     private final Set<Topic> topics = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public Course() {}
 
@@ -78,6 +82,8 @@ public class Course implements DomainEntity {
         return topics;
     }
 
+    public Set<ProposedQuestion> getProposedQuestions() {return proposedQuestions; }
+
     public void addCourseExecution(CourseExecution courseExecution) {
         courseExecutions.add(courseExecution);
     }
@@ -85,6 +91,12 @@ public class Course implements DomainEntity {
     public void addQuestion(Question question) {
         questions.add(question);
     }
+
+    public void addProposedQuestion(ProposedQuestion proposedQuestion) {
+        proposedQuestions.add(proposedQuestion);
+    }
+
+    public void removeProposedQuestion(ProposedQuestion proposedQuestion) { proposedQuestions.remove(proposedQuestion); }
 
     public void addTopic(Topic topic) {
         topics.add(topic);

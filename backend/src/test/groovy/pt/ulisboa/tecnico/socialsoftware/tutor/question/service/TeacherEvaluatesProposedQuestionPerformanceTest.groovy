@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuest
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
 import java.time.LocalDateTime
@@ -105,7 +106,7 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
             proposedQuestionRepository.save(proposedQuestion)
 
             proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
-            proposedQuestionDto.setTeacherId(teacher.getId())
+            proposedQuestionDto.setTeacher(new UserDto(teacher))
             proposedQuestionDto.setEvaluation(ProposedQuestion.Evaluation.AWAITING.name())
             proposedQuestionDto.setJustification(" ")
 
@@ -123,7 +124,6 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
 
     @TestConfiguration
     static class TeacherEvaluateTestContextConfiguration {
-
         @Bean
         QuestionService questionService() {
             return new QuestionService()

@@ -1,6 +1,7 @@
 describe('Administration walkthrough', () => {
   beforeEach(() => {
     cy.demoAdminLogin();
+<<<<<<< HEAD
 
     cy.get('[data-cy="administrationMenuButton"]').click();
     cy.get('[data-cy="manageCoursesMenuButton"]').click();
@@ -8,6 +9,12 @@ describe('Administration walkthrough', () => {
 
   afterEach(() => {
     cy.logout();
+=======
+  });
+
+  afterEach(() => {
+    cy.contains('Logout').click();
+>>>>>>> develop
   });
 
   it('login creates and deletes a course execution', () => {

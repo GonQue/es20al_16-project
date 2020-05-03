@@ -46,15 +46,15 @@ public class Tournament {
     @Column(name = "number_of_questions")
     private Integer numberOfQuestions;
 
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "tournament_creator_id")
     private User creator;
 
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
 
-    @ManyToOne
+    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 

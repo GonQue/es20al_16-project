@@ -5,6 +5,7 @@ coverage/
 cypress/
 tests/e2e/videos/
 
+
 # local env files
 .env
 .env*
@@ -22,3 +23,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+jmeter.log
