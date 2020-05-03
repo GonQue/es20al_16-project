@@ -128,4 +128,16 @@ public class ClarificationController {
 
         clarificationService.askForAdditionalClarification(clarificationQuestionId);
     }
+
+    @PostMapping("/management/clarifications/{clarificationId}/share")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public void makeClarificationAvailableToOtherStudents(Principal principal, @PathVariable Integer clarificationId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.makeClarificationAvailableToOtherStudents(clarificationId);
+    }
 }
