@@ -34,12 +34,12 @@ Cypress.Commands.add('demoAdminLogin', () => {
 
 Cypress.Commands.add('demoStudentLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="studentButton"]').click();
+  cy.get('[data-cy="demoStudentLoginButton"]').click();
 });
 
 Cypress.Commands.add('demoTeacherLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="teacherButton"]').click();
+  cy.get('[data-cy="demoTeacherLoginButton"]').click();
 });
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
@@ -87,7 +87,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('demoStudentLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="studentButton"]').click();
+  cy.get('[data-cy="demoStudentLoginButton"]').click();
 });
 
 Cypress.Commands.add(
@@ -299,7 +299,7 @@ Cypress.Commands.add('closeQuestionMessage', () => {
 
 Cypress.Commands.add('demoTeacherLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="teacherButton"]').click();
+  cy.get('[data-cy="demoTeacherLoginButton"]').click();
 });
 
 Cypress.Commands.add('checkClarificationQuestions', () => {
