@@ -40,16 +40,14 @@
       </template>
 
       <template v-slot:item.content="{ item }">
-        <p
-          v-html="convertMarkDownNoFigure(item.content, null)"
-          @click="showQuestionDialog(item)"
+        <p @click="showQuestionDialog(item)"
       /></template>
 
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -62,7 +60,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="evaluate(item)"
@@ -98,7 +96,6 @@ import Image from '@/models/management/Image';
 import Topic from '@/models/management/Topic';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
 import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
 import User from '@/models/user/User';
@@ -120,6 +117,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
+    { text: 'Actions', value: 'action', align: 'center', sortable: false },
     { text: 'Student', value: 'student.name', align: 'center' },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
@@ -136,8 +134,7 @@ export default class ProposeQuestionView extends Vue {
       value: 'question.image.url',
       align: 'center',
       sortable: false
-    },
-    { text: 'Actions', value: 'action', align: 'center', sortable: false }
+    }
   ];
 
   async created() {
@@ -148,10 +145,6 @@ export default class ProposeQuestionView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
   }
 
   showQuestionDialog(propQuestion: ProposedQuestion) {

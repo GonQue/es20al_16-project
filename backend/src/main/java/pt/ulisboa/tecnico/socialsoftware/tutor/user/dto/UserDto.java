@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.user.dto;
-
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
-
 import java.io.Serializable;
 
 public class UserDto implements Serializable {
