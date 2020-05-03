@@ -56,6 +56,7 @@ class CreateTournamentsServiceSpockPerformanceTest extends Specification {
         userRepository.save(user)
 
         def quiz = new Quiz()
+        quiz.setType(Quiz.QuizType.PROPOSED.toString());
         quiz.setKey(1)
         quizRepository.save(quiz)
         def quizDto = new QuizDto(quiz, false)
