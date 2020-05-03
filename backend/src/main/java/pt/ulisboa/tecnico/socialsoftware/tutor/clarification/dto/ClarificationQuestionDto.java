@@ -62,6 +62,10 @@ public class ClarificationQuestionDto implements Serializable {
         this.status = status;
     }
 
+    public Boolean getNeedClarification() { return needClarification; }
+
+    public void setNeedClarification(Boolean needClarification) { this.needClarification = needClarification; }
+
     public String getCreationDate() {
         return creationDate;
     }

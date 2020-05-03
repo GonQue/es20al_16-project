@@ -672,6 +672,14 @@ export default class RemoteServices {
       });
   }
 
+  static async askForAdditionalClarification(clarificationQuestionId: number) {
+    return httpClient
+        .post(`/student/clarifications/${clarificationQuestionId}/additional`)
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {

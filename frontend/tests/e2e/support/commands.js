@@ -212,7 +212,7 @@ Cypress.Commands.add('deleteClarificationQuestion', clarificationQuestion => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 6)
+    .should('have.length', 7)
     .find('[data-cy="DeleteClarificationIcon"]')
     .click();
 });
@@ -242,10 +242,59 @@ Cypress.Commands.add('successMessage', (name, acronym, academicTerm) => {
     .click();
 });
 
+// Student - ask for additional clarification
+
+Cypress.Commands.add('askForAdditionalClarification', clarificationContent => {
+  cy.contains('Questions').click();
+  cy.get('[data-cy="Clarifications"]').click();
+  cy.contains(clarificationContent)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="ShowResponses"]')
+    .click({ force: true });
+  cy.get('[data-cy="askForAdditionalClarificationButton"').click();
+  cy.get('[data-cy="SubmitButton"').click();
+});
+
+Cypress.Commands.add('checkAdditionalClarification', clarificationContent => {
+  cy.contains('Questions').click();
+  cy.contains('Clarifications').click();
+  cy.contains(clarificationContent)
+    .get('[data-cy="NeedClarificationIcon"')
+    .should('have.class', 'mdi-comment-remove');
+});
+
+Cypress.Commands.add(
+  'cancelAskForAdditionalClarification',
+  clarificationContent => {
+    cy.contains('Questions').click();
+    cy.get('[data-cy="Clarifications"]').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 7)
+      .find('[data-cy="ShowResponses"]')
+      .click({ force: true });
+    cy.get('[data-cy="askForAdditionalClarificationButton"').click();
+    cy.get('[data-cy="CancelButton"').click();
+  }
+);
+
+Cypress.Commands.add('checkNoAdditionalClarification', clarificationContent => {
+  cy.contains('Questions').click();
+  cy.contains('Clarifications').click();
+  cy.contains(clarificationContent)
+    .get('[data-cy="NeedClarificationIcon"')
+    .should('have.class', 'mdi-comment-check');
+});
+
 Cypress.Commands.add('openProposeQuestionStudentMenu', () => {
   cy.contains('Questions').click();
   cy.get('[data-cy="ProposeQuestion"').click();
-})
+});
 
 Cypress.Commands.add(
   'createProposedQuestion',
@@ -314,7 +363,7 @@ Cypress.Commands.add(
       .parent()
       .should('have.length', 1)
       .children()
-      .should('have.length', 6)
+      .should('have.length', 7)
       .find('[data-cy="AnswerClarification"]')
       .click();
     cy.get('[data-cy="TeacherResponse"]')
@@ -331,9 +380,9 @@ Cypress.Commands.add(
       .parent()
       .should('have.length', 1)
       .children()
-      .should('have.length', 6)
+      .should('have.length', 7)
       .find('[data-cy="ShowResponses"]')
-      .click({force:true});
+      .click({ force: true });
     cy.contains(responseContent)
       .first()
       .parent()

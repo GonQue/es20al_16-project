@@ -4,6 +4,7 @@ export default class StatementClarificationQuestion {
   answerId: number | null = null;
   questionContent: string = '';
   status: string = 'NOT_ANSWERED';
+  needClarification: boolean | null = null;
   creationDate!: string | null;
 
   constructor(jsonObj?: StatementClarificationQuestion) {
@@ -13,6 +14,7 @@ export default class StatementClarificationQuestion {
       this.answerId = jsonObj.answerId;
       this.questionContent = jsonObj.questionContent;
       this.status = jsonObj.status;
+      this.needClarification = jsonObj.needClarification;
       this.creationDate = jsonObj.creationDate;
     }
   }
