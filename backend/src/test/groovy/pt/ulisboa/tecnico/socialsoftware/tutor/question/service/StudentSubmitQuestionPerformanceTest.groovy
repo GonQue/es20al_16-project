@@ -8,20 +8,25 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import spock.lang.Specification
 
 import java.time.LocalDateTime;
 
 @DataJpaTest
 class StudentSubmitQuestionPerformanceTest extends Specification {
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     ProposedQuestionService proposedQuestionService
@@ -62,7 +67,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         1.upto(1, {
             def propQuestionDto = new ProposedQuestionDto()
             propQuestionDto.setQuestion(createQuestionDto(it))
-            propQuestionDto.setStudentId(student.getId())
+            propQuestionDto.setStudent(new UserDto(student))
             list.add(propQuestionDto)
         })
 
@@ -93,6 +98,10 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
 
     @TestConfiguration
     static class PropQuestionServiceImplTestContextConfiguration {
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService questionPropService() {

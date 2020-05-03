@@ -227,6 +227,7 @@ public class Question implements DomainEntity {
 
     public void addTopic(Topic topic) {
         topics.add(topic);
+        topic.addQuestion(this);
     }
 
     public void remove() {

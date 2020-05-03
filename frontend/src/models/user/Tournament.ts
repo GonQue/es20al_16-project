@@ -9,8 +9,7 @@ export class Tournament {
   endDate: string = '';
   numberOfQuestions: number | null = null;
   topics: Topic[] = [];
-  enrolled: User[] = [];
-  //quiz!: Quiz | null=null;
+  enrolled: string[] = [];
   status: string = 'CREATED';
 
   constructor(jsonObj?: Tournament) {
@@ -20,10 +19,9 @@ export class Tournament {
       this.startDate = jsonObj.startDate;
       this.endDate = jsonObj.endDate;
       this.numberOfQuestions = jsonObj.numberOfQuestions;
-      //this.quiz = new Quiz(jsonObj.quiz);
       this.status = jsonObj.status;
+      this.enrolled = jsonObj.enrolled;
 
-      this.enrolled = jsonObj.enrolled.map((user: User) => new User(user));
       this.topics = jsonObj.topics.map((topic: Topic) => new Topic(topic));
     }
   }

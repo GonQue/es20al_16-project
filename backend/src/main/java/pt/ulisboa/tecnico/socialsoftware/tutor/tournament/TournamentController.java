@@ -32,7 +32,7 @@ public class TournamentController {
 
     @PostMapping("/tournaments/{tournamentId}/enroll-student")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public TournamentDto studentEnrollTournament(@PathVariable Integer tournamentId, Principal principal){
+    public TournamentDto studentEnrollTournament(@PathVariable int tournamentId, Principal principal){
         User user = (User) ((Authentication) principal).getPrincipal();
 
         if(user == null){

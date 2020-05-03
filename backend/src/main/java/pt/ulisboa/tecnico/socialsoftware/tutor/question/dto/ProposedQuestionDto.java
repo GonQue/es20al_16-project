@@ -1,14 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.io.Serializable;
 
 public class ProposedQuestionDto implements Serializable {
     private Integer id;
-    private Integer studentId;
+    private UserDto student;
     private QuestionDto question;
-    private Integer teacherId;
+    private UserDto teacher;
     private String justification;
     private String evaluation;
 
@@ -17,7 +18,7 @@ public class ProposedQuestionDto implements Serializable {
     public ProposedQuestionDto(ProposedQuestion proposedQuestion) {
         this.id = proposedQuestion.getId();
         this.question = new QuestionDto(proposedQuestion.getQuestion());
-        this.studentId = proposedQuestion.getStudent().getId();
+        this.student = new UserDto(proposedQuestion.getStudent());
         this.evaluation = proposedQuestion.getEvaluation().name();
         if (proposedQuestion.getTeacher() != null) {
             evaluate(proposedQuestion);
@@ -25,7 +26,7 @@ public class ProposedQuestionDto implements Serializable {
     }
 
     private void evaluate(ProposedQuestion proposedQuestion) {
-        this.teacherId = proposedQuestion.getTeacher().getId();
+        this.teacher = new UserDto(proposedQuestion.getTeacher());
         this.justification = proposedQuestion.getJustification();
     }
 
@@ -33,13 +34,13 @@ public class ProposedQuestionDto implements Serializable {
 
     public void setId(Integer id) { this.id = id; }
 
-    public Integer getStudentId() { return studentId; }
+    public UserDto getStudent() { return student; }
 
-    public void setStudentId(Integer studentId) { this.studentId = studentId; }
+    public void setStudent(UserDto student) { this.student = student; }
 
-    public Integer getTeacherId() { return teacherId; }
+    public UserDto getTeacher() { return teacher; }
 
-    public void setTeacherId(Integer teacherId) { this.teacherId = teacherId; }
+    public void setTeacher(UserDto teacher) { this.teacher = teacher; }
 
     public String getJustification() { return justification; }
 

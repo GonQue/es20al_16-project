@@ -74,6 +74,7 @@ public enum ErrorMessage {
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
     QUESTION_CLARIFICATION_NOT_FOUND("Question clarification not found with id %d"),
+    QUESTION_CLARIFICATION_RESPONSE_NOT_FOUND("Clarification response not found with id %d"),
     RESPONSE_CONTENT("The response should have a valid content"),
     CLARIFICATION_CONTENT("The clarification should have a valid content"),
     USER_IS_NOT_A_TEACHER("The user is not a teacher"),
@@ -91,6 +92,7 @@ public enum ErrorMessage {
     JUSTIFICATION_IS_BLANK("The justification is blank"),
     PROPQUESTION_MISSING_QUESTION("Proposed Question have empty question"),
     TOPIC_NOT_BELONGING_TO_COURSE("Topic does not belong to the course"),
+    PROPQUESTION_CANT_BE_REMOVED("The Proposed Question was approved so it can't be removed"),
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file");
