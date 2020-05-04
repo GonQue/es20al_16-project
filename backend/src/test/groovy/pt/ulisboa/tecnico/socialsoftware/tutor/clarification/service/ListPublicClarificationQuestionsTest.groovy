@@ -23,11 +23,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_ANSWERS_NOT_FOUND
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_ID_IS_NULL
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND
 
 @DataJpaTest
-class ListOtherPublicClarificationQuestionsTest extends Specification {
+class ListPublicClarificationQuestionsTest extends Specification {
     public static final String CONTENT = "clarificationQuestion content"
     public static final Integer UNEXISTENT_ID = -1
 
@@ -138,7 +139,7 @@ class ListOtherPublicClarificationQuestionsTest extends Specification {
 
     def 'list a public clarificationQuestion about a question answered by second student'() {
         when:
-        def result = clarificationService.listOtherPublicClarificationQuestions(secondStudent.getId())
+        def result = clarificationService.listPublicClarificationQuestions(secondStudent.getId(), question.getId())
 
         then: 'the returned data has a clarificationQuestion from another student'
         result.size() == 1
@@ -163,7 +164,7 @@ class ListOtherPublicClarificationQuestionsTest extends Specification {
         clarificationQuestionRepository.save(secondClarificationQuestion)
 
         when:
-        def result = clarificationService.listOtherPublicClarificationQuestions(secondStudent.getId())
+        def result = clarificationService.listPublicClarificationQuestions(secondStudent.getId(), question.getId())
 
         then: 'the returned data has two clarificationQuestion from other students'
         result.size() == 2
@@ -190,7 +191,7 @@ class ListOtherPublicClarificationQuestionsTest extends Specification {
         clarificationQuestionRepository.save(privateClarificationQuestion)
 
         when:
-        def result = clarificationService.listOtherPublicClarificationQuestions(secondStudent.getId())
+        def result = clarificationService.listPublicClarificationQuestions(secondStudent.getId(), question.getId())
 
         then: 'the returned data has only one clarificationQuestion from another student; the new one is rejected'
         result.size() == 1
@@ -205,15 +206,16 @@ class ListOtherPublicClarificationQuestionsTest extends Specification {
         userRepository.save(thirdStudent)
 
         when:
-        def result = clarificationService.listOtherPublicClarificationQuestions(thirdStudent.getId())
+        clarificationService.listPublicClarificationQuestions(thirdStudent.getId(), question.getId())
 
         then: 'the returned data has a clarificationQuestion from another student'
-        result.size() == 0
+        def error = thrown(TutorException)
+        error.errorMessage == QUESTION_ANSWERS_NOT_FOUND
     }
 
     def 'user does not exist'() {
         when:
-        clarificationService.listOtherPublicClarificationQuestions(UNEXISTENT_ID)
+        clarificationService.listPublicClarificationQuestions(UNEXISTENT_ID, question.getId())
 
         then:
         def error = thrown(TutorException)
@@ -222,7 +224,7 @@ class ListOtherPublicClarificationQuestionsTest extends Specification {
 
     def 'user id is null'() {
         when:
-        clarificationService.listOtherPublicClarificationQuestions(null)
+        clarificationService.listPublicClarificationQuestions(null, question.getId())
 
         then:
         def error = thrown(TutorException)

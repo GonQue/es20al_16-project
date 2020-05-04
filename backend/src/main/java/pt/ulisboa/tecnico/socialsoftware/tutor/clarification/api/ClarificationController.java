@@ -57,16 +57,16 @@ public class ClarificationController {
         return clarificationService.listClarificationQuestions(user.getId());
     }
 
-    @GetMapping("/student/clarifications/public")
+    @GetMapping("/student/{questionId}/clarifications")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public List<ClarificationQuestionDto> getOtherPublicClarificationQuestions(Principal principal) {
+    public List<ClarificationQuestionDto> getOtherPublicClarificationQuestions(Principal principal, @PathVariable Integer questionId) {
         User user = (User) ((Authentication) principal).getPrincipal();
 
         if (user == null) {
             throw new TutorException(AUTHENTICATION_ERROR);
         }
 
-        return clarificationService.listOtherPublicClarificationQuestions(user.getId());
+        return clarificationService.listPublicClarificationQuestions(user.getId(), questionId);
     }
 
     @GetMapping("/student/clarifications/{clarificationId}/responses")

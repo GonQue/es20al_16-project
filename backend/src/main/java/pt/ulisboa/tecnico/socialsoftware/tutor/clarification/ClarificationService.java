@@ -244,17 +244,19 @@ public class ClarificationService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<ClarificationQuestionDto> listOtherPublicClarificationQuestions(Integer studentId) {
+    public List<ClarificationQuestionDto> listPublicClarificationQuestions(Integer studentId, Integer questionId) {
 
         checkStudentId(studentId);
 
-        getStudent(studentId);
+        User student = getStudent(studentId);
 
-        return listOtherPublicClarificationQuestionsDto(studentId);
+        checkQuestionAnswers(questionId, student);
+
+        return listPublicClarificationQuestionsDto(questionId);
     }
 
-    private List<ClarificationQuestionDto> listOtherPublicClarificationQuestionsDto(Integer studentId) {
-        return clarificationQuestionRepository.findOtherPublicClarificationQuestions(studentId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+    private List<ClarificationQuestionDto> listPublicClarificationQuestionsDto(Integer questionId) {
+        return clarificationQuestionRepository.findOtherPublicClarificationQuestions(questionId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
 
     @Retryable(
