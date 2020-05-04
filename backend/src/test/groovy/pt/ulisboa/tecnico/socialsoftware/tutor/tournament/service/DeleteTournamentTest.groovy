@@ -19,6 +19,7 @@ import spock.lang.Specification
 
 
 
+
 @DataJpaTest
 class DeleteTournamentTest extends Specification {
     public static final String COURSE_NAME = "Software Architecture"

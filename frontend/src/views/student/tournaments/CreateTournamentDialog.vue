@@ -121,10 +121,6 @@ export default class CreateTournamentDialog extends Vue {
   @Prop({ type: Array, required: true }) readonly topics!: Topic;
 
   createTournament!: Tournament;
-
-  //topics: Topic[] = [];
-  //quizzes: Quiz[] = [];//JSON.parse(JSON.stringify(this.question.topics));
-
   quizzes: StatementQuiz[] = [];
 
   async created() {

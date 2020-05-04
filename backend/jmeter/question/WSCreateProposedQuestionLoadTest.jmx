@@ -104,7 +104,9 @@
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
                     <stringProp name="Argument.value">{&#xd;
-	&quot;studentId&quot;: 676,&#xd;
+	&quot;student&quot;: {&#xd;
+    		&quot;username&quot;: &quot;Demo-Student&quot;&#xd;
+  	},&#xd;
 	&quot;question&quot;: {&#xd;
 		&quot;title&quot;: &quot;Question_Title&quot;,&#xd;
 		&quot;content&quot;: &quot;Question_Content&quot;,&#xd;
@@ -241,12 +243,13 @@
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">goncalo</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM proposed_questions WHERE student_id = 676;
+          <stringProp name="query">DELETE FROM courses_proposed_questions WHERE course_id = 2;
+DELETE FROM proposed_questions WHERE student_id = 676;
 DELETE FROM options WHERE question_id in (SELECT id from questions WHERE title = &apos;Question_Title&apos;);
 DELETE FROM questions WHERE title = &apos;Question_Title&apos;;</stringProp>
           <stringProp name="queryArguments"></stringProp>

@@ -10,6 +10,7 @@ public class ClarificationQuestionDto implements Serializable {
 
     private Integer id;
     private Integer answerId;
+    private String questionContent;
     private String content;
     private String status;
     private String creationDate = null;
@@ -23,6 +24,7 @@ public class ClarificationQuestionDto implements Serializable {
     public ClarificationQuestionDto(ClarificationQuestion clarificationQuestion) {
         this.id = clarificationQuestion.getId();
         this.answerId = clarificationQuestion.getAnswer().getId();
+        this.questionContent = clarificationQuestion.getQuestion().getContent();
         this.content = clarificationQuestion.getContent();
         this.status = clarificationQuestion.getStatus().name();
 
@@ -65,6 +67,10 @@ public class ClarificationQuestionDto implements Serializable {
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
+
+    public String getQuestionContent() { return questionContent; }
+
+    public void setQuestionContent(String questionContent) { this.questionContent = questionContent; }
 
     @Override
     public String toString() {

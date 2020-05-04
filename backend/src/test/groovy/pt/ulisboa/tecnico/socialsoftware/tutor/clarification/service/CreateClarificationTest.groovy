@@ -18,6 +18,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionReposit
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -53,10 +55,14 @@ class CreateClarificationTest extends Specification{
     ClarificationQuestionRepository clarificationQuestionRepository
 
     @Autowired
+    QuizQuestionRepository quizQuestionRepository
+
+    @Autowired
     OptionRepository optionRepository
 
     def clarificationQuestion
     def question
+    def quizQuestion
     def student
     def answer
     def quizAnswer
@@ -68,17 +74,25 @@ class CreateClarificationTest extends Specification{
         student.setRole(User.Role.STUDENT)
 
         question = new Question()
+        question.setTitle("question title")
         question.setKey(1)
         question.setContent(CONTENT)
+
+        quizQuestion = new QuizQuestion()
 
         answer = new QuestionAnswer()
 
         quizAnswer = new QuizAnswer()
 
         option = new Option()
+        option.setContent("option content")
+        option.setCorrect(true)
+        option.setSequence(0)
 
         option.setQuestion(question)
+        quizQuestion.setQuestion(question)
         answer.setOption(option)
+        answer.setQuizQuestion(quizQuestion)
         quizAnswer.addQuestionAnswer(answer)
         student.addQuizAnswer(quizAnswer)
 
@@ -88,6 +102,7 @@ class CreateClarificationTest extends Specification{
         clarificationQuestion.setAnswer(answer)
         clarificationQuestion.setContent(CONTENT)
 
+        quizQuestionRepository.save(quizQuestion)
         optionRepository.save(option)
         questionRepository.save(question)
         userRepository.save(student)
@@ -141,6 +156,7 @@ class CreateClarificationTest extends Specification{
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
         and: "new question, quizQuestion not answered"
         def newQuestion = new Question()
+        newQuestion.setTitle("question title")
         newQuestion.setKey(2)
         newQuestion.setContent(CONTENT)
         questionRepository.save(newQuestion)
@@ -206,12 +222,11 @@ class CreateClarificationTest extends Specification{
         given: "create clarificationQuestionDto"
         def clarificationQuestionDto = new ClarificationQuestionDto()
         clarificationQuestionDto.setId(clarificationQuestion.getId())
+        clarificationQuestionDto.setAnswerId(answer.getId())
         and: "input to test"
         def sId = studentId = studentId == null ? null : student.getId()
         def qId = questionId = questionId == null ? null : question.getId()
-        def aId = answerId = answerId == null ? null : answer.getId()
         clarificationQuestionDto.setContent(content)
-        clarificationQuestionDto.setAnswerId(aId)
 
         when:
         clarificationService.createClarification(qId, sId, clarificationQuestionDto)
@@ -221,12 +236,11 @@ class CreateClarificationTest extends Specification{
         error.errorMessage == errorMessage
 
         where:
-        studentId          | questionId     | answerId      | content   || errorMessage
-        null               | EXISTENT_ID    | EXISTENT_ID   | CONTENT   || USER_ID_IS_NULL
-        EXISTENT_ID        | null           | EXISTENT_ID   | CONTENT   || QUESTION_ID_IS_NULL
-        EXISTENT_ID        | EXISTENT_ID    | null          | CONTENT   || QUESTION_ANSWER_ID_IS_NULL
-        EXISTENT_ID        | EXISTENT_ID    | EXISTENT_ID   | null      || CLARIFICATION_CONTENT
-        EXISTENT_ID        | EXISTENT_ID    | EXISTENT_ID   | "   "     || CLARIFICATION_CONTENT
+        studentId          | questionId     | content   || errorMessage
+        null               | EXISTENT_ID    | CONTENT   || USER_ID_IS_NULL
+        EXISTENT_ID        | null           | CONTENT   || QUESTION_ID_IS_NULL
+        EXISTENT_ID        | EXISTENT_ID    | null      || CLARIFICATION_CONTENT
+        EXISTENT_ID        | EXISTENT_ID    | "   "     || CLARIFICATION_CONTENT
     }
 
     @TestConfiguration

@@ -62,11 +62,15 @@ class ListClarificationQuestionsTest extends Specification {
         student.setKey(1)
         student.setRole(User.Role.STUDENT)
         question = new Question()
+        question.setTitle("Question Title")
         question.setKey(1)
         question.setContent(CONTENT)
         answer = new QuestionAnswer()
         quizAnswer = new QuizAnswer()
         option = new Option()
+        option.setContent("Option content")
+        option.setCorrect(true)
+        option.setSequence(0)
 
         option.setQuestion(question)
         answer.setOption(option)
@@ -118,11 +122,15 @@ class ListClarificationQuestionsTest extends Specification {
 
     def 'list more than one clarificationQuestion'() {
         def secondQuestion = new Question()
+        secondQuestion.setTitle("Question title")
         secondQuestion.setKey(2)
         secondQuestion.setContent(CONTENT)
         def secondAnswer = new QuestionAnswer()
         def secondQuizAnswer = new QuizAnswer()
         def secondOption = new Option()
+        secondOption.setSequence(0)
+        secondOption.setContent("content")
+        secondOption.setCorrect(false)
 
         option.setQuestion(secondQuestion)
         answer.setOption(secondOption)
