@@ -74,6 +74,7 @@ class CreateClarificationTest extends Specification{
         student.setRole(User.Role.STUDENT)
 
         question = new Question()
+        question.setTitle("question title")
         question.setKey(1)
         question.setContent(CONTENT)
 
@@ -84,6 +85,9 @@ class CreateClarificationTest extends Specification{
         quizAnswer = new QuizAnswer()
 
         option = new Option()
+        option.setContent("option content")
+        option.setCorrect(true)
+        option.setSequence(0)
 
         option.setQuestion(question)
         quizQuestion.setQuestion(question)
@@ -152,6 +156,7 @@ class CreateClarificationTest extends Specification{
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
         and: "new question, quizQuestion not answered"
         def newQuestion = new Question()
+        newQuestion.setTitle("question title")
         newQuestion.setKey(2)
         newQuestion.setContent(CONTENT)
         questionRepository.save(newQuestion)

@@ -1,10 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -24,6 +24,9 @@ import java.time.LocalDateTime
 
 @DataJpaTest
 class GetProposedQuestionsPerformanceTest extends Specification {
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     ProposedQuestionService proposedQuestionService
@@ -84,7 +87,31 @@ class GetProposedQuestionsPerformanceTest extends Specification {
 
         when:
         1.upto(1, {
-            proposedQuestionService.getProposedQuestions(student.getId())
+            proposedQuestionService.getStudentProposedQuestions(student.getId())
+        })
+
+        then:
+        true
+    }
+
+    def "performance testing to get 2000 proposed questions from course 20000 times"() {
+        given: "2000 proposed questions"
+
+        1.upto(1, {
+            def propQuestion = new ProposedQuestion()
+            propQuestion.setQuestion(createQuestion(it))
+            propQuestion.setStudent(student)
+            propQuestion.setTeacher(teacher)
+            propQuestion.setEvaluation(ProposedQuestion.Evaluation.APPROVED)
+            propQuestion.setJustification(" ")
+            proposedQuestionRepository.save(propQuestion)
+            student.addProposedQuestion(propQuestion)
+            course.addProposedQuestion(propQuestion)
+        })
+
+        when:
+        1.upto(1, {
+            proposedQuestionService.getCourseProposedQuestions(course.getId())
         })
 
         then:
@@ -103,7 +130,6 @@ class GetProposedQuestionsPerformanceTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
 
         def question = new Question(course, questionDto)
         questionRepository.save(question)
@@ -112,6 +138,10 @@ class GetProposedQuestionsPerformanceTest extends Specification {
 
     @TestConfiguration
     static class GetProposedQuestionTestContextConfiguration {
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         ProposedQuestionService proposedQuestionService() {

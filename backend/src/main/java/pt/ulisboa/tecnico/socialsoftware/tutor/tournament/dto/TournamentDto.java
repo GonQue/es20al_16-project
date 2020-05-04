@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.TOPIC_NOT_FOUND;
@@ -25,7 +26,7 @@ public class TournamentDto implements Serializable {
     private String endDate;
     private int numberOfQuestions;
     private List<TopicDto> topics = new ArrayList<>();
-    private List<UserDto> enrolled = new ArrayList<>();
+    private List<String> enrolled = new ArrayList<>();
 
     private QuizDto quiz;
     private String status;
@@ -46,6 +47,7 @@ public class TournamentDto implements Serializable {
         this.status = tournament.getStatus().name();
         this.quiz = quizDto;
         this.topics = topics;
+        this.enrolled = new ArrayList<>();
     }
 
     public TournamentDto(Tournament tournament){
@@ -56,11 +58,17 @@ public class TournamentDto implements Serializable {
         this.endDate = tournament.getEndDate().format(formatter);
         this.numberOfQuestions = tournament.getNumberOfQuestions();
         this.status = tournament.getStatus().name();
-        this.quiz = new QuizDto(tournament.getQuiz(), false);
+
+        if(tournament.getQuiz()!=null) this.quiz = new QuizDto(tournament.getQuiz(), false);
 
         Set<Topic> topicsTournament = tournament.getTopics();
         for(Topic topic: topicsTournament){
             this.topics.add(new TopicDto(topic));
+        }
+
+        Set<User> enrolledTournament = tournament.getEnrolled();
+        for(User user: enrolledTournament){
+            this.enrolled.add(user.getUsername());
         }
 
     }
@@ -117,8 +125,8 @@ public class TournamentDto implements Serializable {
 
     public void setStatus(String status) { this.status = status; }
 
-    public List<UserDto> getEnrolled() {return enrolled;}
+    public List<String> getEnrolled() {return enrolled;}
 
-    public void setEnrolled(List<UserDto> enrolled) {this.enrolled = enrolled;    }
+    public void setEnrolled(List<String> enrolled) {this.enrolled = enrolled;    }
 
 }

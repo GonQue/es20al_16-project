@@ -98,6 +98,7 @@ class StudentEnrollTournamentTest extends Specification {
 
         quiz = new Quiz()
         quiz.setKey(1)
+        quiz.setType(Quiz.QuizType.PROPOSED.toString())
         quizRepository.save(quiz)
         tournament.setQuiz(quiz)
         tournament.setStatus(Tournament.Status.STARTED)
@@ -118,7 +119,7 @@ class StudentEnrollTournamentTest extends Specification {
         result.getName()==TOURNAMENT_NAME
         result.getEnrolled()!=null
         result.getEnrolled().size()==1
-        result.getEnrolled().get(0).getUsername()==USERNAME
+        result.getEnrolled().get(0)==USERNAME
 
     }
 
@@ -147,8 +148,8 @@ class StudentEnrollTournamentTest extends Specification {
         then:
         result.getEnrolled()!=null
         result.getEnrolled().size()==2
-        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(user.getId()) })
-        result.getEnrolled().stream().anyMatch({ u -> u.getId().equals(user2Dto.getId()) })
+        result.getEnrolled().stream().anyMatch({ u -> (u == user.getUsername()) })
+        result.getEnrolled().stream().anyMatch({ u -> (u == user2Dto.getUsername()) })
 
     }
 
