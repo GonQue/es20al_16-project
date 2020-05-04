@@ -57,6 +57,7 @@ class CreateClarificationPerformanceTest extends Specification{
         student.setRole(User.Role.STUDENT)
 
         question = new Question()
+        question.setTitle("question title")
         question.setKey(1)
         question.setContent(CONTENT)
 
@@ -67,6 +68,9 @@ class CreateClarificationPerformanceTest extends Specification{
         quizAnswer = new QuizAnswer()
 
         option = new Option()
+        option.setContent("option content")
+        option.setCorrect(true)
+        option.setSequence(0)
 
         option.setQuestion(question)
         quizQuestion.setQuestion(question)

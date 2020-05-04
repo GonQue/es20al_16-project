@@ -95,7 +95,10 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
             questionDto.setContent("QUESTION_CONTENT")
             questionDto.setStatus(Question.Status.SUBMITTED.name())
             questionDto.setOptions(options)
+<<<<<<< HEAD
             questionDto.setCreationDate(LocalDateTime.now().toString())
+=======
+>>>>>>> develop
 
             def question = new Question(course, questionDto)
             questionRepository.save(question)
