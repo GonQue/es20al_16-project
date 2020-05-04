@@ -124,7 +124,7 @@ class CreateTournamentTest extends Specification {
 
         quiz = new Quiz()
         quiz.setKey(1)
-        quiz.setType(Quiz.QuizType.PROPOSED)
+        quiz.setType(Quiz.QuizType.PROPOSED.toString())
         quiz.setAvailableDate(LocalDateTime.now().minusDays(1))
         quiz.setCourseExecution(courseExecution)
         quiz.setTitle(QUIZ_NAME)

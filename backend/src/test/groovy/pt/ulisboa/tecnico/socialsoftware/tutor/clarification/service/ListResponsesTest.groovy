@@ -28,6 +28,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
 class ListResponsesTest extends Specification {
     public static final String CONTENT = "clarificationQuestion content"
     public static final String TEACHER_RESPONSE = "teacher response"
+    public static final String OPTION_CONTENT = "option content"
     public static final Integer UNEXISTENT_ID = -1
 
     @Autowired
@@ -66,14 +67,19 @@ class ListResponsesTest extends Specification {
         student.setKey(1)
         student.setRole(User.Role.STUDENT)
         question = new Question()
+        question.setTitle("title")
         question.setKey(1)
         question.setContent(CONTENT)
         answer = new QuestionAnswer()
         quizAnswer = new QuizAnswer()
-        option = new Option()
 
+        option = new Option()
+        option.setContent(OPTION_CONTENT)
+        option.setCorrect(true)
+        option.setSequence(0)
         option.setQuestion(question)
         answer.setOption(option)
+
         quizAnswer.addQuestionAnswer(answer)
         student.addQuizAnswer(quizAnswer)
 
