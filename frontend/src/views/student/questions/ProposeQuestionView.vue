@@ -27,9 +27,7 @@
       </template>
 
       <template v-slot:item.question.content="{ item }">
-        <p
-          v-html="convertMarkDownNoFigure(item.question.content, null)"
-          @click="showQuestionDialog(item)"
+        <p @click="showQuestionDialog(item)"
       /></template>
 
       <template v-slot:item.question.topics="{ item }">
@@ -65,7 +63,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -78,7 +76,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="deleteProposedQuestion(item)"
@@ -121,7 +119,6 @@ import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDi
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 
 @Component({
   components: {
@@ -139,6 +136,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
+    { text: 'Actions', value: 'action', align: 'center', sortable: false },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
     {
@@ -155,8 +153,7 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'question.image.url', align: 'center' },
-    { text: 'Actions', value: 'action', align: 'center', sortable: false }
+    { text: 'Image', value: 'question.image.url', align: 'center' }
   ];
 
   async created() {
@@ -182,10 +179,6 @@ export default class ProposeQuestionView extends Vue {
 
   onCloseShowQuestionDialog() {
     this.questionDialog = false;
-  }
-
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
   }
 
   showJustificationDialog(propQuestion: ProposedQuestion) {
