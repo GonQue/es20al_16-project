@@ -159,7 +159,6 @@ public class TournamentService {
 
       int executionId = tournament.getCourseExecution().getId();
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
-
       List<Question> availableQuestions = pickRandomQuestions(tournament);
 
       quiz.generate(availableQuestions);

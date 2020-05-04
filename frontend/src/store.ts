@@ -130,6 +130,9 @@ export default new Vuex.Store({
       );
     },
     isStudent(state): boolean {
+      console.log('ALUNOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa\n');
+      if(state.user==null) console.log("NULL")
+      else console.log(state.user.username)
       return (
         !!state.token && state.user !== null && state.user.role == 'STUDENT'
       );
