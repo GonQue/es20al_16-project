@@ -354,4 +354,8 @@ public class Question implements DomainEntity {
     public boolean belongsToAssessment(Assessment chosenAssessment) {
         return chosenAssessment.getTopicConjunctions().stream().map(TopicConjunction::getTopics).collect(Collectors.toList()).contains(this.topics);
     }
+
+    public boolean hasAnyTopics(Set<Topic> topics){
+        return !Collections.disjoint(this.topics, topics);
+    }
 }

@@ -68,7 +68,7 @@ public class Tournament {
 
     public Tournament(){}
 
-    public Tournament(User creator, CourseExecution courseExecution, Quiz quiz, TournamentDto tournamentDto){
+    public Tournament(User creator, CourseExecution courseExecution, TournamentDto tournamentDto){
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -98,7 +98,6 @@ public class Tournament {
         this.creator = creator;
         this.numberOfQuestions = tournamentDto.getNumberOfQuestions();
         this.courseExecution = courseExecution;
-        this.quiz = quiz;
         this.status = Status.CREATED;
     }
 
