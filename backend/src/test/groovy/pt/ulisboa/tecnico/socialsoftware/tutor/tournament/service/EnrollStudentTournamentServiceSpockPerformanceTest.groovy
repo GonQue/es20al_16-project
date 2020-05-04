@@ -69,6 +69,7 @@ class EnrollStudentTournamentServiceSpockPerformanceTest extends Specification {
 
         def quiz = new Quiz()
         quiz.setKey(1)
+        quiz.setType(Quiz.QuizType.PROPOSED.toString());
         quizRepository.save(quiz)
 
         def tournament = new Tournament()

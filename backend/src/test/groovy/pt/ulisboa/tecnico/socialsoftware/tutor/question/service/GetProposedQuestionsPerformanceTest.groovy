@@ -130,7 +130,6 @@ class GetProposedQuestionsPerformanceTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
 
         def question = new Question(course, questionDto)
         questionRepository.save(question)
