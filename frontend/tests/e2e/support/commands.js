@@ -212,7 +212,6 @@ Cypress.Commands.add('deleteClarificationQuestion', clarificationQuestion => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
     .find('[data-cy="DeleteClarificationIcon"]')
     .click();
 });
@@ -363,7 +362,7 @@ Cypress.Commands.add(
       .parent()
       .should('have.length', 1)
       .children()
-      .should('have.length', 7)
+      .should('have.length', 8)
       .find('[data-cy="AnswerClarification"]')
       .click();
     cy.get('[data-cy="TeacherResponse"]')
@@ -380,7 +379,6 @@ Cypress.Commands.add(
       .parent()
       .should('have.length', 1)
       .children()
-      .should('have.length', 7)
       .find('[data-cy="ShowResponses"]')
       .click({ force: true });
     cy.contains(responseContent)
@@ -413,3 +411,54 @@ Cypress.Commands.add('evaluate', (title, evaluation, justification) => {
   cy.contains(evaluation).click({ force: true });
   cy.get('[data-cy="saveButton"]').click();
 });
+
+// Teacher - change clarification availability
+
+Cypress.Commands.add(
+  'changeClarificationAvailability',
+  clarificationContent => {
+    cy.contains('Management').click();
+    cy.contains('Clarifications').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .within(() => {
+        cy.get('[data-cy="AvailabilityDiv"]')
+          .first()
+          .click();
+      });
+  }
+);
+
+Cypress.Commands.add(
+  'checkIfClarificationIsAvailable',
+  clarificationContent => {
+    cy.contains('Management').click();
+    cy.contains('Clarifications').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .within(() => {
+        cy.get('[data-cy="AvailabilityDiv"]')
+          .first()
+          .within(() => {
+            cy.get('[data-cy="AvailabilitySwitch"]').should('be.checked');
+          });
+      });
+  }
+);
+
+Cypress.Commands.add(
+  'checkIfClarificationIsUnavailable',
+  clarificationContent => {
+    cy.contains('Management').click();
+    cy.contains('Clarifications').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .within(() => {
+        cy.get('[data-cy="AvailabilityDiv"]')
+          .first()
+          .within(() => {
+            cy.get('[data-cy="AvailabilitySwitch"]').should('not.be.checked');
+          });
+      });
+  }
+);

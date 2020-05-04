@@ -35,12 +35,28 @@
       <template v-slot:item.needClarification="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon class="mr-2" :color="needClarificationColor(item.needClarification)" v-on="on">{{
-              needClarificationIcon(item.needClarification)
-              }}</v-icon>
+            <v-icon
+              class="mr-2"
+              :color="needClarificationColor(item.needClarification)"
+              v-on="on"
+              >{{ needClarificationIcon(item.needClarification) }}</v-icon
+            >
           </template>
           <span>{{ needClarificationSpan(item.needClarification) }}</span>
         </v-tooltip>
+      </template>
+
+      <template v-slot:item.availableToOtherStudents="{ item }">
+        <div
+          v-on:click="changeClarificationAvailability(item.id)"
+          data-cy="AvailabilityDiv"
+        >
+          <v-switch
+            data-cy="AvailabilitySwitch"
+            v-model="availability"
+            :value="item.id"
+          ></v-switch>
+        </div>
       </template>
 
       <template v-slot:item.responses="{ item }">
@@ -106,6 +122,7 @@ export default class ListTeacherClarificationQuestionsView extends Vue {
   editClarificationResponseDialog: boolean = false;
   currentClarificationQuestion: ClarificationQuestion | null = null;
   currentClarificationResponse: ClarificationResponse | null = null;
+  availability: number[] = [];
   search: string = '';
   headers: object = [
     {
@@ -120,8 +137,19 @@ export default class ListTeacherClarificationQuestionsView extends Vue {
       align: 'center',
       width: '30%'
     },
-    { text: 'Status', value: 'status', align: 'center', width: '5%' },
-    { text: 'Clarified?', value: 'needClarification', align: 'center', width: '10%' },
+    { text: 'Answered?', value: 'status', align: 'center', width: '5%' },
+    {
+      text: 'Clarified?',
+      value: 'needClarification',
+      align: 'center',
+      width: '5%'
+    },
+    {
+      text: 'Public?',
+      value: 'availableToOtherStudents',
+      align: 'center',
+      width: '5%'
+    },
     {
       text: 'Creation Date',
       value: 'creationDate',
@@ -186,6 +214,14 @@ export default class ListTeacherClarificationQuestionsView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.clarificationQuestions = await RemoteServices.getAllClarificationQuestions();
+      for (let i = 0; i < this.clarificationQuestions.length; i++) {
+        let num = this.clarificationQuestions[i].id;
+        if (
+          num != null &&
+          this.clarificationQuestions[i].availableToOtherStudents
+        )
+          this.availability.push(num);
+      }
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -217,6 +253,17 @@ export default class ListTeacherClarificationQuestionsView extends Vue {
     this.clarificationResponses.unshift(clarificationResponse);
     this.editClarificationResponseDialog = false;
     this.currentClarificationQuestion = null;
+  }
+
+  async changeClarificationAvailability(clarificationQuestionId: number) {
+    try {
+      await RemoteServices.changeClarificationAvailability(
+        clarificationQuestionId
+      );
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
   }
 }
 </script>

@@ -10,6 +10,7 @@ export default class ClarificationQuestion {
   content: string = '';
   status: string = 'NOT_ANSWERED';
   needClarification: boolean | null = null;
+  availableToOtherStudents: boolean | null = null;
   creationDate!: string | null;
 
   constructor(jsonObj?: ClarificationQuestion) {
@@ -21,6 +22,7 @@ export default class ClarificationQuestion {
       this.content = jsonObj.content;
       this.status = jsonObj.status;
       this.needClarification = jsonObj.needClarification;
+      this.availableToOtherStudents = jsonObj.availableToOtherStudents;
       this.creationDate = jsonObj.creationDate;
     }
   }
