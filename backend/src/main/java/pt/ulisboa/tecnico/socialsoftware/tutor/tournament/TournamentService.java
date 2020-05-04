@@ -154,7 +154,7 @@ public class TournamentService {
    private void generateQuiz(Tournament tournament, User user){
       Quiz quiz = new Quiz();
       quiz.setKey(quizService.getMaxQuizKey() + 1);
-      quiz.setType(Quiz.QuizType.TOURNAMENT);
+      quiz.setType(Quiz.QuizType.TOURNAMENT.toString());
       quiz.setCreationDate(LocalDateTime.now());
 
       int executionId = tournament.getCourseExecution().getId();
