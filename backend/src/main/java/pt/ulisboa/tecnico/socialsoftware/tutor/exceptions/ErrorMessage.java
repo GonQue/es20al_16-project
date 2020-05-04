@@ -58,6 +58,7 @@ public enum ErrorMessage {
     TOURNAMENT_CLOSED("Student cant enroll in a closed tournament"),
     TOURNAMENT_NO_STUDENT_TO_ENROLL("Missing student to enroll tournament"),
     INVALID_USERNAME("Username is null or empty"),
+    TOURNAMENT_STARTED("the tournament already started"),
 
     NO_CORRECT_OPTION("Question does not have a correct option"),
 

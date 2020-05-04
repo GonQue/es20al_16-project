@@ -70,6 +70,13 @@ public class TournamentService {
       return new TournamentDto(new UserDto(creatorUser), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
+   public void deleteTournament(int tournamentId){
+      tournamentRepository.deleteById(tournamentId);
+   }
+
+   public boolean tournamentExists (int tournamentId){
+      return tournamentRepository.existsById(tournamentId);
+   }
 
    private Quiz getQuiz(TournamentDto tournamentDto) {
       if(tournamentDto.getQuiz()==null){
