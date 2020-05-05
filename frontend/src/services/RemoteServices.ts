@@ -573,6 +573,21 @@ export default class RemoteServices {
       });
   }
 
+  static getPublicClarificationQuestions(questionId: number | undefined): Promise<
+      StatementClarificationQuestion[]
+      > {
+    return httpClient
+        .get('/student/' + questionId + '/clarifications')
+        .then(response => {
+          return response.data.map((clarificationQuestion: any) => {
+            return new StatementClarificationQuestion(clarificationQuestion);
+          });
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async createClarificationQuestion(
     questionId: number | undefined,
     clarificationQuestion: StatementClarificationQuestion | null

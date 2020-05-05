@@ -29,6 +29,11 @@
             <stringProp name="Argument.value">8080</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="questionId" elementType="Argument">
+            <stringProp name="Argument.name">questionId</stringProp>
+            <stringProp name="Argument.value">999999</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -230,7 +235,7 @@ INSERT INTO question_answers VALUES (9999991, 41640, 9999991, 9999991, 999999, 0
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/student/clarifications/public</stringProp>
+            <stringProp name="HTTPSampler.path">/student/${questionId}/clarifications</stringProp>
             <stringProp name="HTTPSampler.method">GET</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

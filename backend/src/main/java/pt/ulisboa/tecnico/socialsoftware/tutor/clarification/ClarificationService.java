@@ -111,7 +111,7 @@ public class ClarificationService {
                 List<QuestionAnswer> questionAnswers = iQuizAnswer.getQuestionAnswers();
                 if(!questionAnswers.isEmpty())
                     for (QuestionAnswer iAnswer: questionAnswers) {
-                        if(iAnswer.getQuizQuestion() != null && iAnswer.getQuizQuestion().getQuestion() != null && iAnswer.getQuizQuestion().getQuestion().getId() == questionId) {
+                        if(iAnswer.getQuizQuestion() != null && iAnswer.getQuizQuestion().getQuestion() != null && iAnswer.getQuizQuestion().getQuestion().getId().equals(questionId)) {
                             valid = true;
                             break;
                         }
@@ -252,11 +252,11 @@ public class ClarificationService {
 
         checkQuestionAnswers(questionId, student);
 
-        return listPublicClarificationQuestionsDto(questionId);
+        return listPublicClarificationQuestionsDto(questionId, studentId);
     }
 
-    private List<ClarificationQuestionDto> listPublicClarificationQuestionsDto(Integer questionId) {
-        return clarificationQuestionRepository.findOtherPublicClarificationQuestions(questionId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+    private List<ClarificationQuestionDto> listPublicClarificationQuestionsDto(Integer questionId, Integer studentId) {
+        return clarificationQuestionRepository.findOtherPublicClarificationQuestions(questionId, studentId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
 
     @Retryable(

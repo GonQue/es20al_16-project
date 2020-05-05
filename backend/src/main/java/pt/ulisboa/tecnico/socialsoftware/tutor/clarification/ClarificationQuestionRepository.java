@@ -13,6 +13,6 @@ import java.util.List;
 public interface ClarificationQuestionRepository extends JpaRepository<ClarificationQuestion,Integer> {
     // findById in JpaRepository
 
-    @Query(value = "select * from clarifications where available_to_other_students = 't' and question_id = :questionId ;", nativeQuery = true)
-    List<ClarificationQuestion> findOtherPublicClarificationQuestions(Integer questionId);
+    @Query(value = "select * from clarifications where user_id = :studentId or (available_to_other_students = 't' and question_id = :questionId) ;", nativeQuery = true)
+    List<ClarificationQuestion> findOtherPublicClarificationQuestions(Integer questionId, Integer studentId);
 }

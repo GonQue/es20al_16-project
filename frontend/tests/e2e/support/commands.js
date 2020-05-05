@@ -241,6 +241,68 @@ Cypress.Commands.add('successMessage', (name, acronym, academicTerm) => {
     .click();
 });
 
+// Student - get public or own clarifications
+
+Cypress.Commands.add('showPublicClarifications', content => {
+  cy.get('[data-cy="ShowPublicClarifications"]').click();
+  cy.contains(content);
+});
+
+Cypress.Commands.add('assignPublicClarificationToAnotherStudent', content => {
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "INSERT INTO users VALUES (999999999, \'2019-10-18 21:17:28.460416\', \'n\', \'r\', \'u\', 1, 1, 1, 1, \'e\', \'2019-10-18 21:17:28.460416\', 999999999, 1, 1, 1, 1, 1)"'
+  );
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "UPDATE clarifications SET user_id = 999999999, available_to_other_students = \'t\' WHERE content = \'$content\'"',
+    { env: { content: content } }
+  );
+});
+
+Cypress.Commands.add('deletePublicClarification', content => {
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarification_responses WHERE clarification_id IN (SELECT id FROM clarifications WHERE content=\'$content\')"',
+    { env: { content: content } }
+  );
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarifications WHERE content=\'$content\'"',
+    { env: { content: content } }
+  );
+});
+
+Cypress.Commands.add('deletePublicStudent', () => {
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM users WHERE id=999999999"'
+  );
+});
+
+Cypress.Commands.add(
+  'checkPublicResponses',
+  (clarificationContent, responseContent) => {
+    cy.contains(clarificationContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="ShowResponses"]')
+      .click({ force: true });
+    cy.contains(responseContent);
+  }
+);
+
+Cypress.Commands.add(
+  'checkNoPublicResponses',
+  (clarificationContent, responseContent) => {
+    cy.contains(clarificationContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="ShowResponses"]')
+      .click({ force: true });
+    cy.contains(responseContent).should('not.exist');
+  }
+);
+
 // Student - ask for additional clarification
 
 Cypress.Commands.add('askForAdditionalClarification', clarificationContent => {
