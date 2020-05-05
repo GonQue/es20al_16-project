@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
@@ -147,7 +148,7 @@ public class ProposedQuestionService {
     public void deleteProposedQuestion(int proposedQuestionId) {
         ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
 
-        if (proposedQuestion.canBeRemoved()) {
+        if (proposedQuestion.canBeRemovedOrUpdated()) {
             Course course = getCourse(proposedQuestionId);
             course.removeProposedQuestion(proposedQuestion);
             pqRepository.delete(proposedQuestion);
@@ -155,5 +156,17 @@ public class ProposedQuestionService {
         }
         else
             throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_REMOVED);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestionDto updateProposedQuestion(Integer propQuestionId, ProposedQuestionDto proposedQuestionDto) {
+        ProposedQuestion proposedQuestion = findProposedQuestion(propQuestionId);
+        if (proposedQuestion.canBeRemovedOrUpdated()) {
+            questionService.updateQuestion(proposedQuestion.getQuestion().getId(), proposedQuestionDto.getQuestion());
+            proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING);
+            return new ProposedQuestionDto(proposedQuestion);
+        }
+        else
+            throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_UPDATED);
     }
 }

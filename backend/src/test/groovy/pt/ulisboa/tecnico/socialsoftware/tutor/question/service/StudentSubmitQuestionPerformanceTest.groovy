@@ -92,10 +92,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-<<<<<<< HEAD
-        questionDto.setCreationDate(LocalDateTime.now().toString())
-=======
->>>>>>> develop
+
         return questionDto
     }
 

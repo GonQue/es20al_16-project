@@ -86,10 +86,6 @@ class StudentSubmitQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-<<<<<<< HEAD
-        questionDto.setCreationDate(LocalDateTime.now().toString())
-=======
->>>>>>> develop
     }
 
     def 'the user is not a Student'() {
