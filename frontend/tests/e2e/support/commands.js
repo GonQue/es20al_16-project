@@ -354,3 +354,15 @@ Cypress.Commands.add('evaluate', (title, evaluation, justification) => {
   cy.contains(evaluation).click({ force: true });
   cy.get('[data-cy="saveButton"]').click();
 });
+
+Cypress.Commands.add('turnAvailable', (title) => {
+    cy.get('[data-cy="search"').type(title);
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 8)
+        .find('[data-cy="available"]')
+        .click( { force: true }) ;
+    cy.get('[data-cy="turnAvailable"]').click();
+})

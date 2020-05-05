@@ -58,7 +58,9 @@
         </v-tooltip>
 
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
+          <template v-slot:activator="{ on }"
+                    v-if="item.evaluation !== 'AVAILABLE'"
+          >
             <v-icon
               large
               class="mr-2"
@@ -70,13 +72,30 @@
           </template>
           <span>Evaluate</span>
         </v-tooltip>
+
+        <v-tooltip bottom>
+          <template
+            v-slot:activator="{ on }"
+            v-if="item.evaluation === 'APPROVED'"
+          >
+            <v-icon
+              large
+              class="mr-2"
+              v-on="on"
+              @click="turnAvailable(item)"
+              data-cy="available"
+              >far fa-plus-square</v-icon
+            >
+          </template>
+          <span>Turn Question Available</span>
+        </v-tooltip>
       </template>
     </v-data-table>
 
     <evaluate-dialog
       v-if="currentPropQuestion"
       v-model="evaluateDialog"
-      :evaluate="currentPropQuestion"
+      :propQuestion="currentPropQuestion"
       v-on:save-evaluation="onSaveEvaluation"
     />
 
@@ -85,6 +104,13 @@
       v-model="questionDialog"
       :question="currentPropQuestion.question"
       v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+    />
+
+    <turn-available-dialog
+      v-if="currentPropQuestion"
+      v-model="turnAvailableDialog"
+      :propQuestion="currentPropQuestion"
+      v-on:available="onSaveAvailable"
     />
   </v-card>
 </template>
@@ -99,11 +125,14 @@ import RemoteServices from '@/services/RemoteServices';
 import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
 import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
 import User from '@/models/user/User';
+import Store from '@/store';
+import TurnAvailableDialog from '@/views/teacher/proposedQuestions/TurnAvailableDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
-    'evaluate-dialog': EvaluateDialog
+    'evaluate-dialog': EvaluateDialog,
+    'turn-available-dialog': TurnAvailableDialog
   }
 })
 export default class ProposeQuestionView extends Vue {
@@ -113,6 +142,7 @@ export default class ProposeQuestionView extends Vue {
   currentPropQuestion: ProposedQuestion | null = null;
   evaluateDialog: boolean = false;
   questionDialog: boolean = false;
+  turnAvailableDialog: boolean = false;
   justification: string = '';
   search: string = '';
 
@@ -174,7 +204,22 @@ export default class ProposeQuestionView extends Vue {
   getEvaluationColor(evaluation: string) {
     if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
+    else if (evaluation === 'AVAILABLE') return 'light-blue';
     else return 'red';
+  }
+
+  turnAvailable(propQuestion: ProposedQuestion) {
+    this.currentPropQuestion = propQuestion;
+    this.turnAvailableDialog = true;
+  }
+
+  async onSaveAvailable(propQuestion: ProposedQuestion) {
+    this.proposedQuestions = this.proposedQuestions.filter(
+      pq => pq.id !== propQuestion.id
+    );
+    this.proposedQuestions.unshift(propQuestion);
+    this.turnAvailableDialog = false;
+    this.currentPropQuestion = null;
   }
 }
 </script>

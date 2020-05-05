@@ -15,22 +15,22 @@
           <v-col cols="12">
             <v-select
               outlined
-              v-model="evaluate.evaluation"
+              v-model="propQuestion.evaluation"
               :items="evaluationsList"
-              :color="getEvaluationColor(evaluate.evaluation)"
+              :color="getEvaluationColor(propQuestion.evaluation)"
               small
               data-cy="evaluation"
             >
-              <span>{{ evaluate.evaluation }}</span>
+              <span>{{ propQuestion.evaluation }}</span>
             </v-select>
           </v-col>
 
-          <v-card-text class="text-left" v-if="evaluate">
+          <v-card-text class="text-left" v-if="propQuestion">
             <v-flex xs24 sm12 md12>
               <v-textarea
                 outline
                 rows="5"
-                v-model="evaluate.justification"
+                v-model="propQuestion.justification"
                 label="Justification"
                 data-cy="justification"
               ></v-textarea>
@@ -68,13 +68,13 @@ import Store from '@/store';
 export default class EditJustificationDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: ProposedQuestion, required: true })
-  readonly evaluate!: ProposedQuestion;
+  readonly propQuestion!: ProposedQuestion;
   evaluationsList = ['AWAITING', 'APPROVED', 'REJECTED'];
 
   async saveEvaluation() {
-    this.evaluate.teacher = Store.getters.getUser;
+    this.propQuestion.teacher = Store.getters.getUser;
     try {
-      const result = await RemoteServices.evaluate(this.evaluate);
+      const result = await RemoteServices.evaluate(this.propQuestion);
       this.$emit('save-evaluation', result);
     } catch (error) {
       await this.$store.dispatch('error', error);

@@ -801,6 +801,19 @@ export default class RemoteServices {
       });
   }
 
+  static async turnAvailable(
+      proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
+    return httpClient
+        .put(`/proposed-questions/${proposedQuestion.id}/turn-available`, proposedQuestion)
+        .then(response => {
+          return new ProposedQuestion(response.data);
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async errorMessage(error: any): Promise<string> {
     if (error.message === 'Network Error') {
       return 'Unable to connect to server';

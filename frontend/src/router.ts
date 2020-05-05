@@ -77,7 +77,7 @@ let router = new Router({
           }
         },
         {
-          path: 'proposedQuestions',
+          path: 'proposed-questions',
           name: 'proposed-questions-management',
           component: ProposedQuestionsView,
           meta: {
