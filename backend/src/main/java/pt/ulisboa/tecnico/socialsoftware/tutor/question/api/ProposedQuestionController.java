@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
@@ -61,6 +62,12 @@ public class ProposedQuestionController {
     public ResponseEntity deleteProposedQuestion(@PathVariable Integer proposedQuestionId) {
         proposedQuestionService.deleteProposedQuestion(proposedQuestionId);
         return  ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/proposed-questions/{proposedQuestionId}/turn-available")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#proposedQuestionId, 'PQ.ACCESS')")
+    public ProposedQuestionDto turnAvailable(@PathVariable Integer proposedQuestionId, @Valid @RequestBody ProposedQuestionDto pqDto) {
+        return this.proposedQuestionService.turnAvailable(pqDto);
     }
 
 }

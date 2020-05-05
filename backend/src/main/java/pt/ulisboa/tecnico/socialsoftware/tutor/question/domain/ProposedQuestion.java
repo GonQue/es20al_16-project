@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "proposed_questions")
 public class ProposedQuestion {
     public enum Evaluation {
-        APPROVED, REJECTED, AWAITING
+        APPROVED, REJECTED, AWAITING, AVAILABLE
     }
 
     @Id
@@ -72,6 +72,12 @@ public class ProposedQuestion {
         }
         if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
+        }
+        if (evaluation == Evaluation.AVAILABLE && this.evaluation != Evaluation.APPROVED){
+            throw new TutorException(ErrorMessage.PROPQUESTION_NOT_APPROVED);
+        }
+        if (evaluation != Evaluation.AVAILABLE && this.evaluation == Evaluation.AVAILABLE){
+            throw new TutorException(ErrorMessage.PROPQUESTION_ALREADY_APPROVED);
         }
         setJustification(justification);
         setEvaluation(evaluation);

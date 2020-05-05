@@ -157,4 +157,17 @@ public class ProposedQuestionService {
         else
             throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_REMOVED);
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestionDto turnAvailable(ProposedQuestionDto pqDto) {
+        ProposedQuestion pq = findProposedQuestion(pqDto.getId());
+        pq.evaluate("", ProposedQuestion.Evaluation.AVAILABLE);
+        Question question = pq.getQuestion();
+        questionService.questionSetStatus(question.getId(), Question.Status.AVAILABLE);
+
+        Course course = getCourse(pq.getId());
+        course.removeProposedQuestion(pq);
+
+    return new ProposedQuestionDto(pq);
+    }
 }
