@@ -8,8 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Unroll
 
-import java.time.LocalDateTime
-
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_BLANK
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.JUSTIFICATION_IS_EMPTY
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_IS_EMPTY
@@ -94,7 +92,6 @@ class TeacherEvaluatesProposedQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCreationDate(LocalDateTime.now().toString())
 
         question = new Question(course, questionDto)
         questionRepository.save(question)

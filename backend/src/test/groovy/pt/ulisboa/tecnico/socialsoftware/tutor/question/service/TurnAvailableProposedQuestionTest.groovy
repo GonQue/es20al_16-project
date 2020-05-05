@@ -8,7 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.ProposedQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
@@ -24,13 +23,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
-import java.time.LocalDateTime
-
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 
 @DataJpaTest
 class TurnAvailableProposedQuestionTest extends Specification {
-    static final String JUSTIFICATION = "JUSTIFICATION"
 
     @Autowired
     QuestionService questionService
@@ -59,7 +55,6 @@ class TurnAvailableProposedQuestionTest extends Specification {
     def courseExecution
     def question
     def proposedQuestion
-    def proposedQuestionDto
 
     def setup() {
         teacher = new User("teacher", "teacher", 1, User.Role.TEACHER)
@@ -90,7 +85,6 @@ class TurnAvailableProposedQuestionTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCreationDate(LocalDateTime.now().toString())
 
         question = new Question(course, questionDto)
         questionRepository.save(question)
@@ -136,7 +130,7 @@ class TurnAvailableProposedQuestionTest extends Specification {
 
         then:
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.PROPQUESTION_NOT_APPROVED
+        exception.getErrorMessage() == PROPQUESTION_NOT_APPROVED
 
     }
 

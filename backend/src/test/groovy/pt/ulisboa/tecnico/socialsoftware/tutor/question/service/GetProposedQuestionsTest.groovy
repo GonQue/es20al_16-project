@@ -23,7 +23,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
-import java.time.LocalDateTime
 
 @DataJpaTest
 class GetProposedQuestionsTest extends Specification {
@@ -162,7 +161,6 @@ class GetProposedQuestionsTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCreationDate(LocalDateTime.now().toString())
 
         def question = new Question(course, questionDto)
         questionRepository.save(question)

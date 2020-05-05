@@ -1,12 +1,35 @@
 describe('Administration walkthrough', () => {
   beforeEach(() => {
     cy.demoAdminLogin();
+<<<<<<< HEAD
     cy.get('[data-cy="administrationMenuButton"]').click();
     cy.get('[data-cy="manageCoursesMenuButton"]').click();
   });
 
   afterEach(() => {
     cy.logout();
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> ppa
+    cy.get('[data-cy="administrationMenuButton"]').click();
+    cy.get('[data-cy="manageCoursesMenuButton"]').click();
+  });
+
+  afterEach(() => {
+    cy.logout();
+<<<<<<< HEAD
+=======
+  });
+
+  afterEach(() => {
+    cy.contains('Logout').click();
+>>>>>>> develop
+=======
+>>>>>>> ppa
+>>>>>>> develop
   });
 
   it('login creates and deletes a course execution', () => {

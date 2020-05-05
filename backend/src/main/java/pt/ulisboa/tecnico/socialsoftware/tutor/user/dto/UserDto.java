@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.user.dto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 
 public class UserDto implements Serializable {
