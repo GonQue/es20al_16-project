@@ -1,7 +1,7 @@
 describe('Student walkthrough - Get public clarifications or own clarifications', () => {
   before(() => {
-    //cy.demoStudentLogin();
-    //cy.answerQuiz();
+    cy.demoStudentLogin();
+    cy.answerQuiz();
   });
 
   beforeEach(() => {

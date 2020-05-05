@@ -78,6 +78,7 @@ class ListPublicClarificationQuestionsTest extends Specification {
         firstStudent.setRole(User.Role.STUDENT)
 
         question = new Question()
+        question.setTitle("question title")
         question.setKey(1)
         question.setContent(CONTENT)
 
@@ -88,6 +89,9 @@ class ListPublicClarificationQuestionsTest extends Specification {
         quizAnswer = new QuizAnswer()
 
         option = new Option()
+        option.setContent("option content")
+        option.setCorrect(true)
+        option.setSequence(0)
 
         option.setQuestion(question)
         quizQuestion.setQuestion(question)
@@ -123,6 +127,9 @@ class ListPublicClarificationQuestionsTest extends Specification {
         secondQuizAnswer = new QuizAnswer()
 
         secondOption = new Option()
+        secondOption.setContent("option content")
+        secondOption.setCorrect(true)
+        secondOption.setSequence(0)
 
         secondAnswer.setOption(secondOption)
         secondAnswer.setQuizQuestion(quizQuestion)
