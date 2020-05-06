@@ -58,6 +58,26 @@
         </div>
       </div>
     </div>
+
+    <h2>Clarifications</h2>
+    <div v-if="stats != null" class="stats-container">
+      <div class="items" >
+        <div class="icon-wrapper" ref="totalClarificationQuestions" >
+          <animated-number :number="stats.totalClarificationQuestions" data-cy="totalClarificationQuestions"/>
+        </div>
+        <div class="project-name">
+          <p>Clarifications Created</p>
+        </div>
+      </div>
+      <div class="items" >
+        <div class="icon-wrapper" ref="totalPublicClarificationQuestions"  data-cy="totalPublicClarificationQuestions">
+          <animated-number :number="stats.totalPublicClarificationQuestions" />
+        </div>
+        <div class="project-name">
+          <p>Clarifications marked as Public</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

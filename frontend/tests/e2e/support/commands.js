@@ -27,7 +27,7 @@
 
 Cypress.Commands.add('demoAdminLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="adminButton"]').click();
+  cy.get('[data-cy="demoAdminLoginButton"]').click();
   cy.contains('Administration').click();
   cy.contains('Manage Courses').click();
 });
@@ -514,3 +514,11 @@ Cypress.Commands.add(
       });
   }
 );
+
+Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="totalClarificationQuestions"]')
+    .should('have.text',clarifs)
+  cy.get('[data-cy="totalPublicClarificationQuestions"]')
+    .should('have.text',publicClarifs)
+});
