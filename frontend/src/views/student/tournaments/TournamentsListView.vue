@@ -14,7 +14,11 @@
       show-expand
       class="elevation-1"
     >
+
+
+
       <template v-slot:top>
+
         <v-card-title>
           <v-text-field
             v-model="search"
@@ -31,9 +35,13 @@
             >New Tournament</v-btn
           >
         </v-card-title>
+
       </template>
 
+
+
       <template v-slot:item.enrollment="{ item }">
+
         <v-tooltip>
           <template v-slot:activator="{ on }">
             <v-btn
@@ -48,9 +56,11 @@
               Enroll
             </v-btn>
             <v-btn
-              disabled
+              class="white--text"
+              color="green"
               v-show="checkIfEnrolled(item) || enrollButtons.includes(item.id)"
-              >Enrolled</v-btn
+              @click="solveTournamentQuiz(item)"
+              >Join</v-btn
             >
           </template>
         </v-tooltip>
@@ -87,6 +97,7 @@ import { Tournament } from '@/models/user/Tournament';
 import CreateTournamentDialog from '@/views/student/tournaments/CreateTournamentDialog.vue';
 import RemoteServices from '@/services/RemoteServices';
 import Topic from '@/models/management/Topic';
+import StatementManager from '@/models/statement/StatementManager';
 
 @Component({
   components: {
@@ -99,6 +110,7 @@ export default class TournamentsListView extends Vue {
   tournaments: Tournament[] = [];
   topics: Topic[] = [];
   search: string = '';
+  sucessAlert: boolean = true;
   headers: object = [
     {
       text: 'Tournament Name',
@@ -147,6 +159,7 @@ export default class TournamentsListView extends Vue {
     try {
       this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
       this.topics = await RemoteServices.getTopics();
+      this.sucessAlert = true
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -167,6 +180,18 @@ export default class TournamentsListView extends Vue {
     this.tournaments.unshift(tournament);
     this.createTournamentDialog = false;
     this.tournament = null;
+  }
+
+  async solveTournamentQuiz(tournament: Tournament) {
+    await this.$store.dispatch('loading');
+    try {
+      let statementManager: StatementManager = StatementManager.getInstance;
+      statementManager.statementQuiz = (await RemoteServices.getTournamentQuiz(tournament));
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+    this.$router.push({ name: 'solve-quiz' });
   }
 
   async enrolled(tournament: Tournament) {
@@ -192,4 +217,6 @@ export default class TournamentsListView extends Vue {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>

@@ -70,6 +70,11 @@ public class TournamentService {
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public StatementQuizDto getTournamentQuiz(int tournamentId, int studentId) {
       Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+
+      if(tournament.getQuiz() == null){
+         throw new TutorException(NOT_ENOUGH_PARTICIPANTS);
+      }
+
       User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, studentId));
       Quiz quiz = quizRepository.findById(tournament.getQuiz().getId()).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, tournament.getQuiz().getId()));
 

@@ -65,6 +65,7 @@ public enum ErrorMessage {
     TOURNAMENT_NAME_INVALID("Tournament name is null or empty"),
     TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID("Number of questions for the tournament is invalid"),
     TOURNAMENT_NO_LONGER_AVAILABLE("Tournament already ended"),
+    NOT_ENOUGH_PARTICIPANTS("Not enough participants in tournament"),
 
     TOURNAMENT_QUIZ_NOT_FOUND("Tournament cant be created without a quiz"),
     TOURNAMENT_NO_CREATOR("Tournament cant be created without a creator"),
