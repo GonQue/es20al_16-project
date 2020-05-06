@@ -208,6 +208,8 @@ public class TournamentService {
       quiz.setKey(quizService.getMaxQuizKey() + 1);
       quiz.setType(Quiz.QuizType.TOURNAMENT.toString());
       quiz.setCreationDate(LocalDateTime.now());
+      quiz.setAvailableDate(tournament.getStartDate());
+      quiz.setConclusionDate(tournament.getEndDate());
 
       int executionId = tournament.getCourseExecution().getId();
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
