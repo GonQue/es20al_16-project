@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -29,5 +30,17 @@ public class StatsController {
         }
 
         return statsService.getStats(user.getId(), executionId);
+    }
+
+    @PostMapping("/executions/toggleDashboard")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public void changeClarificationAvailability(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        statsService.togglePublicDashboard(user.getId());
     }
 }

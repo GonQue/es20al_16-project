@@ -86,6 +86,14 @@ class DashboardTest extends Specification {
         stats.getPublicDashboard()
     }
 
+    def 'change dashboard from private to public'(){
+        when: 'toggle dashboard to private'
+        statsService.togglePublicDashboard(student.getId())
+        StatsDto stats = statsService.getStats(student.getId(), courseExecution.getId())
+        then: 'the dashboard is shown as private'
+        !stats.getPublicDashboard()
+    }
+
 @TestConfiguration
 static class StatsServiceImplTestContextConfiguration {
 

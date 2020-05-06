@@ -113,4 +113,11 @@ public class StatsService {
 
         return statsDto;
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void togglePublicDashboard(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        user.togglePublicDashboard();
+    }
 }
