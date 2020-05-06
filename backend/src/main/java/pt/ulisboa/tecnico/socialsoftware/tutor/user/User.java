@@ -42,6 +42,8 @@ public class User implements UserDetails, DomainEntity {
     private String name;
     private String enrolledCoursesAcronyms;
 
+    private Boolean publicDashboard;
+
     private Integer numberOfTeacherQuizzes;
     private Integer numberOfStudentQuizzes;
     private Integer numberOfInClassQuizzes;
@@ -90,6 +92,7 @@ public class User implements UserDetails, DomainEntity {
         this.key = key;
         this.role = role;
         this.creationDate = DateHandler.now();
+        setPublicDashboard(false);
         this.numberOfTeacherQuizzes = 0;
         this.numberOfInClassQuizzes = 0;
         this.numberOfStudentQuizzes = 0;
@@ -324,6 +327,18 @@ public class User implements UserDetails, DomainEntity {
 
     public void setNumberOfCorrectStudentAnswers(Integer numberOfCorrectStudentAnswers) {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
+    }
+
+    public Boolean getPublicDashboard() {
+        return this.publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
     }
 
     public Integer getNumberOfClarificationQuestions() {

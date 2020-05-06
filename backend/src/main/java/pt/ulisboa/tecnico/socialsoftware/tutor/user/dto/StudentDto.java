@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class StudentDto implements Serializable {
     private String username;
     private String name;
+    private Boolean publicDashboard;
     private Integer numberOfTeacherQuizzes;
     private Integer numberOfInClassQuizzes;
     private Integer numberOfStudentQuizzes;
@@ -27,6 +28,7 @@ public class StudentDto implements Serializable {
     public StudentDto(User user) {
         this.username = user.getUsername();
         this.name = user.getName();
+        this.publicDashboard = user.getPublicDashboard();
         this.numberOfTeacherQuizzes = user.getNumberOfTeacherQuizzes();
         this.numberOfInClassQuizzes = user.getNumberOfInClassQuizzes();
         this.numberOfStudentQuizzes = user.getNumberOfStudentQuizzes();
@@ -64,6 +66,18 @@ public class StudentDto implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getPublicDashboard() {
+        return publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
     }
 
     public Integer getNumberOfTeacherQuizzes() {
@@ -189,6 +203,7 @@ public class StudentDto implements Serializable {
         return "StudentDto{" +
                 "username='" + username + '\'' +
                 ", name='" + name + '\'' +
+                ", publicDashboard='" + publicDashboard + '\'' +
                 ", numberOfTeacherQuizzes=" + numberOfTeacherQuizzes +
                 ", numberOfStudentQuizzes=" + numberOfStudentQuizzes +
                 ", numberOfAnswers=" + numberOfAnswers +

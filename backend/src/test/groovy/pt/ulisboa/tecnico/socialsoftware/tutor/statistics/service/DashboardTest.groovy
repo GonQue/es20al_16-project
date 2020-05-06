@@ -19,7 +19,6 @@ import spock.lang.Specification
 
 @DataJpaTest
 class DashboardTest extends Specification {
-    public static final String CONTENT = "clarificationQuestion content"
     @Autowired
     StatsService statsService
 
@@ -45,19 +44,7 @@ class DashboardTest extends Specification {
         student = new User()
         student.setKey(1)
         student.setRole(User.Role.STUDENT)
-
-        clarificationQuestion1 = new ClarificationQuestion()
-        clarificationQuestion1.setStudent(student)
-        clarificationQuestion1.setContent(CONTENT)
-        clarificationQuestion1.setStatus(ClarificationQuestion.Status.NOT_ANSWERED)
-        clarificationQuestion1.setAvailableToOtherStudents(true)
-        student.addClarificationQuestion(clarificationQuestion1)
-
-        clarificationQuestion2 = new ClarificationQuestion()
-        clarificationQuestion2.setStudent(student)
-        clarificationQuestion2.setContent(CONTENT)
-        clarificationQuestion2.setStatus(ClarificationQuestion.Status.NOT_ANSWERED)
-        student.addClarificationQuestion(clarificationQuestion2)
+        student.setPublicDashboard(true)
 
         course = new Course("course", Course.Type.TECNICO)
         courseRepository.save(course)
@@ -66,6 +53,15 @@ class DashboardTest extends Specification {
         courseExecutionRepository.save(courseExecution)
         course.addCourseExecution(courseExecution)
 
+        clarificationQuestion1 = new ClarificationQuestion()
+        clarificationQuestion1.setStudent(student)
+        clarificationQuestion1.setAvailableToOtherStudents(true)
+        student.addClarificationQuestion(clarificationQuestion1)
+
+        clarificationQuestion2 = new ClarificationQuestion()
+        clarificationQuestion2.setStudent(student)
+
+        student.addClarificationQuestion(clarificationQuestion2)
         student.addCourse(courseExecution)
 
         userRepository.save(student)
@@ -81,6 +77,13 @@ class DashboardTest extends Specification {
         then: "the stats show two clarifications and one of them is public"
         stats.getTotalClarificationQuestions() == 2
         stats.getTotalPublicClarificationQuestions() == 1
+    }
+
+    def 'the dashboard is public'(){
+        when:
+        StatsDto stats = statsService.getStats(student.getId(), courseExecution.getId())
+        then: 'the dashboard is shown as public'
+        stats.getPublicDashboard()
     }
 
 @TestConfiguration
