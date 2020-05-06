@@ -70,13 +70,6 @@ public class TournamentService {
       return new TournamentDto(new UserDto(creatorUser), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
 
    }
-   public void deleteTournament(int tournamentId){
-      tournamentRepository.deleteById(tournamentId);
-   }
-
-   public boolean tournamentExists (int tournamentId){
-      return tournamentRepository.existsById(tournamentId);
-   }
 
    private Quiz getQuiz(TournamentDto tournamentDto) {
       if(tournamentDto.getQuiz()==null){
@@ -124,7 +117,6 @@ public class TournamentService {
       return creatorUser;
    }
 
-
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto enrollStudent(int tournamentId, int studentId) {
       Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
@@ -140,15 +132,14 @@ public class TournamentService {
       //tDto.setEnrolled(enrolled);
 
       return tDto;
-
    }
 
    private void enrollStud(Tournament tournament, User user) {
-      if(tournament.getEnrolled().stream().anyMatch(u -> u.getId().equals(user.getId()))){
-         throw new TutorException(STUDENT_ALREADY_ENROLLED);
-      }
-      tournament.addStudent(user);
-      user.enrollTournament(tournament);
+       if(tournament.getEnrolled().stream().anyMatch(u -> u.getId().equals(user.getId()))){
+           throw new TutorException(STUDENT_ALREADY_ENROLLED);
+       }
+       tournament.addStudent(user);
+       user.enrollTournament(tournament);
    }
 
    private void checkUserInCourseExecution(User user, CourseExecution courseExecution, ErrorMessage em) {
@@ -191,4 +182,18 @@ public class TournamentService {
               .collect(Collectors.toList());
 
    }
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public void deleteTournament(Integer tournamentId, Integer creatorId){
+      Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+      if(tournament.getCreator().getId()==creatorId) {
+         tournament.delete();
+         tournamentRepository.deleteById(tournamentId);
+      }
+      else {
+         throw new TutorException(TOURNAMENT_NOT_THE_CREATOR);
+      }
+   }
+
+
 }
