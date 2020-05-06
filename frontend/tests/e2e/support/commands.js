@@ -120,7 +120,8 @@ Cypress.Commands.add(
       .click();
 
     //Number of questions
-    if (pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').click();
+    if (pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').get('label').contains('Number of questions').type('{rightarrow}');
+
 
     //Topics
     cy.get('[data-cy="topics"]').click();
@@ -162,16 +163,16 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
 });
 Cypress.Commands.add('removeTournamentFromDB', name => {
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 

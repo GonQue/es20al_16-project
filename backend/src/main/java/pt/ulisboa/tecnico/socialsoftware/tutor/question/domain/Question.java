@@ -324,4 +324,8 @@ public class Question implements DomainEntity {
         getTopics().forEach(topic -> topic.getQuestions().remove(this));
         getTopics().clear();
     }
+
+    public boolean hasAnyTopics(Set<Topic> topics){
+        return !Collections.disjoint(this.topics, topics);
+    }
 }

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
@@ -13,9 +16,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
@@ -27,9 +33,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
@@ -49,35 +58,89 @@ public class TournamentService {
    @Autowired
    private QuizRepository quizRepository;
 
+   @Autowired
+   private QuizService quizService;
+
+   @Autowired
+   private QuestionRepository questionRepository;
+
+   @Autowired
+   private QuizAnswerRepository quizAnswerRepository;
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public StatementQuizDto getTournamentQuiz(int tournamentId, int studentId) {
+      Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+
+      if(tournament.getQuiz() == null){
+         throw new TutorException(NOT_ENOUGH_PARTICIPANTS);
+      }
+
+      User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, studentId));
+      Quiz quiz = quizRepository.findById(tournament.getQuiz().getId()).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, tournament.getQuiz().getId()));
+
+      if (!user.getCourseExecutions().contains(tournament.getCourseExecution())) {
+         throw new TutorException(USER_NOT_ENROLLED, user.getUsername());
+      }
+
+      if (tournament.getEndDate() != null && LocalDateTime.now().isAfter(tournament.getEndDate())) {
+         throw new TutorException(TOURNAMENT_NO_LONGER_AVAILABLE);
+      }
+
+      QuizAnswer quizAnswer = quizAnswerRepository.findQuizAnswer(quiz.getId(), user.getId()).orElseGet(() -> {
+         QuizAnswer qa = new QuizAnswer(user, quiz);
+         quizAnswerRepository.save(qa);
+         return qa;
+      });
+
+      if (quizAnswer.isCompleted()) {
+         throw new TutorException(QUIZ_ALREADY_COMPLETED);
+      }
+
+      if (quizAnswer.getQuiz().isOneWay() && quizAnswer.getAnswerDate() != null) {
+         throw new TutorException(QUIZ_ALREADY_COMPLETED);
+      }
+
+      if (tournament.getEndDate() == null || DateHandler.now().isAfter(tournament.getStartDate())) {
+         return new StatementQuizDto(quizAnswer);
+
+
+      } else { // Send timer
+         StatementQuizDto quizDto = new StatementQuizDto();
+         quizDto.setTimeToAvailability(ChronoUnit.MILLIS.between(DateHandler.now(), tournament.getStartDate()));
+         return quizDto;
+      }
+
+   }
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto createTournament(int executionId, int creatorId, TournamentDto tournamentDto){
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
 
-      Quiz quiz = getQuiz(tournamentDto);
+      //Quiz quiz = getQuiz(tournamentDto);
       User creatorUser = getCreator(creatorId);
       checkCreatorCourse(courseExecution, creatorUser);
 
       Set<Topic> topics = getTopics(tournamentDto);
 
-      //StatementQuizDto statementQuizDto = statementService.generateStudentQuiz(); TODO Quiz generation
 
-      Tournament tournament = saveTournament(tournamentDto, courseExecution, quiz, creatorUser, topics);
+      Tournament tournament = saveTournament(tournamentDto, courseExecution, creatorUser, topics);
       creatorUser.addTournament(tournament);
-      if(quiz!=null)quiz.addTournament(tournament);
+      //if(quiz!=null)quiz.addTournament(tournament);
       courseExecution.addTournament(tournament);
 
-      return new TournamentDto(new UserDto(creatorUser), tournamentDto.getQuiz(), tournamentDto.getTopics(), tournament);
+      pickRandomQuestions(tournament);//throws error if not enough questions
+
+      return new TournamentDto(new UserDto(creatorUser), tournamentDto.getTopics(), tournament);
 
    }
-
+   /*
    private Quiz getQuiz(TournamentDto tournamentDto) {
       if(tournamentDto.getQuiz()==null){
          return null;
          //throw new TutorException(TOURNAMENT_QUIZ_NOT_FOUND);
       }
       return quizRepository.findById(tournamentDto.getQuiz().getId()).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, tournamentDto.getQuiz().getId()));
-   }
+   }*/
 
    private Set<Topic> getTopics(TournamentDto tournamentDto) {
       if(tournamentDto.getTopics() == null){ tournamentDto.setTopics(new ArrayList<>(Arrays.asList())); }
@@ -92,8 +155,8 @@ public class TournamentService {
       return topics;
    }
 
-   private Tournament saveTournament(TournamentDto tournamentDto, CourseExecution courseExecution, Quiz quiz, User creatorUser, Set<Topic> topics) {
-      Tournament tournament = new Tournament(creatorUser, courseExecution, quiz, tournamentDto);
+   private Tournament saveTournament(TournamentDto tournamentDto, CourseExecution courseExecution, User creatorUser, Set<Topic> topics) {
+      Tournament tournament = new Tournament(creatorUser, courseExecution, tournamentDto);
       tournament.setTopics(topics);
 
       tournamentRepository.save(tournament);
@@ -127,11 +190,51 @@ public class TournamentService {
 
       enrollStud(tournament, user);
 
+      if(tournament.getQuiz()==null && tournament.getEnrolled().size() > 1){
+         generateQuiz(tournament, user);
+      }
+
       List<UserDto> enrolled = getUserDtos(tournament);
       TournamentDto tDto = new TournamentDto(tournament);
       //tDto.setEnrolled(enrolled);
 
       return tDto;
+   }
+
+   private void generateQuiz(Tournament tournament, User user){
+      Quiz quiz = new Quiz();
+      quiz.setKey(quizService.getMaxQuizKey() + 1);
+      quiz.setType(Quiz.QuizType.TOURNAMENT.toString());
+      quiz.setCreationDate(LocalDateTime.now());
+      quiz.setAvailableDate(tournament.getStartDate());
+      quiz.setConclusionDate(tournament.getEndDate());
+
+      int executionId = tournament.getCourseExecution().getId();
+      CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
+      List<Question> availableQuestions = pickRandomQuestions(tournament);
+
+      quiz.generate(availableQuestions);
+      quiz.setCourseExecution(courseExecution);
+      quizRepository.save(quiz);
+      tournament.setQuiz(quiz);
+   }
+
+
+
+   public List<Question> pickRandomQuestions(Tournament tournament){
+      List<Question> availableQuestions = questionRepository.findAvailableQuestions(tournament.getCourseExecution().getCourse().getId());
+
+      Set<Topic> topics = tournament.getTopics();
+
+      availableQuestions = availableQuestions.stream().filter(question -> question.hasAnyTopics(topics)).collect(Collectors.toList());
+
+      if (availableQuestions.size() < tournament.getNumberOfQuestions()) {
+         throw new TutorException(NOT_ENOUGH_QUESTIONS);
+      }
+
+      List<Question> copy = new ArrayList<>(availableQuestions);
+      Collections.shuffle(copy);
+      return copy.subList(0, tournament.getNumberOfQuestions());
    }
 
    private void enrollStud(Tournament tournament, User user) {
@@ -179,7 +282,7 @@ public class TournamentService {
               .filter(tournament -> tournament.getStatus() == Tournament.Status.CREATED)
               .sorted(Comparator.comparing(Tournament::getStartDate))
               .map(TournamentDto::new)
-              .collect(Collectors.toList());
+              .collect(toList());
 
    }
 

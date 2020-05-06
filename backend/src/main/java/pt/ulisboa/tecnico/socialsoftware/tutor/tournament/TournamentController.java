@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.dto.TournamentDto;
@@ -70,6 +71,18 @@ public class TournamentController {
         }
         if (tournament.getEndDate() !=null && !tournament.getEndDate().matches("(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2})"))
             tournament.setEndDate(LocalDateTime.parse(tournament.getEndDate().replaceAll(".$", ""), DateTimeFormatter.ISO_DATE_TIME).format(formatter));
+    }
+
+    @GetMapping("/tournaments/{tournamentId}/quiz")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public StatementQuizDto getTournamentQuiz(@PathVariable int tournamentId, Principal principal){
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return tournamentService.getTournamentQuiz(tournamentId, user.getId());
     }
 
 }

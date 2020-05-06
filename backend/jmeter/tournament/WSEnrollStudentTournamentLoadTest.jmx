@@ -61,20 +61,20 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">12345</stringProp>
+          <stringProp name="password">123</stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">joana</stringProp>
+          <stringProp name="username">rafa</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request Tournament" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="queryType">Update Statement</stringProp>
           <stringProp name="query">insert into tournaments(id, end_date, name, number_of_questions, start_date, status, course_execution_id, tournament_creator_id, quiz_id)
-values (${tournamentId},&apos;2222-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 651, 5370)
+values (${tournamentId},&apos;2222-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 651, 5360)
 </stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
@@ -334,13 +334,13 @@ values (${tournamentId},&apos;2222-12-22 22:22&apos;, &apos;torneio&apos;, 5,&ap
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">12345</stringProp>
+          <stringProp name="password">123</stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">joana</stringProp>
+          <stringProp name="username">rafa</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
