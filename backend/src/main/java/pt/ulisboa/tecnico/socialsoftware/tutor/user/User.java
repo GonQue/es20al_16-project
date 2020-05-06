@@ -51,6 +51,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfClarificationQuestions;
+    private Integer numberOfPublicClarificationQuestions;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -97,6 +99,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfClarificationQuestions = 0;
     }
 
     public void addTournament(Tournament tournament) {
@@ -323,6 +326,30 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
 
+    public Integer getNumberOfClarificationQuestions() {
+        if (this.numberOfClarificationQuestions == null)
+            this.numberOfClarificationQuestions = this.getClarification_questions().size();
+
+        return numberOfClarificationQuestions;
+    }
+
+    public void setNumberOfClarificationQuestions(Integer numberOfClarificationQuestions) {
+        this.numberOfClarificationQuestions = numberOfClarificationQuestions;
+    }
+
+    public Integer getNumberOfPublicClarificationQuestions() {
+        if (this.numberOfPublicClarificationQuestions == null)
+            this.numberOfPublicClarificationQuestions = (int) this.getClarification_questions().stream()
+                    .filter(ClarificationQuestion::getAvailableToOtherStudents)
+                    .count();
+
+        return numberOfPublicClarificationQuestions;
+    }
+
+    public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
+        this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -341,6 +368,8 @@ public class User implements UserDetails, DomainEntity {
                 ", numberOfCorrectTeacherAnswers=" + numberOfCorrectTeacherAnswers +
                 ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
+                ", numberOfClarificationQuestions=" + numberOfClarificationQuestions +
+                ", numberOfPublicClarificationQuestion=" + numberOfPublicClarificationQuestions +
                 ", creationDate=" + creationDate +
                 ", lastAccess=" + lastAccess +
                 '}';
