@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
@@ -31,6 +34,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,6 +63,49 @@ public class TournamentService {
 
    @Autowired
    private QuestionRepository questionRepository;
+
+   @Autowired
+   private QuizAnswerRepository quizAnswerRepository;
+
+   @Transactional(isolation = Isolation.REPEATABLE_READ)
+   public StatementQuizDto getTournamentQuiz(int tournamentId, int studentId) {
+      Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
+      User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, studentId));
+      Quiz quiz = quizRepository.findById(tournament.getQuiz().getId()).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, tournament.getQuiz().getId()));
+
+      if (!user.getCourseExecutions().contains(tournament.getCourseExecution())) {
+         throw new TutorException(USER_NOT_ENROLLED, user.getUsername());
+      }
+
+      if (tournament.getEndDate() != null && LocalDateTime.now().isAfter(tournament.getEndDate())) {
+         throw new TutorException(TOURNAMENT_NO_LONGER_AVAILABLE);
+      }
+
+      QuizAnswer quizAnswer = quizAnswerRepository.findQuizAnswer(quiz.getId(), user.getId()).orElseGet(() -> {
+         QuizAnswer qa = new QuizAnswer(user, quiz);
+         quizAnswerRepository.save(qa);
+         return qa;
+      });
+
+      if (quizAnswer.isCompleted()) {
+         throw new TutorException(QUIZ_ALREADY_COMPLETED);
+      }
+
+      if (quizAnswer.getQuiz().isOneWay() && quizAnswer.getAnswerDate() != null) {
+         throw new TutorException(QUIZ_ALREADY_COMPLETED);
+      }
+
+      if (tournament.getEndDate() == null || DateHandler.now().isAfter(tournament.getStartDate())) {
+         return new StatementQuizDto(quizAnswer);
+
+
+      } else { // Send timer
+         StatementQuizDto quizDto = new StatementQuizDto();
+         quizDto.setTimeToAvailability(ChronoUnit.MILLIS.between(DateHandler.now(), tournament.getStartDate()));
+         return quizDto;
+      }
+
+   }
 
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public TournamentDto createTournament(int executionId, int creatorId, TournamentDto tournamentDto){

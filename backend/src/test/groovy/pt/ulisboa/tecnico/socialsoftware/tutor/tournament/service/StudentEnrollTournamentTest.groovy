@@ -88,7 +88,6 @@ class StudentEnrollTournamentTest extends Specification {
     def userDto
     def user2Dto
     def formatter
-    def quiz
     def topicOne
     def topicDtoOne
     def topicTwo
