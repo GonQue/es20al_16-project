@@ -41,8 +41,8 @@ public class Course implements DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
     private final Set<Topic> topics = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY, orphanRemoval=true)
-    private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
+    @OneToMany(fetch=FetchType.LAZY)
+    private final Set<ProposedQuestion> proposedQuestions = new HashSet<>();
 
     public Course() {}
 

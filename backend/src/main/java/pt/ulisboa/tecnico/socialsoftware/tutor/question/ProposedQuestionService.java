@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
@@ -21,7 +22,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.util.Comparator;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -158,13 +158,16 @@ public class ProposedQuestionService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public ProposedQuestionDto turnAvailable(ProposedQuestionDto pqDto) {
-        ProposedQuestion pq = findProposedQuestion(pqDto.getId());
+    public ProposedQuestionDto turnAvailable(int pqId, ProposedQuestionDto pqDto) {
+        ProposedQuestion pq = findProposedQuestion(pqId);
         pq.evaluate("", ProposedQuestion.Evaluation.AVAILABLE);
-        Question question = pq.getQuestion();
-        questionService.questionSetStatus(question.getId(), Question.Status.AVAILABLE);
 
-        Course course = getCourse(pq.getId());
+        QuestionDto questionDto = pqDto.getQuestion();
+        int questionId = pq.getQuestion().getId();
+        questionService.questionSetStatus(questionId, Question.Status.AVAILABLE);
+        questionService.updateQuestion(questionId, questionDto);
+
+        Course course = getCourse(pqId);
         course.removeProposedQuestion(pq);
 
     return new ProposedQuestionDto(pq);
