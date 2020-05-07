@@ -9,6 +9,12 @@ export default class StudentStats {
   uniqueCorrectAnswers!: number;
   uniqueWrongAnswers!: number;
 
+  publicDashboard!: boolean;
+  totalClarificationQuestions!: number;
+  totalPublicClarificationQuestions!: number;
+  totalProposedQuestions!: number;
+  totalApprovedProposedQuestions!: number;
+
   constructor(jsonObj?: StudentStats) {
     if (jsonObj) {
       this.totalQuizzes = jsonObj.totalQuizzes;
@@ -19,6 +25,13 @@ export default class StudentStats {
       this.uniqueCorrectAnswers = jsonObj.uniqueCorrectAnswers;
       this.uniqueWrongAnswers = jsonObj.uniqueWrongAnswers;
       this.totalAvailableQuestions = jsonObj.totalAvailableQuestions;
+      this.publicDashboard = jsonObj.publicDashboard;
+      this.totalClarificationQuestions = jsonObj.totalClarificationQuestions;
+      this.totalPublicClarificationQuestions =
+        jsonObj.totalPublicClarificationQuestions;
+      this.totalProposedQuestions = jsonObj.totalProposedQuestions;
+      this.totalApprovedProposedQuestions =
+        jsonObj.totalApprovedProposedQuestions;
     }
   }
 }

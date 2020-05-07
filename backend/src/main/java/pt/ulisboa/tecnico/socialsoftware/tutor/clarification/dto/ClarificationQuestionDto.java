@@ -13,6 +13,8 @@ public class ClarificationQuestionDto implements Serializable {
     private String questionContent;
     private String content;
     private String status;
+    private Boolean needClarification;
+    private Boolean availableToOtherStudents;
     private String creationDate = null;
 
     @Transient
@@ -27,6 +29,8 @@ public class ClarificationQuestionDto implements Serializable {
         this.questionContent = clarificationQuestion.getQuestion().getContent();
         this.content = clarificationQuestion.getContent();
         this.status = clarificationQuestion.getStatus().name();
+        this.needClarification = clarificationQuestion.getNeedClarification();
+        this.availableToOtherStudents = clarificationQuestion.getAvailableToOtherStudents();
 
         if (clarificationQuestion.getCreationDate() != null)
             this.creationDate = clarificationQuestion.getCreationDate().format(formatter);
@@ -59,6 +63,14 @@ public class ClarificationQuestionDto implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public Boolean getNeedClarification() { return needClarification; }
+
+    public void setNeedClarification(Boolean needClarification) { this.needClarification = needClarification; }
+
+    public Boolean getAvailableToOtherStudents() { return availableToOtherStudents; }
+
+    public void setAvailableToOtherStudents(Boolean availableToOtherStudents) { this.availableToOtherStudents = availableToOtherStudents; }
 
     public String getCreationDate() {
         return creationDate;

@@ -133,7 +133,6 @@
 </template>
 
 <script lang="ts">
-
 import { Component, Vue } from 'vue-property-decorator';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
@@ -150,7 +149,6 @@ import Image from '@/models/management/Image';
     'edit-question-dialog': EditPropQuestionDialog
   }
 })
-
 export default class ProposeQuestionView extends Vue {
   proposedQuestions: ProposedQuestion[] = [];
   currentPropQuestion: ProposedQuestion | null = null;
@@ -256,7 +254,6 @@ export default class ProposeQuestionView extends Vue {
     this.currentPropQuestion = null;
   }
 }
-
 </script>
 
 <style lang="scss" scoped></style>

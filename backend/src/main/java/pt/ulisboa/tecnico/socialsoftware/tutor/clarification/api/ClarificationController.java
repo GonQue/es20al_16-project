@@ -57,6 +57,18 @@ public class ClarificationController {
         return clarificationService.listClarificationQuestions(user.getId());
     }
 
+    @GetMapping("/student/{questionId}/clarifications")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<ClarificationQuestionDto> getOtherPublicClarificationQuestions(Principal principal, @PathVariable Integer questionId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if (user == null) {
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return clarificationService.listPublicClarificationQuestions(user.getId(), questionId);
+    }
+
     @GetMapping("/student/clarifications/{clarificationId}/responses")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public List<ClarificationResponseDto> listStudentResponses(Principal principal, @PathVariable Integer clarificationId) {
@@ -115,5 +127,29 @@ public class ClarificationController {
         }
 
         clarificationService.removeClarificationResponse(clarificationResponseId);
+    }
+
+    @PostMapping("/student/clarifications/{clarificationQuestionId}/additional")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public void askForAdditionalClarification(Principal principal, @PathVariable Integer clarificationQuestionId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.askForAdditionalClarification(clarificationQuestionId);
+    }
+
+    @PostMapping("/management/clarifications/{clarificationId}/availability")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public void changeClarificationAvailability(Principal principal, @PathVariable Integer clarificationId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        clarificationService.changeClarificationAvailability(clarificationId);
     }
 }

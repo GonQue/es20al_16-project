@@ -21,32 +21,6 @@
         </v-card-title>
       </template>
 
-      <template v-slot:item.status="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon class="mr-2" :color="statusColor(item.status)" v-on="on">{{
-              statusIcon(item.status)
-            }}</v-icon>
-          </template>
-          <span>{{ statusSpan(item.status) }}</span>
-        </v-tooltip>
-      </template>
-
-      <template v-slot:item.needClarification="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              data-cy="NeedClarificationIcon"
-              class="mr-2"
-              :color="needClarificationColor(item.needClarification)"
-              v-on="on"
-              >{{ needClarificationIcon(item.needClarification) }}</v-icon
-            >
-          </template>
-          <span>{{ needClarificationSpan(item.needClarification) }}</span>
-        </v-tooltip>
-      </template>
-
       <template v-slot:item.responses="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -59,22 +33,6 @@
             >
           </template>
           <span>Show Responses</span>
-        </v-tooltip>
-      </template>
-
-      <template v-slot:item.deleteClarification="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              class="mr-2"
-              v-on="on"
-              @click="deleteClarificationQuestion(item.id)"
-              color="#D32F2F"
-              data-cy="DeleteClarificationIcon"
-              >delete</v-icon
-            >
-          </template>
-          <span>Remove Clarification</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -96,6 +54,7 @@ import ListClarificationResponses from '@/views/teacher/clarifications/ListClari
 })
 export default class ListClarificationQuestionsView extends Vue {
   @Prop(ClarificationQuestion) clarificationQuestion!: ClarificationQuestion;
+  @Prop(String) readonly questionId!: string;
   currentClarificationQuestion: ClarificationQuestion | null = null;
   clarificationQuestions: StatementClarificationQuestion[] = [];
   search: string = '';
@@ -104,20 +63,13 @@ export default class ListClarificationQuestionsView extends Vue {
       text: 'Clarification Content',
       value: 'content',
       align: 'center',
-      width: '30%'
+      width: '40%'
     },
     {
       text: 'Question To Be Clarified',
       value: 'questionContent',
       align: 'center',
-      width: '30%'
-    },
-    { text: 'Answered?', value: 'status', align: 'center', width: '5%' },
-    {
-      text: 'Clarified?',
-      value: 'needClarification',
-      align: 'center',
-      width: '10%'
+      width: '40%'
     },
     {
       text: 'Creation Date',
@@ -130,47 +82,8 @@ export default class ListClarificationQuestionsView extends Vue {
       value: 'responses',
       align: 'center',
       width: '5%'
-    },
-    {
-      text: 'Remove',
-      value: 'deleteClarification',
-      align: 'center',
-      width: '5%'
     }
   ];
-
-  statusIcon(status: string) {
-    if (status == 'NOT_ANSWERED') return 'mdi-comment-remove';
-    else if (status == 'ANSWERED') return 'mdi-comment-check';
-    else return 'mdi-comment-remove';
-  }
-
-  statusColor(status: string) {
-    if (status == 'NOT_ANSWERED') return '#D32F2F';
-    else if (status == 'ANSWERED') return '#2E7D32';
-    else return '#D32F2F';
-  }
-
-  statusSpan(needClarification: string) {
-    if (needClarification == 'NOT_ANSWERED') return 'Not Answered';
-    else if (needClarification == 'ANSWERED') return 'Answered';
-    else return 'Not Answered';
-  }
-
-  needClarificationIcon(needClarification: boolean) {
-    if (needClarification) return 'mdi-comment-remove';
-    else return 'mdi-comment-check';
-  }
-
-  needClarificationColor(needClarification: boolean) {
-    if (needClarification) return '#D32F2F';
-    else return '#2E7D32';
-  }
-
-  needClarificationSpan(needClarification: boolean) {
-    if (needClarification) return 'Needs clarification';
-    else return 'Already clarified';
-  }
 
   async deleteClarificationQuestion(clarificationId: number) {
     if (
@@ -192,7 +105,7 @@ export default class ListClarificationQuestionsView extends Vue {
     this.currentClarificationQuestion = clarificationQuestion;
     if (this.currentClarificationQuestion.id != null)
       await this.$router.push({
-        name: 'show-student-clarification-responses',
+        name: 'show-public-student-clarification-responses',
         params: {
           clarificationQuestionId: this.currentClarificationQuestion.id.toString()
         }
@@ -202,9 +115,15 @@ export default class ListClarificationQuestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.clarificationQuestions = await RemoteServices.getClarificationQuestions();
+      this.clarificationQuestions = await RemoteServices.getPublicClarificationQuestions(
+        parseInt(this.questionId)
+      );
     } catch (error) {
-      await this.$store.dispatch('error', error);
+      if (this.questionId != null) await this.$store.dispatch('error', error);
+      else
+        await this.$router.push({
+          name: 'solved-quizzes'
+        });
     }
     await this.$store.dispatch('clearLoading');
   }

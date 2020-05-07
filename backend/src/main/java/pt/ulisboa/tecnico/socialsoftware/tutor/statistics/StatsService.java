@@ -8,10 +8,12 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
@@ -87,18 +89,45 @@ public class StatsService {
                 .filter(Option::getCorrect)
                 .count();
 
+        int clarificationQuestions = user.getClarification_questions().size();
+
+        int publicClarificationQuestions = (int) user.getClarification_questions().stream()
+                .filter(clarificationQuestion -> Objects.nonNull(clarificationQuestion.getAvailableToOtherStudents()))
+                .filter(ClarificationQuestion::getAvailableToOtherStudents)
+                .count();
+
+        int proposedQuestions = user.getProposedQuestions().size();
+
+        int approvedProposedQuestions = (int) user.getProposedQuestions().stream()
+                .filter(proposedQuestion -> proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.APPROVED) ||
+                        proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.AVAILABLE))
+                .count();
+
         Course course = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId)).getCourse();
 
         int totalAvailableQuestions = questionRepository.getAvailableQuestionsSize(course.getId());
 
+        statsDto.setPublicDashboard(user.getPublicDashboard());
         statsDto.setTotalQuizzes(totalQuizzes);
         statsDto.setTotalAnswers(totalAnswers);
         statsDto.setTotalUniqueQuestions(uniqueQuestions);
         statsDto.setTotalAvailableQuestions(totalAvailableQuestions);
+        statsDto.setTotalClarificationQuestions(clarificationQuestions);
+        statsDto.setTotalPublicClarificationQuestions(publicClarificationQuestions);
+        statsDto.setTotalProposedQuestions(proposedQuestions);
+        statsDto.setTotalApprovedProposedQuestions(approvedProposedQuestions);
         if (totalAnswers != 0) {
             statsDto.setCorrectAnswers(((float)correctAnswers)*100/totalAnswers);
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);
         }
+
         return statsDto;
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void togglePublicDashboard(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        user.togglePublicDashboard();
     }
 }

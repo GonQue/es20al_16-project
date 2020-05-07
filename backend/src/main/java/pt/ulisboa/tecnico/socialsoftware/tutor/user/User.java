@@ -42,6 +42,8 @@ public class User implements UserDetails, DomainEntity {
     private String name;
     private String enrolledCoursesAcronyms;
 
+    private Boolean publicDashboard;
+
     private Integer numberOfTeacherQuizzes;
     private Integer numberOfStudentQuizzes;
     private Integer numberOfInClassQuizzes;
@@ -51,6 +53,10 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfClarificationQuestions;
+    private Integer numberOfPublicClarificationQuestions;
+    private Integer numberOfProposedQuestions;
+    private Integer numberOfApprovedProposedQuestions;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -88,6 +94,7 @@ public class User implements UserDetails, DomainEntity {
         this.key = key;
         this.role = role;
         this.creationDate = DateHandler.now();
+        setPublicDashboard(false);
         this.numberOfTeacherQuizzes = 0;
         this.numberOfInClassQuizzes = 0;
         this.numberOfStudentQuizzes = 0;
@@ -97,6 +104,9 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfClarificationQuestions = 0;
+        this.numberOfProposedQuestions = 0;
+        this.numberOfApprovedProposedQuestions = 0;
     }
 
     public void addTournament(Tournament tournament) {
@@ -323,6 +333,67 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
 
+    public Boolean getPublicDashboard() {
+        return this.publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
+    }
+
+    public Integer getNumberOfClarificationQuestions() {
+        if (this.numberOfClarificationQuestions == null)
+            this.numberOfClarificationQuestions = this.getClarification_questions().size();
+
+        return numberOfClarificationQuestions;
+    }
+
+    public void setNumberOfClarificationQuestions(Integer numberOfClarificationQuestions) {
+        this.numberOfClarificationQuestions = numberOfClarificationQuestions;
+    }
+
+    public Integer getNumberOfPublicClarificationQuestions() {
+        if (this.numberOfPublicClarificationQuestions == null)
+            this.numberOfPublicClarificationQuestions = (int) this.getClarification_questions().stream()
+                    .filter(ClarificationQuestion::getAvailableToOtherStudents)
+                    .count();
+
+        return numberOfPublicClarificationQuestions;
+    }
+
+    public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
+        this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
+    public Integer getNumberOfProposedQuestions() {
+       if (this.numberOfProposedQuestions == null)
+           this.numberOfProposedQuestions = this.getProposedQuestions().size();
+
+        return numberOfProposedQuestions;
+    }
+
+    public void setNumberOfProposedQuestions(Integer numberOfProposedQuestions) {
+        this.numberOfProposedQuestions = numberOfProposedQuestions;
+    }
+
+    public Integer getNumberOfApprovedProposedQuestions() {
+        if (this.numberOfApprovedProposedQuestions == null)
+            this.numberOfApprovedProposedQuestions = (int) this.getProposedQuestions().stream()
+                    .filter(proposedQuestion -> proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.APPROVED) ||
+                            proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.AVAILABLE))
+                    .count();
+
+        return numberOfApprovedProposedQuestions;
+    }
+
+    public void setNumberOfApprovedProposedQuestions(Integer numberOfApprovedProposedQuestions) {
+        this.numberOfApprovedProposedQuestions = numberOfApprovedProposedQuestions;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -341,6 +412,8 @@ public class User implements UserDetails, DomainEntity {
                 ", numberOfCorrectTeacherAnswers=" + numberOfCorrectTeacherAnswers +
                 ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
+                ", numberOfClarificationQuestions=" + numberOfClarificationQuestions +
+                ", numberOfPublicClarificationQuestion=" + numberOfPublicClarificationQuestions +
                 ", creationDate=" + creationDate +
                 ", lastAccess=" + lastAccess +
                 '}';

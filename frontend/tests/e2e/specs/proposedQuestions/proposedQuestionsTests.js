@@ -28,11 +28,14 @@ describe('Proposed Question walkthrough', () => {
     cy.get('[data-cy="search"').clear();
     cy.turnAvailable('TEST', 'NEWTITLE', 'NEWCONTENT');
     cy.get('[data-cy="search"').clear();
-    cy.exec('PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost < tests/e2e/specs/teacher/deleteAvailableQuestion.sql');
-  })
+    cy.exec(
+      'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost < tests/e2e/specs/proposedQuestions/deleteAvailableQuestion.sql'
+    );
+  });
 
   it('student resubmit rejected proposed question', () => {
     cy.evaluate('TEST', 'REJECTED', 'Justification');
+    cy.contains('Logout').click();
     cy.openProposeQuestionStudentMenu();
     cy.updateProposedQuestion('TEST', 'New_Content');
 

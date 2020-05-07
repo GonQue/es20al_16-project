@@ -1,5 +1,18 @@
 <template>
   <div class="container">
+    <h3 align="left" data-cy="privacyInfo">
+      Your Dashboard is set to
+      {{ stats.publicDashboard ? 'PUBLIC' : 'PRIVATE' }}
+    </h3>
+    <v-btn
+      v-model="checkedSwitch"
+      inset
+      class="privacyToggle"
+      @click="togglePublicDashboard"
+      data-cy="privacyButton"
+      color="primary"
+      >Change Privacy</v-btn
+    >
     <h2>Statistics</h2>
     <div v-if="stats != null" class="stats-container">
       <div class="items">
@@ -58,6 +71,60 @@
         </div>
       </div>
     </div>
+
+    <h2>Clarifications</h2>
+    <div v-if="stats != null" class="stats-container">
+      <div class="items">
+        <div class="icon-wrapper" ref="totalClarificationQuestions">
+          <animated-number
+            :number="stats.totalClarificationQuestions"
+            data-cy="totalClarificationQuestions"
+          />
+        </div>
+        <div class="project-name">
+          <p>Clarifications Created</p>
+        </div>
+      </div>
+      <div class="items">
+        <div
+          class="icon-wrapper"
+          ref="totalPublicClarificationQuestions"
+          data-cy="totalPublicClarificationQuestions"
+        >
+          <animated-number :number="stats.totalPublicClarificationQuestions" />
+        </div>
+        <div class="project-name">
+          <p>Clarifications marked as Public</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Proposed Questions</h2>
+    <div v-if="stats != null" class="stats-container">
+      <div class="items">
+        <div class="icon-wrapper" ref="totalProposedQuestions">
+          <animated-number
+            :number="stats.totalProposedQuestions"
+            data-cy="totalProposedQuestions"
+          />
+        </div>
+        <div class="project-name">
+          <p>Proposed Questions</p>
+        </div>
+      </div>
+      <div class="items">
+        <div
+          class="icon-wrapper"
+          ref="totalApprovedProposedQuestions"
+          data-cy="totalApprovedProposedQuestions"
+        >
+          <animated-number :number="stats.totalApprovedProposedQuestions" />
+        </div>
+        <div class="project-name">
+          <p>Approved Proposed Questions</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -72,15 +139,37 @@ import AnimatedNumber from '@/components/AnimatedNumber.vue';
 })
 export default class StatsView extends Vue {
   stats: StudentStats | null = null;
-
+  checkedSwitch!: boolean;
   async created() {
     await this.$store.dispatch('loading');
     try {
       this.stats = await RemoteServices.getUserStats();
+      this.checkedSwitch = this.stats.publicDashboard;
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  getCurrentMessage(): string {
+    if (this.stats)
+      if (this.stats.publicDashboard)
+        return 'Are you sure you want to set your Dashboard to Private?';
+      else return 'Are you sure you want to set your Dashboard to Public?';
+    return '';
+  }
+
+  async togglePublicDashboard() {
+    if (confirm(this.getCurrentMessage())) {
+      try {
+        await RemoteServices.togglePublicDashboard();
+        if (this.stats)
+          this.stats.publicDashboard = !this.stats.publicDashboard;
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    }
   }
 }
 </script>
@@ -111,6 +200,13 @@ export default class StatsView extends Vue {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.privacyToggle {
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  color: #1976d2;
 }
 
 .icon-wrapper {

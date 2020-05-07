@@ -58,8 +58,9 @@
         </v-tooltip>
 
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }"
-                    v-if="item.evaluation !== 'AVAILABLE'"
+          <template
+            v-slot:activator="{ on }"
+            v-if="item.evaluation !== 'AVAILABLE'"
           >
             <v-icon
               large

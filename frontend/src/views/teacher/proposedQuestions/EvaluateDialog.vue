@@ -45,7 +45,13 @@
               data-cy="cancelButton"
               >Cancel</v-btn
             >
-            <v-btn v-if="!(!propQuestion.justification && propQuestion.evaluation ==='REJECTED')"
+            <v-btn
+              v-if="
+                !(
+                  !propQuestion.justification &&
+                  propQuestion.evaluation === 'REJECTED'
+                )
+              "
               color="blue darken-1"
               @click="saveEvaluation"
               data-cy="saveButton"

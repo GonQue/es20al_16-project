@@ -36,6 +36,10 @@ public class ClarificationQuestion {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private Boolean needClarification;
+
+    private Boolean availableToOtherStudents;
+
     @Column(name = "creation_date")
     private LocalDateTime creationDate = null;
 
@@ -50,6 +54,8 @@ public class ClarificationQuestion {
         student = s;
         answer = a;
         setStatus(Status.NOT_ANSWERED);
+        setNeedClarification(true);
+        setAvailableToOtherStudents(false);
         content = clarificationQuestionDto.getContent();
         creationDate = LocalDateTime.now();
     }
@@ -90,6 +96,18 @@ public class ClarificationQuestion {
         this.status = status;
     }
 
+    public Boolean getNeedClarification() {
+        return needClarification;
+    }
+
+    public void setNeedClarification(Boolean b) {
+        this.needClarification = b;
+    }
+
+    public Boolean getAvailableToOtherStudents() { return availableToOtherStudents; }
+
+    public void setAvailableToOtherStudents(Boolean availableForOtherStudents) { this.availableToOtherStudents = availableForOtherStudents; }
+
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
@@ -115,6 +133,12 @@ public class ClarificationQuestion {
         answer = null;
 
     }
+
+    public void askForAdditionalClarification() {
+        this.needClarification = true;
+    }
+
+    public void changeClarificationAvailability() { this.availableToOtherStudents = !this.availableToOtherStudents; }
 
     @Override
     public String toString() {
