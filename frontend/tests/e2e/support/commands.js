@@ -413,6 +413,27 @@ Cypress.Commands.add('updateProposedQuestion', (title, new_content) => {
   cy.get('[data-cy="resubmitButton"').click();
 });
 
+Cypress.Commands.add('createTwoProposedQuestions', () => {
+  cy.createProposedQuestion('Test_Title1', 'Test_Content1', 'Option', '3');
+  cy.createProposedQuestion('Test_Title2', 'Test_Content2', 'Option', '2');
+  cy.contains('Logout').click();
+  cy.openProposedQuestionsMenu();
+  cy.evaluate('Test_Title1', 'APPROVED', ' ');
+  cy.get('[data-cy="search"').clear();
+  cy.evaluate('Test_Title2', 'REJECTED', 'Justification');
+  cy.contains('Logout').click();
+});
+
+Cypress.Commands.add('deleteTwoProposedQuestions', () => {
+  cy.deleteProposedQuestion('Test_Title2');
+  cy.contains('Logout').click();
+  cy.openProposedQuestionsMenu();
+  cy.evaluate('Test_Title1', 'REJECTED', 'Justification');
+  cy.contains('Logout').click();
+  cy.openProposeQuestionStudentMenu();
+  cy.deleteProposedQuestion('Test_Title1');
+});
+
 // Teacher
 
 Cypress.Commands.add('checkClarificationQuestions', () => {
@@ -531,16 +552,34 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
   cy.contains('Stats').click();
-  cy.get('[data-cy="totalClarificationQuestions"]')
-    .should('have.text',clarifs)
-  cy.get('[data-cy="totalPublicClarificationQuestions"]')
-    .should('have.text',publicClarifs)
+  cy.get('[data-cy="totalClarificationQuestions"]').should(
+    'have.text',
+    clarifs
+  );
+  cy.get('[data-cy="totalPublicClarificationQuestions"]').should(
+    'have.text',
+    publicClarifs
+  );
 });
+
+Cypress.Commands.add(
+  'checkProposedQuestionsStats',
+  (proposedQuestions, approved) => {
+    cy.contains('Stats').click();
+    cy.get('[data-cy="totalProposedQuestions"]').should(
+      'have.text',
+      proposedQuestions
+    );
+    cy.get('[data-cy="totalApprovedProposedQuestions"]').should(
+      'have.text',
+      approved
+    );
+  }
+);
 
 Cypress.Commands.add('toggleDashboardPrivacy', () => {
   cy.contains('Stats').click();
-  cy.get('[data-cy="privacyButton"]')
-    .click();
+  cy.get('[data-cy="privacyButton"]').click();
 });
 
 Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
@@ -549,8 +588,7 @@ Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
   );
 });
 
-Cypress.Commands.add('checkDashboardPrivacy', (content) => {
+Cypress.Commands.add('checkDashboardPrivacy', content => {
   cy.contains('Stats').click();
-  cy.get('[data-cy="privacyInfo"]')
-    .contains(/PUBLIC/)
+  cy.get('[data-cy="privacyInfo"]').contains(/PUBLIC/);
 });

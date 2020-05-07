@@ -12,6 +12,8 @@ export default class StudentStats {
   publicDashboard!: boolean;
   totalClarificationQuestions!: number;
   totalPublicClarificationQuestions!: number;
+  totalProposedQuestions!: number;
+  totalApprovedProposedQuestions!: number;
 
   constructor(jsonObj?: StudentStats) {
     if (jsonObj) {
@@ -27,6 +29,9 @@ export default class StudentStats {
       this.totalClarificationQuestions = jsonObj.totalClarificationQuestions;
       this.totalPublicClarificationQuestions =
         jsonObj.totalPublicClarificationQuestions;
+      this.totalProposedQuestions = jsonObj.totalProposedQuestions;
+      this.totalApprovedProposedQuestions =
+        jsonObj.totalApprovedProposedQuestions;
     }
   }
 }
