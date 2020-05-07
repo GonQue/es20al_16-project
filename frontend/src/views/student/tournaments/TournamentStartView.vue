@@ -22,7 +22,6 @@
     async created() {
       this.statementQuiz = StatementManager.getInstance.statementQuiz;
       this.tournamentId = this.statementQuiz?.tournamentId;
-      this.getTournamentQuiz()
     }
 
 

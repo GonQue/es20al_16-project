@@ -87,7 +87,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'createTournament',
-  (name, topics, day1, day2, nextMonth, pickQuestionNumber) => {
+  (name, topics, day1, day2, startMonthBefore, nextMonth, pickQuestionNumber) => {
     cy.get('[data-cy="createButton"]').click();
 
     //Name
@@ -95,6 +95,10 @@ Cypress.Commands.add(
 
     //Start date
     cy.get('[data-cy=startDate]').click();
+
+    if(startMonthBefore)
+      cy.get('i[class="v-icon notranslate mdi mdi-chevron-left theme--light"]').click().wait(500);
+
     cy.get('button')
       .contains(day1)
       .click()
@@ -147,6 +151,13 @@ Cypress.Commands.add('enrollStudent', name => {
     .find('[data-cy="enrollButton"]')
     .click();
 });
+Cypress.Commands.add('answerQuestions', name => {
+  cy.contains(name).parent().children().find('[data-cy="joinButton"]').click()
+
+  cy.get('[data-cy="EndQuiz"]').click();
+  cy.get('[data-cy="ImSure"]').click();
+});
+
 
 Cypress.Commands.add('getTopics', name => {
   cy.get('td[class="text-start"]')
@@ -161,6 +172,15 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
     .children()
     .should('have.length', 7);
 });
+
+Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
+  cy.exec(
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "Insert into tournaments_enrolled(tournaments_enrolled_id, enrolled_id) ' +
+    '                                                                        select id, $enrolled_id from tournaments where name=\'$name\';\n"',
+    { env: { name: name , enrolled_id: enrolled_id, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
+  );
+});
+
 Cypress.Commands.add('removeTournamentFromDB', name => {
   cy.exec(
     'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',

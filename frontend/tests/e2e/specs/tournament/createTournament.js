@@ -11,6 +11,7 @@ describe('Student walkthrough', () => {
     topics = ['Availability'];
     startDay = 20;
     endDay = 20;
+    startMonthBefore = false;
     nextMonth = true;
     pickQuestionNumber = true;
   });
@@ -25,6 +26,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );
@@ -43,6 +45,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );
@@ -64,6 +67,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );
@@ -85,6 +89,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );
@@ -93,6 +98,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );

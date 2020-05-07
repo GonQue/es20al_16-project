@@ -58,6 +58,7 @@
             <v-btn
               class="white--text"
               color="green"
+              data-cy="joinButton"
               v-show="checkIfEnrolled(item) || enrollButtons.includes(item.id)"
               @click="solveTournamentQuiz(item)"
               >Join</v-btn

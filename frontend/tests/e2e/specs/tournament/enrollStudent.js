@@ -11,6 +11,7 @@ describe('Student walkthrough', () => {
     topics = ['Availability'];
     startDay = 20;
     endDay = 20;
+    startMonthBefore = false;
     nextMonth = true;
     pickQuestionNumber = true;
   });
@@ -25,12 +26,16 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      true,
       nextMonth,
       pickQuestionNumber
     );
     cy.getTopics(tournamentName1); //open
     cy.getTopics(tournamentName1); //close
+
+    cy.insertStudentInTournament(tournamentName1, 651);
     cy.enrollStudent(tournamentName1);
+    cy.answerQuestions(tournamentName1);
     cy.removeTournamentFromDB(tournamentName1);
   });
 
@@ -40,6 +45,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );
@@ -48,6 +54,7 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
+      startMonthBefore,
       nextMonth,
       pickQuestionNumber
     );
