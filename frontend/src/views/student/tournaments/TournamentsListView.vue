@@ -38,8 +38,6 @@
 
       </template>
 
-
-
       <template v-slot:item.enrollment="{ item }">
 
         <v-tooltip>
@@ -63,6 +61,23 @@
               >Join</v-btn
             >
           </template>
+        </v-tooltip>
+      </template>
+      <template v-slot:item.delete="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              large
+              class="mr-2"
+              v-show = "checkIfCreator(item)"
+              v-on="on"
+              @click="deleteTournament(item)"
+              color="red"
+              data-cy="deleteTournament"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Tournament</span>
         </v-tooltip>
       </template>
 
@@ -98,6 +113,7 @@ import CreateTournamentDialog from '@/views/student/tournaments/CreateTournament
 import RemoteServices from '@/services/RemoteServices';
 import Topic from '@/models/management/Topic';
 import StatementManager from '@/models/statement/StatementManager';
+import ProposedQuestion from '@/models/management/ProposedQuestion';
 
 @Component({
   components: {
@@ -112,6 +128,12 @@ export default class TournamentsListView extends Vue {
   search: string = '';
   sucessAlert: boolean = true;
   headers: object = [
+    {
+      value: 'delete',
+      align: 'center',
+      width: '2%',
+      sortable: false
+    },
     {
       text: 'Tournament Name',
       value: 'name',
@@ -149,6 +171,7 @@ export default class TournamentsListView extends Vue {
       width: '7%',
       sortable: false
     },
+
     { text: 'topics', value: 'data-table-expand', width: '1%' }
   ];
 
@@ -188,7 +211,7 @@ export default class TournamentsListView extends Vue {
       let statementManager: StatementManager = StatementManager.getInstance;
       statementManager.statementQuiz = (await RemoteServices.getTournamentQuiz(tournament.id));
       statementManager.statementQuiz.tournamentId = tournament.id;
-      console.log("List", statementManager.statementQuiz.timeToAvailability, statementManager.statementQuiz.tournamentId);
+      console.log('List', statementManager.statementQuiz.timeToAvailability, statementManager.statementQuiz.tournamentId);
       await this.$router.push({ name: 'tournament-start' });
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -215,6 +238,30 @@ export default class TournamentsListView extends Vue {
       }
     }
     return false;
+  }
+
+  checkIfCreator(tournament:Tournament):boolean{
+    let user = this.$store.getters.getUser;
+    let creator = tournament.creator;
+    if(creator.username==user.username)
+      return true;
+    return false;
+  }
+
+  async deleteTournament(tournament: Tournament) {
+    if (
+      tournament.id &&
+      confirm('Are you sure you want to delete this tournament?')
+    ) {
+      try {
+        await RemoteServices.deleteTournament(tournament.id);
+        this.tournaments = this.tournaments.filter(
+          tourn => tourn.id != tournament.id
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>
