@@ -238,16 +238,17 @@ Cypress.Commands.add('successMessage', (name, acronym, academicTerm) => {
 });
 
 Cypress.Commands.add('openProposeQuestionStudentMenu', () => {
+  cy.demoStudentLogin();
   cy.contains('Questions').click();
   cy.get('[data-cy="ProposeQuestion"').click();
-})
+});
 
 Cypress.Commands.add(
   'createProposedQuestion',
   (title, content, optionsText, correct) => {
     cy.get('[data-cy="proposeQuestionButton"]').click();
 
-    if (title) cy.get('[data-cy="Title"]').type(title, { force: true });
+    cy.get('[data-cy="Title"]').type(title, { force: true });
 
     cy.get('[data-cy="Question"]').type(content);
     cy.contains('Correct ' + correct)
@@ -290,6 +291,18 @@ Cypress.Commands.add('closeQuestionMessage', () => {
     .click();
 });
 
+Cypress.Commands.add('updateProposedQuestion', (title, new_content) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 8)
+    .find('[data-cy="editProposedQuestion"]')
+    .click();
+  cy.get('[data-cy="Question"]').type(new_content);
+  cy.get('[data-cy="resubmitButton"').click();
+});
+
 // Teacher
 
 Cypress.Commands.add('checkClarificationQuestions', () => {
@@ -323,7 +336,7 @@ Cypress.Commands.add(
       .children()
       .should('have.length', 6)
       .find('[data-cy="ShowResponses"]')
-      .click({force:true});
+      .click({ force: true });
     cy.contains(responseContent)
       .first()
       .parent()
@@ -334,6 +347,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('openProposedQuestionsMenu', () => {
+  cy.demoTeacherLogin();
   cy.contains('Management').click();
   cy.get('[data-cy="ProposedQuestions"]').click();
 });

@@ -765,6 +765,22 @@ export default class RemoteServices {
       });
   }
 
+  static async updateProposedQuestion(
+    proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
+    return httpClient
+      .put(
+        `/student/proposed-questions/${proposedQuestion.id}`,
+        proposedQuestion
+      )
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async deleteProposedQuestion(proposedQuestionId: number) {
     return httpClient
       .delete(`/proposed-questions/${proposedQuestionId}`)

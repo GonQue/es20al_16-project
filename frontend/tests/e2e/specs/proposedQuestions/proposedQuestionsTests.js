@@ -1,18 +1,14 @@
-describe('Evaluation', () => {
+describe('Proposed Question walkthrough', () => {
   beforeEach(() => {
-    cy.demoStudentLogin();
     cy.openProposeQuestionStudentMenu();
     cy.createProposedQuestion('TEST', 'Question', 'Options', 1);
     cy.showProposedQuestion('TEST');
     cy.contains('Logout').click();
-
-    cy.demoTeacherLogin();
     cy.openProposedQuestionsMenu();
   });
 
   afterEach(() => {
     cy.contains('Logout').click();
-    cy.demoStudentLogin();
     cy.openProposeQuestionStudentMenu();
     cy.deleteProposedQuestion('TEST');
     cy.contains('Logout').click();
@@ -36,5 +32,11 @@ describe('Evaluation', () => {
     cy.evaluate('TEST', 'REJECTED', ' ');
     cy.closeErrorMessage();
     cy.get('[data-cy="cancelButton"]').click();
+  });
+
+  it('student resubmit rejected proposed question', () => {
+    cy.evaluate('TEST', 'REJECTED', 'Justification');
+    cy.openProposeQuestionStudentMenu();
+    cy.updateProposedQuestion('TEST', 'New_Content');
   });
 });

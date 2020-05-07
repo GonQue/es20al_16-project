@@ -79,7 +79,7 @@ public class ProposedQuestionService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ProposedQuestionDto> getStudentProposedQuestions(int id) {
-        User student = findStudentById(id);
+        User student = userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
         return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).
                 sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
                 collect(Collectors.toList());
@@ -132,10 +132,6 @@ public class ProposedQuestionService {
             throw new TutorException(ErrorMessage.USER_IS_EMPTY);
         }
         return userRepository.findByUsername(pqDto.getTeacher().getUsername());
-    }
-
-    private User findStudentById(int id){
-        return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
