@@ -45,7 +45,6 @@ export default class ListClarificationResponses extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop(String) readonly clarificationQuestionId!: string;
   clarificationResponses: StatementClarificationResponse[] = [];
-  isTeacher: boolean = false;
   search: string = '';
   creationAlertSuccess: boolean = false;
   headersStudent: object = [

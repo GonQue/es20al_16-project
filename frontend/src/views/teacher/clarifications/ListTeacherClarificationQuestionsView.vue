@@ -253,6 +253,22 @@ export default class ListTeacherClarificationQuestionsView extends Vue {
     this.clarificationResponses.unshift(clarificationResponse);
     this.editClarificationResponseDialog = false;
     this.currentClarificationQuestion = null;
+
+    this.availability = [];
+    try {
+      this.clarificationQuestions = await RemoteServices.getAllClarificationQuestions();
+      for (let i = 0; i < this.clarificationQuestions.length; i++) {
+        let num = this.clarificationQuestions[i].id;
+        if (
+          num != null &&
+          this.clarificationQuestions[i].availableToOtherStudents
+        )
+          this.availability.push(num);
+      }
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
   }
 
   async changeClarificationAvailability(clarificationQuestionId: number) {
