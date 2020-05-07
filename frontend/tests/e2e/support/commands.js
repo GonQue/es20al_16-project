@@ -50,6 +50,7 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="saveButton"]').click();
 });
 
+
 Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
   cy.contains('Error')
     .parent()
@@ -98,7 +99,8 @@ Cypress.Commands.add(
 
     if(startMonthBefore)
       cy.get('i[class="v-icon notranslate mdi mdi-chevron-left theme--light"]').click().wait(500);
-
+    else
+      cy.get('i[class="v-icon notranslate mdi mdi-chevron-right theme--light"]').click().wait(500);
     cy.get('button')
       .contains(day1)
       .click()
@@ -147,7 +149,7 @@ Cypress.Commands.add('enrollStudent', name => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="enrollButton"]')
     .click();
 });
@@ -170,7 +172,7 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
     .parent()
     .should('have.length', numberOfTournaments)
     .children()
-    .should('have.length', 7);
+    .should('have.length', 8);
 });
 
 Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
@@ -179,6 +181,15 @@ Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
     '                                                                        select id, $enrolled_id from tournaments where name=\'$name\';\n"',
     { env: { name: name , enrolled_id: enrolled_id, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
+});
+
+Cypress.Commands.add('deleteTournament', name => {
+  cy.contains(name)
+    .parent()
+    .children()
+    .should('have.length', 8)
+    .find('[data-cy="deleteTournament"]')
+    .click({ force: true });
 });
 
 Cypress.Commands.add('removeTournamentFromDB', name => {

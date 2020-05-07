@@ -10,9 +10,9 @@ describe('Student walkthrough', () => {
     tournamentName2 = 'Demo Tournament 2';
     topics = ['Availability'];
     startDay = 20;
-    endDay = 20;
+    endDay = 21;
     startMonthBefore = false;
-    nextMonth = true;
+    endNextMonth = true;
     pickQuestionNumber = true;
   });
 
@@ -20,23 +20,27 @@ describe('Student walkthrough', () => {
     cy.contains('Logout').click();
   });
 
-  it('Login creates tournament, open topics, and enrolls', () => {
+  it('Login creates tournament, open topics, enrolls, and tries to deletes', () => {
+    startMonthBefore=true;
     cy.createTournament(
       tournamentName1,
       topics,
       startDay,
       endDay,
-      true,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.getTopics(tournamentName1); //open
     cy.getTopics(tournamentName1); //close
-
+    cy.deleteTournament(tournamentName1);
+    cy.closeErrorMessage();
     cy.insertStudentInTournament(tournamentName1, 651);
     cy.enrollStudent(tournamentName1);
     cy.answerQuestions(tournamentName1);
-    cy.removeTournamentFromDB(tournamentName1);
+
+
+
   });
 
   it('Login creates two tournaments and enrolls in both', () => {
@@ -46,7 +50,7 @@ describe('Student walkthrough', () => {
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.createTournament(
@@ -55,12 +59,13 @@ describe('Student walkthrough', () => {
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.enrollStudent(tournamentName1);
     cy.enrollStudent(tournamentName2);
     cy.removeTournamentFromDB(tournamentName1);
     cy.removeTournamentFromDB(tournamentName2);
+
   });
 });

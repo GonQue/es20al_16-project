@@ -10,9 +10,9 @@ describe('Student walkthrough', () => {
     tournamentName = 'Demo Tournament';
     topics = ['Availability'];
     startDay = 20;
-    endDay = 20;
+    endDay = 21;
     startMonthBefore = false;
-    nextMonth = true;
+    endNextMonth = true;
     pickQuestionNumber = true;
   });
 
@@ -20,23 +20,23 @@ describe('Student walkthrough', () => {
     cy.contains('Logout').click();
   });
 
-  it('Login creates tournament and checks creation', () => {
+  it('Login creates tournament, checks creation and deletes', () => {
     cy.createTournament(
       tournamentName,
       topics,
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
 
     cy.checkTournament(tournamentName, 1);
-    cy.removeTournamentFromDB(tournamentName);
+    cy.deleteTournament(tournamentName);
   });
 
   it('Login creates tournament with wrong date', () => {
-    nextMonth = false;
+    endNextMonth = false;
     endDay = 10;
 
     cy.log('try to create with wrong date');
@@ -46,7 +46,7 @@ describe('Student walkthrough', () => {
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
 
@@ -68,7 +68,7 @@ describe('Student walkthrough', () => {
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
 
@@ -90,7 +90,7 @@ describe('Student walkthrough', () => {
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.createTournament(
@@ -99,7 +99,7 @@ describe('Student walkthrough', () => {
       startDay,
       endDay,
       startMonthBefore,
-      nextMonth,
+      endNextMonth,
       pickQuestionNumber
     );
 
