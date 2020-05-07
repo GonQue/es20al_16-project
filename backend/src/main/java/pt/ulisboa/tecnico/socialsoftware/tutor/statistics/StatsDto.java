@@ -14,6 +14,8 @@ public class StatsDto implements Serializable {
     private Integer totalAvailableQuestions = 0;
     private Integer totalClarificationQuestions = 0;
     private Integer totalPublicClarificationQuestions = 0;
+    private Integer totalProposedQuestions = 0;
+    private Integer totalApprovedProposedQuestions = 0;
 
     public Boolean getPublicDashboard() {
         return publicDashboard;
@@ -107,6 +109,18 @@ public class StatsDto implements Serializable {
         this.totalPublicClarificationQuestions = totalPublicClarificationQuestions;
     }
 
+    public Integer getTotalProposedQuestions() { return totalProposedQuestions; }
+
+    public void setTotalProposedQuestions(Integer totalProposedQuestions) {
+        this.totalProposedQuestions = totalProposedQuestions;
+    }
+
+    public Integer getTotalApprovedProposedQuestions() { return totalApprovedProposedQuestions; }
+
+    public void setTotalApprovedProposedQuestions(Integer totalApprovedProposedQuestions) {
+        this.totalApprovedProposedQuestions = totalApprovedProposedQuestions;
+    }
+
     @Override
     public String toString() {
         return "StatsDto{" +
@@ -120,6 +134,8 @@ public class StatsDto implements Serializable {
                 ", uniqueWrongAnswers=" + uniqueWrongAnswers +
                 ", totalClarificationQuestions=" + totalClarificationQuestions +
                 ", totalPublicClarificationQuestions=" + totalPublicClarificationQuestions +
+                ", totalProposedQuestions=" + totalProposedQuestions +
+                ", totalApprovedProposedQuestions=" + totalApprovedProposedQuestions +
                 '}';
     }
 }

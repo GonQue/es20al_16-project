@@ -72,19 +72,28 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">INSERT INTO questions VALUES (999999, &apos;test_question&apos;, 1, 1, &apos;test_title&apos;, &apos;AVAILABLE&apos;, &apos;2019-10-22 20:19:30.843479&apos;, 2, 999999);
+          <stringProp name="query">INSERT INTO questions(id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id) VALUES (999999, &apos;test_question&apos;, 1, 1, &apos;test_title&apos;, &apos;AVAILABLE&apos;, &apos;2019-10-22 20:19:30.843479&apos;, 2);
+INSERT INTO questions(id, title, content, course_id, status) VALUES (999998, &apos;Question_Title2&apos;, &apos;Question_Content&apos;, 2, &apos;SUBMITTED&apos;);
+INSERT INTO questions(id, title, content, course_id, status) VALUES (999997, &apos;Question_Title3&apos;, &apos;Question_Content&apos;, 2, &apos;SUBMITTED&apos;);
 
-INSERT INTO quiz_answers VALUES (999999, &apos;2019-10-18 21:17:28.460416&apos;, &apos;t&apos;, 5373, 676, &apos;f&apos;);
+INSERT INTO quiz_answers(id, answer_date, completed, quiz_id, user_id, used_in_statistics) VALUES (999999, &apos;2019-10-18 21:17:28.460416&apos;, &apos;t&apos;, 5373, 676, &apos;f&apos;);
 
-INSERT INTO quiz_questions VALUES (999999, 0, 999999, 5373);
+INSERT INTO quiz_questions(id, sequence, question_id, quiz_id) VALUES (999999, 0, 999999, 5373);
 
-INSERT INTO options VALUES (999999, &apos;test_content&apos;, &apos;f&apos;, 999999, 0);
+INSERT INTO options(id, content, correct, question_id, sequence) VALUES (999999, &apos;test_content&apos;, &apos;t&apos;, 999999, 0);
+INSERT INTO options(id, content, correct, question_id) VALUES (999998, &apos;Option 1&apos;, true, 999998);
+INSERT INTO options(id, content, correct, question_id) VALUES (999997, &apos;Option 1&apos;, true, 999997);
 
-INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);
 
-INSERT INTO clarifications VALUES (999999, &apos;t&apos; ,&apos;CONTENT_1&apos;, &apos;2017-06-25 12:28:37&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
+INSERT INTO proposed_questions(id, student_id, teacher_id, question_id, evaluation, justification) VALUES (999999, 676, 677, 999999, &apos;AVAILABLE&apos;, &apos;Justification&apos;); 
+INSERT INTO proposed_questions(id, student_id, teacher_id, question_id, evaluation, justification) VALUES (999998, 676, 677, 999998, &apos;APPROVED&apos;, &apos;Justification&apos;); 
+INSERT INTO proposed_questions(id, student_id, teacher_id, question_id, evaluation, justification) VALUES (999997, 676, 677, 999997, &apos;REJECTED&apos;, &apos;Justification&apos;); 
 
-INSERT INTO clarifications VALUES (999998, &apos;f&apos;, &apos;CONTENT_2&apos;, &apos;2017-08-10 15:30:30&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
+INSERT INTO question_answers(id, time_taken, option_id, quiz_answer_id, quiz_question_id, sequence) VALUES (999999, 41640, 999999, 999999, 999999, 0);
+
+INSERT INTO clarifications(id, available_to_other_students, content, creation_date, need_clarification, status, answer_id, question_id, user_id) VALUES (999999, &apos;t&apos; ,&apos;CONTENT_1&apos;, &apos;2017-06-25 12:28:37&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
+
+INSERT INTO clarifications(id, available_to_other_students, content, creation_date, need_clarification, status, answer_id, question_id, user_id) VALUES (999998, &apos;f&apos;, &apos;CONTENT_2&apos;, &apos;2017-08-10 15:30:30&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
 
 UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="queryArguments"></stringProp>
@@ -269,6 +278,24 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
               <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert numberOfProposedQuestions" enabled="true">
+              <stringProp name="JSON_PATH">$.totalProposedQuestions</stringProp>
+              <stringProp name="EXPECTED_VALUE">3</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert numberOfApprovedProposedQuestions" enabled="true">
+              <stringProp name="JSON_PATH">$.totalApprovedProposedQuestions</stringProp>
+              <stringProp name="EXPECTED_VALUE">2</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
           </hashTree>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
@@ -383,15 +410,17 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">DELETE FROM clarifications WHERE content LIKE &apos;CONTENT_%&apos;;
 
-DELETE FROM question_answers WHERE id = 999999;
+DELETE FROM question_answers WHERE id &gt;= 999997;
 
-DELETE FROM options WHERE id = 999999;
+DELETE FROM proposed_questions WHERE id &gt;= 999997;
+
+DELETE FROM options WHERE id &gt;= 999997;
 
 DELETE FROM quiz_questions WHERE id = 999999;
 
 DELETE FROM quiz_answers WHERE id = 999999;
 
-DELETE FROM questions WHERE id = 999999;</stringProp>
+DELETE FROM questions WHERE id &gt;= 999997;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>

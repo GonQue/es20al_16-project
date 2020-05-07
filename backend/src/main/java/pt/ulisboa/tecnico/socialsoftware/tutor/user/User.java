@@ -55,6 +55,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectStudentAnswers;
     private Integer numberOfClarificationQuestions;
     private Integer numberOfPublicClarificationQuestions;
+    private Integer numberOfProposedQuestions;
+    private Integer numberOfApprovedProposedQuestions;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -103,6 +105,8 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
         this.numberOfClarificationQuestions = 0;
+        this.numberOfProposedQuestions = 0;
+        this.numberOfApprovedProposedQuestions = 0;
     }
 
     public void addTournament(Tournament tournament) {
@@ -363,6 +367,31 @@ public class User implements UserDetails, DomainEntity {
 
     public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
         this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
+    public Integer getNumberOfProposedQuestions() {
+       if (this.numberOfProposedQuestions == null)
+           this.numberOfProposedQuestions = this.getProposedQuestions().size();
+
+        return numberOfProposedQuestions;
+    }
+
+    public void setNumberOfProposedQuestions(Integer numberOfProposedQuestions) {
+        this.numberOfProposedQuestions = numberOfProposedQuestions;
+    }
+
+    public Integer getNumberOfApprovedProposedQuestions() {
+        if (this.numberOfApprovedProposedQuestions == null)
+            this.numberOfApprovedProposedQuestions = (int) this.getProposedQuestions().stream()
+                    .filter(proposedQuestion -> proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.APPROVED) ||
+                            proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.AVAILABLE))
+                    .count();
+
+        return numberOfApprovedProposedQuestions;
+    }
+
+    public void setNumberOfApprovedProposedQuestions(Integer numberOfApprovedProposedQuestions) {
+        this.numberOfApprovedProposedQuestions = numberOfApprovedProposedQuestions;
     }
 
     @Override

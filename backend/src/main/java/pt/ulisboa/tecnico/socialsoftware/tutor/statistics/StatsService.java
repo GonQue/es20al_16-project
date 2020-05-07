@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
@@ -95,6 +96,13 @@ public class StatsService {
                 .filter(ClarificationQuestion::getAvailableToOtherStudents)
                 .count();
 
+        int proposedQuestions = user.getProposedQuestions().size();
+
+        int approvedProposedQuestions = (int) user.getProposedQuestions().stream()
+                .filter(proposedQuestion -> proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.APPROVED) ||
+                        proposedQuestion.getEvaluation().equals(ProposedQuestion.Evaluation.AVAILABLE))
+                .count();
+
         Course course = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId)).getCourse();
 
         int totalAvailableQuestions = questionRepository.getAvailableQuestionsSize(course.getId());
@@ -106,6 +114,8 @@ public class StatsService {
         statsDto.setTotalAvailableQuestions(totalAvailableQuestions);
         statsDto.setTotalClarificationQuestions(clarificationQuestions);
         statsDto.setTotalPublicClarificationQuestions(publicClarificationQuestions);
+        statsDto.setTotalProposedQuestions(proposedQuestions);
+        statsDto.setTotalApprovedProposedQuestions(approvedProposedQuestions);
         if (totalAnswers != 0) {
             statsDto.setCorrectAnswers(((float)correctAnswers)*100/totalAnswers);
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);
