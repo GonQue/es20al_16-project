@@ -347,15 +347,13 @@ Cypress.Commands.add('evaluate', (title, evaluation, justification) => {
     .should('have.length', 8)
     .find('[data-cy="evaluate"]')
     .click();
-  cy.get('[data-cy="justification"]').clear();
-  if (justification !== ' ')
-    cy.get('[data-cy="justification"]').type(justification);
+  cy.get('[data-cy="justification"]').clear().type(justification);
   cy.get('[data-cy="evaluation"]').click({ force: true });
   cy.contains(evaluation).click({ force: true });
   cy.get('[data-cy="saveButton"]').click();
 });
 
-Cypress.Commands.add('turnAvailable', (title) => {
+Cypress.Commands.add('turnAvailable', (title, newTitle, newContent) => {
     cy.get('[data-cy="search"').type(title);
     cy.contains(title)
         .parent()
@@ -364,5 +362,7 @@ Cypress.Commands.add('turnAvailable', (title) => {
         .should('have.length', 8)
         .find('[data-cy="available"]')
         .click( { force: true }) ;
+    cy.get('[data-cy="Title"]').clear( { force: true }).type(newTitle, { force: true });
+    cy.get('[data-cy="Question"]').clear().type(newContent);
     cy.get('[data-cy="turnAvailable"]').click();
 })

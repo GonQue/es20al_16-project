@@ -14,8 +14,10 @@ describe('Evaluation', () => {
     cy.contains('Logout').click();
   });
 
-  it('evaluate awaiting proposed question', () => {
+  it('evaluate proposed question', () => {
     cy.evaluate('TEST', 'APPROVED', 'Justification');
+    cy.get('[data-cy="search"').clear();
+    cy.evaluate('TEST', 'REJECTED', 'Justification');
     cy.get('[data-cy="search"').clear();
     cy.evaluate('TEST', 'AWAITING', ' ');
     cy.get('[data-cy="search"').clear();
@@ -26,33 +28,11 @@ describe('Evaluation', () => {
     cy.deleteProposedQuestion('TEST');
   });
 
-  it('evaluate approved proposed question', () => {
+  it('turn proposed question available ', () => {
     cy.evaluate('TEST', 'APPROVED', 'Justification');
     cy.get('[data-cy="search"').clear();
-    cy.evaluate('TEST', 'REJECTED', 'Justification');
+    cy.turnAvailable('TEST', 'NEWTITLE', 'NEWCONTENT');
     cy.get('[data-cy="search"').clear();
-
-    cy.contains('Logout').click();
-    cy.demoStudentLogin();
-    cy.openProposeQuestionStudentMenu();
-    cy.deleteProposedQuestion('TEST');
-  });
-
-  it('reject awaiting proposed question without justification', () => {
-    cy.evaluate('TEST', 'REJECTED', ' ');
-    cy.closeErrorMessage();
-    cy.get('[data-cy="cancelButton"]').click();
-
-    cy.contains('Logout').click();
-    cy.demoStudentLogin();
-    cy.openProposeQuestionStudentMenu();
-    cy.deleteProposedQuestion('TEST');
-  });
-
-  it('turn an approved proposed question available ', () => {
-    cy.evaluate('TEST', 'APPROVED', 'Justification');
-    cy.get('[data-cy="search"').clear();
-    cy.turnAvailable('TEST');
-    cy.get('[data-cy="search"').clear();
+    cy.exec('PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost < tests/e2e/specs/teacher/deleteAvailableQuestion.sql');
   })
 });

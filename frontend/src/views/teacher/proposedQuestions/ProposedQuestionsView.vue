@@ -108,8 +108,8 @@
 
     <turn-available-dialog
       v-if="currentPropQuestion"
-      v-model="turnAvailableDialog"
-      :propQuestion="currentPropQuestion"
+      v-model="editPropQuestionDialog"
+      :proposedQuestion="currentPropQuestion"
       v-on:available="onSaveAvailable"
     />
   </v-card>
@@ -119,20 +119,17 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
-import Topic from '@/models/management/Topic';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
 import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
 import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
-import User from '@/models/user/User';
-import Store from '@/store';
-import TurnAvailableDialog from '@/views/teacher/proposedQuestions/TurnAvailableDialog.vue';
+import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
     'evaluate-dialog': EvaluateDialog,
-    'turn-available-dialog': TurnAvailableDialog
+    'turn-available-dialog': EditPropQuestionDialog
   }
 })
 export default class ProposeQuestionView extends Vue {
@@ -142,7 +139,7 @@ export default class ProposeQuestionView extends Vue {
   currentPropQuestion: ProposedQuestion | null = null;
   evaluateDialog: boolean = false;
   questionDialog: boolean = false;
-  turnAvailableDialog: boolean = false;
+  editPropQuestionDialog: boolean = false;
   justification: string = '';
   search: string = '';
 
@@ -210,7 +207,7 @@ export default class ProposeQuestionView extends Vue {
 
   turnAvailable(propQuestion: ProposedQuestion) {
     this.currentPropQuestion = propQuestion;
-    this.turnAvailableDialog = true;
+    this.editPropQuestionDialog = true;
   }
 
   async onSaveAvailable(propQuestion: ProposedQuestion) {
@@ -218,7 +215,7 @@ export default class ProposeQuestionView extends Vue {
       pq => pq.id !== propQuestion.id
     );
     this.proposedQuestions.unshift(propQuestion);
-    this.turnAvailableDialog = false;
+    this.editPropQuestionDialog = false;
     this.currentPropQuestion = null;
   }
 }

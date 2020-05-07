@@ -749,6 +749,22 @@ export default class RemoteServices {
       });
   }
 
+  static async updateProposedQuestion(
+    proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
+    return httpClient
+      .put(
+        `/student/proposed-questions/${proposedQuestion.id}`,
+        proposedQuestion
+      )
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createProposedQuestion(
     proposedQuestion: ProposedQuestion
   ): Promise<ProposedQuestion> {
@@ -802,16 +818,19 @@ export default class RemoteServices {
   }
 
   static async turnAvailable(
-      proposedQuestion: ProposedQuestion
+    proposedQuestion: ProposedQuestion
   ): Promise<ProposedQuestion> {
     return httpClient
-        .put(`/proposed-questions/${proposedQuestion.id}/turn-available`, proposedQuestion)
-        .then(response => {
-          return new ProposedQuestion(response.data);
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .put(
+        `/proposed-questions/${proposedQuestion.id}/turn-available`,
+        proposedQuestion
+      )
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async errorMessage(error: any): Promise<string> {
