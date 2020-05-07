@@ -8,6 +8,14 @@ describe('Dashboard Walkthrough', () => {
     cy.contains('Logout').click();
   });
 
+  it('toggleDashboard to Public, check if still public', () => {
+    cy.toggleDashboardPrivacy();
+    cy.contains('Logout').click();
+    cy.demoStudentLogin();
+    cy.checkDashboardPrivacy('PUBLIC');
+    cy.toggleDashboardPrivacy();
+  });
+
   it('dashboard shows 0 clarifications, 0 public', () => {
     cy.checkClarificationStats('0','0');
   });

@@ -25,7 +25,8 @@ export default class StudentStats {
       this.totalAvailableQuestions = jsonObj.totalAvailableQuestions;
       this.publicDashboard = jsonObj.publicDashboard;
       this.totalClarificationQuestions = jsonObj.totalClarificationQuestions;
-      this.totalPublicClarificationQuestions = jsonObj.totalPublicClarificationQuestions;
+      this.totalPublicClarificationQuestions =
+        jsonObj.totalPublicClarificationQuestions;
     }
   }
 }

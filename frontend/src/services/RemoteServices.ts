@@ -573,19 +573,19 @@ export default class RemoteServices {
       });
   }
 
-  static getPublicClarificationQuestions(questionId: number | undefined): Promise<
-      StatementClarificationQuestion[]
-      > {
+  static getPublicClarificationQuestions(
+    questionId: number | undefined
+  ): Promise<StatementClarificationQuestion[]> {
     return httpClient
-        .get('/student/' + questionId + '/clarifications')
-        .then(response => {
-          return response.data.map((clarificationQuestion: any) => {
-            return new StatementClarificationQuestion(clarificationQuestion);
-          });
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
+      .get('/student/' + questionId + '/clarifications')
+      .then(response => {
+        return response.data.map((clarificationQuestion: any) => {
+          return new StatementClarificationQuestion(clarificationQuestion);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async createClarificationQuestion(
@@ -699,7 +699,9 @@ export default class RemoteServices {
     clarificationQuestionId: number
   ) {
     return httpClient
-      .post(`/management/clarifications/${clarificationQuestionId}/availability`)
+      .post(
+        `/management/clarifications/${clarificationQuestionId}/availability`
+      )
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
@@ -848,5 +850,11 @@ export default class RemoteServices {
       console.log(error);
       return 'Unknown Error - Contact admin';
     }
+  }
+
+  static async togglePublicDashboard() {
+    return httpClient.post('/executions/dashboard').catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 }

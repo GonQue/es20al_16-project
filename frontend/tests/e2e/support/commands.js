@@ -522,3 +522,15 @@ Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
   cy.get('[data-cy="totalPublicClarificationQuestions"]')
     .should('have.text',publicClarifs)
 });
+
+Cypress.Commands.add('toggleDashboardPrivacy', () => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="privacyButton"]')
+    .click();
+});
+
+Cypress.Commands.add('checkDashboardPrivacy', (content) => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="privacyInfo"]')
+    .contains(/PUBLIC/)
+});

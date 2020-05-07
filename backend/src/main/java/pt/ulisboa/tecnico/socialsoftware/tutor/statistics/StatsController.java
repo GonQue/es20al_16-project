@@ -32,7 +32,7 @@ public class StatsController {
         return statsService.getStats(user.getId(), executionId);
     }
 
-    @PostMapping("/executions/toggleDashboard")
+    @PostMapping("/executions/dashboard")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public void changeClarificationAvailability(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
