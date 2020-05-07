@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
+import java.time.format.DateTimeFormatter
 
 import java.time.LocalDateTime
 
@@ -58,6 +59,8 @@ class DeleteTournamentTest extends Specification {
     def user
     def userDto
     def creatorId
+    def startDate
+    def formatter
 
     def setup() {
         tournamentDto = new TournamentDto()
@@ -79,6 +82,10 @@ class DeleteTournamentTest extends Specification {
         tournament.setStatus(Tournament.Status.CREATED)
         tournament.setCourseExecution(courseExecution)
         tournamentRepository.save(tournament)
+
+
+
+        tournament.setStartDate(LocalDateTime.now().plusDays(3))
 
     }
     def "creator delete created tournament"() {
@@ -114,6 +121,23 @@ class DeleteTournamentTest extends Specification {
         @Bean
         TournamentService tournamentService() {
             return new TournamentService()
+        }
+        @Bean
+        QuizService quizService(){
+            return new QuizService()
+        }
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
     }
 

@@ -294,7 +294,7 @@ public class TournamentService {
    @Transactional(isolation = Isolation.REPEATABLE_READ)
    public void deleteTournament(Integer tournamentId, Integer creatorId){
       Tournament tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TutorException(TOURNAMENT_NOT_FOUND, tournamentId));
-      if(tournament.getCreator().getId()==creatorId) {
+      if(tournament.getCreator().getId().equals(creatorId)) {
          tournament.delete();
          tournamentRepository.deleteById(tournamentId);
       }
@@ -302,6 +302,5 @@ public class TournamentService {
          throw new TutorException(TOURNAMENT_NOT_THE_CREATOR);
       }
    }
-
-
+   
 }

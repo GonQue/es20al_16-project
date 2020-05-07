@@ -77,7 +77,7 @@ public enum ErrorMessage {
     TOURNAMENT_NO_STUDENT_TO_ENROLL("Missing student to enroll tournament"),
     INVALID_USERNAME("Username is null or empty"),
     TOURNAMENT_STARTED("the tournament already started"),
-    TOURNAMENT_NOT_THE_CREATOR("not the creator of the tournament"),
+    TOURNAMENT_NOT_THE_CREATOR("is not the creator of the tournament"),
 
     NO_CORRECT_OPTION("Question does not have a correct option"),
 
