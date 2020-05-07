@@ -9,6 +9,7 @@ describe('Dashboard Walkthrough', () => {
   });
 
   it('toggleDashboard to Public, check if still public', () => {
+    cy.addPrivateDashboardToDemoStudent();
     cy.toggleDashboardPrivacy();
     cy.contains('Logout').click();
     cy.demoStudentLogin();

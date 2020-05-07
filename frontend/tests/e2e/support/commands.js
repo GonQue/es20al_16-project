@@ -529,6 +529,12 @@ Cypress.Commands.add('toggleDashboardPrivacy', () => {
     .click();
 });
 
+Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
+  cy.exec(
+    'PGPASSWORD=a psql -d tutordb -U a -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"'
+  );
+});
+
 Cypress.Commands.add('checkDashboardPrivacy', (content) => {
   cy.contains('Stats').click();
   cy.get('[data-cy="privacyInfo"]')
