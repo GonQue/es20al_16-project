@@ -14,7 +14,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -75,10 +74,10 @@ public class User implements UserDetails, DomainEntity {
     private Set<Tournament> tournamentsEnrolled = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
+    private List<ClarificationQuestion> clarificationQuestions = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<ClarificationResponse> clarification_responses = new ArrayList<>();
+    private List<ClarificationResponse> clarificationResponses = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true, fetch=FetchType.LAZY)
     private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
@@ -343,7 +342,7 @@ public class User implements UserDetails, DomainEntity {
 
     public Integer getNumberOfClarificationQuestions() {
         if (this.numberOfClarificationQuestions == null)
-            this.numberOfClarificationQuestions = this.getClarification_questions().size();
+            this.numberOfClarificationQuestions = this.getClarificationQuestions().size();
 
         return numberOfClarificationQuestions;
     }
@@ -354,7 +353,7 @@ public class User implements UserDetails, DomainEntity {
 
     public Integer getNumberOfPublicClarificationQuestions() {
         if (this.numberOfPublicClarificationQuestions == null)
-            this.numberOfPublicClarificationQuestions = (int) this.getClarification_questions().stream()
+            this.numberOfPublicClarificationQuestions = (int) this.getClarificationQuestions().stream()
                     .filter(ClarificationQuestion::getAvailableToOtherStudents)
                     .count();
 
@@ -451,17 +450,17 @@ public class User implements UserDetails, DomainEntity {
         this.courseExecutions.add(course);
     }
 
-    public List<ClarificationQuestion> getClarification_questions() { return clarification_questions; }
+    public List<ClarificationQuestion> getClarificationQuestions() { return clarificationQuestions; }
 
-    public void setClarification_questions(List<ClarificationQuestion> clarification_questions) { this.clarification_questions = clarification_questions; }
+    public void setClarificationQuestions(List<ClarificationQuestion> clarificationQuestions) { this.clarificationQuestions = clarificationQuestions; }
 
-    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarification_questions.add(clarificationQuestion); }
+    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarificationQuestions.add(clarificationQuestion); }
 
-    public List<ClarificationResponse> getClarification_responses() { return clarification_responses; }
+    public List<ClarificationResponse> getClarificationResponses() { return clarificationResponses; }
 
-    public void setClarification_responses(List<ClarificationResponse> clarification_responses) { this.clarification_responses = clarification_responses; }
+    public void setClarificationResponses(List<ClarificationResponse> clarificationResponses) { this.clarificationResponses = clarificationResponses; }
 
-    public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarification_responses.add(clarificationResponse); }
+    public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarificationResponses.add(clarificationResponse); }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

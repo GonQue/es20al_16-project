@@ -88,9 +88,9 @@ public class StatsService {
                 .filter(Option::getCorrect)
                 .count();
 
-        int clarificationQuestions = user.getClarification_questions().size();
+        int clarificationQuestions = user.getClarificationQuestions().size();
 
-        int publicClarificationQuestions = (int) user.getClarification_questions().stream()
+        int publicClarificationQuestions = (int) user.getClarificationQuestions().stream()
                 .filter(clarificationQuestion -> Objects.nonNull(clarificationQuestion.getAvailableToOtherStudents()))
                 .filter(ClarificationQuestion::getAvailableToOtherStudents)
                 .count();
