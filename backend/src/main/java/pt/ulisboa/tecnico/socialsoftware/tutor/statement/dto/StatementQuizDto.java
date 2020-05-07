@@ -23,6 +23,7 @@ public class StatementQuizDto implements Serializable {
     private Long timeToResults;
     private List<StatementQuestionDto> questions = new ArrayList<>();
     private List<StatementAnswerDto> answers = new ArrayList<>();
+    private Integer tournamentId;
 
     public StatementQuizDto() {}
 
@@ -136,6 +137,8 @@ public class StatementQuizDto implements Serializable {
     public void setAnswers(List<StatementAnswerDto> answers) {
         this.answers = answers;
     }
+
+    public void setTournamentId(int id){ this.tournamentId = id; }
 
     @Override
     public String toString() {

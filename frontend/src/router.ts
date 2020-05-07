@@ -29,6 +29,7 @@ import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 import TournamentsListView from '@/views/student/tournaments/TournamentsListView.vue';
+import TournamentStartView from '@/views/student/tournaments/TournamentStartView.vue';
 import ProposedQuestionsView from '@/views/teacher/proposedQuestions/ProposedQuestionsView.vue';
 import ProposeQuestionView from '@/views/student/questions/ProposeQuestionView.vue';
 
@@ -223,6 +224,15 @@ let router = new Router({
           path: 'tournaments',
           name: 'list-tournaments',
           component: TournamentsListView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Tournaments',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tournament/start',
+          name: 'tournament-start',
+          component: TournamentStartView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Tournaments',
             requiredAuth: 'Student'

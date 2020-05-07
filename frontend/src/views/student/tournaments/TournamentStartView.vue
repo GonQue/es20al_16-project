@@ -8,32 +8,56 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+  import { Component, Vue } from 'vue-property-decorator';
   import StatementQuiz from '../../../models/statement/StatementQuiz';
-
+  import { milisecondsToHHMMSS } from '@/services/ConvertDateService';
+  import RemoteServices from '@/services/RemoteServices';
+  import StatementManager from '@/models/statement/StatementManager';
   @Component
   export default class TournamentStartView extends Vue {
-    quizId: number | null = null;
-    quiz: StatementQuiz | null = null;
+    statementQuiz: StatementQuiz | null = null;
+    tournamentId: number | undefined | null = null;
 
     async created() {
-      if (!this.statementQuiz?.id) {
-        await this.$router.push({ name: 'create-quiz' });
-      } else {
+      this.statementQuiz = StatementManager.getInstance.statementQuiz;
+      this.tournamentId = this.statementQuiz?.tournamentId;
+      this.getTournamentQuiz()
+    }
+
+
+    async getTournamentQuiz() {
+      console.log('statement', this.statementQuiz?.tournamentId, this.statementQuiz?.id, this.statementQuiz?.availableDate, this.statementQuiz?.conclusionDate);
+      console.log('getournamentquiz', this.statementQuiz?.timeToAvailability, this.tournamentId);
+      if (this.statementQuiz && this.tournamentId && this.$router.currentRoute.name === 'tournament-start') {
+        console.log('in1');
         try {
-          await RemoteServices.startQuiz(this.statementQuiz?.id);
+          console.log('supose to end after', this.statementQuiz.timeToAvailability, this.statementQuiz.timeToAvailability === 0, this.statementQuiz);
+          this.statementQuiz = await RemoteServices.getTournamentQuiz(this.tournamentId);
+          console.log('supose to end after', this.statementQuiz.timeToAvailability, this.statementQuiz.timeToAvailability === 0, this.statementQuiz);
+          if (this.statementQuiz.timeToAvailability === 0) {
+            console.log('END END END ');
+            let statementManager: StatementManager = StatementManager.getInstance;
+            statementManager.statementQuiz = this.statementQuiz;
+            await this.$router.push({ name: 'solve-quiz' });
+          }
         } catch (error) {
           await this.$store.dispatch('error', error);
-          await this.$router.push({ name: 'available-quizzes' });
+          await this.$router.push({ name: 'home' });
         }
       }
+    }
+
+    timer() {
+      if (this.statementQuiz?.timeToAvailability === 0) {
+        this.getTournamentQuiz();
+      }
+
+      return milisecondsToHHMMSS(this.statementQuiz?.timeToAvailability);
+    }
 
   }
 
 </script>
 
-
-
-<style scoped>
-
-</style>
+<style lang="scss" scoped></style>

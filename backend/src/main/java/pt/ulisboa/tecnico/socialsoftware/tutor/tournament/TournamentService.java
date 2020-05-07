@@ -82,7 +82,7 @@ public class TournamentService {
          throw new TutorException(USER_NOT_ENROLLED, user.getUsername());
       }
 
-      if (tournament.getEndDate() != null && LocalDateTime.now().isAfter(tournament.getEndDate())) {
+      if (tournament.getEndDate() != null && DateHandler.now().isAfter(tournament.getEndDate())) {
          throw new TutorException(TOURNAMENT_NO_LONGER_AVAILABLE);
       }
 
@@ -101,12 +101,16 @@ public class TournamentService {
       }
 
       if (tournament.getEndDate() == null || DateHandler.now().isAfter(tournament.getStartDate())) {
-         return new StatementQuizDto(quizAnswer);
+         StatementQuizDto quizDto = new StatementQuizDto(quizAnswer);
+         quizDto.setTimeToAvailability(0L);
+         quizDto.setTournamentId(tournament.getId());
+         return quizDto;
 
 
       } else { // Send timer
          StatementQuizDto quizDto = new StatementQuizDto();
          quizDto.setTimeToAvailability(ChronoUnit.MILLIS.between(DateHandler.now(), tournament.getStartDate()));
+         quizDto.setTournamentId(tournament.getId());
          return quizDto;
       }
 
@@ -205,15 +209,16 @@ public class TournamentService {
       Quiz quiz = new Quiz();
       quiz.setKey(quizService.getMaxQuizKey() + 1);
       quiz.setType(Quiz.QuizType.TOURNAMENT.toString());
-      quiz.setCreationDate(LocalDateTime.now());
-      quiz.setAvailableDate(tournament.getStartDate());
-      quiz.setConclusionDate(tournament.getEndDate());
 
       int executionId = tournament.getCourseExecution().getId();
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
       List<Question> availableQuestions = pickRandomQuestions(tournament);
-
       quiz.generate(availableQuestions);
+
+      quiz.setCreationDate(LocalDateTime.now());
+      quiz.setAvailableDate(tournament.getStartDate());
+      quiz.setConclusionDate(tournament.getEndDate());
+
       quiz.setCourseExecution(courseExecution);
       quizRepository.save(quiz);
       tournament.setQuiz(quiz);

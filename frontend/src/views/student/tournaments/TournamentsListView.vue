@@ -186,12 +186,14 @@ export default class TournamentsListView extends Vue {
     await this.$store.dispatch('loading');
     try {
       let statementManager: StatementManager = StatementManager.getInstance;
-      statementManager.statementQuiz = (await RemoteServices.getTournamentQuiz(tournament));
+      statementManager.statementQuiz = (await RemoteServices.getTournamentQuiz(tournament.id));
+      statementManager.statementQuiz.tournamentId = tournament.id;
+      console.log("List", statementManager.statementQuiz.timeToAvailability, statementManager.statementQuiz.tournamentId);
+      await this.$router.push({ name: 'tournament-start' });
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-    this.$router.push({ name: 'solve-quiz' });
   }
 
   async enrolled(tournament: Tournament) {
@@ -208,7 +210,7 @@ export default class TournamentsListView extends Vue {
     let user = this.$store.getters.getUser;
     let usersMap = tournament.enrolled;
     for (let i = 0; i < usersMap.length; i++) {
-      if (usersMap[i] == user.username) {
+      if ( usersMap[i]!=null && usersMap[i] == user.username) {
         return true;
       }
     }
