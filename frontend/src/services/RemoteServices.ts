@@ -749,12 +749,12 @@ export default class RemoteServices {
       });
   }
 
-  static async updateProposedQuestion(
+  static async createProposedQuestion(
     proposedQuestion: ProposedQuestion
   ): Promise<ProposedQuestion> {
     return httpClient
-      .put(
-        `/student/proposed-questions/${proposedQuestion.id}`,
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions/`,
         proposedQuestion
       )
       .then(response => {
@@ -765,12 +765,12 @@ export default class RemoteServices {
       });
   }
 
-  static async createProposedQuestion(
+  static async updateProposedQuestion(
     proposedQuestion: ProposedQuestion
   ): Promise<ProposedQuestion> {
     return httpClient
-      .post(
-        `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions/`,
+      .put(
+        `/student/proposed-questions/${proposedQuestion.id}`,
         proposedQuestion
       )
       .then(response => {

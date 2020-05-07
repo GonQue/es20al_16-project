@@ -69,4 +69,9 @@ public class ProposedQuestionController {
         return this.proposedQuestionService.turnAvailable(proposedQuestionId, pqDto);
     }
 
+    @PutMapping("/student/proposed-questions/{proposedQuestionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#proposedQuestionId, 'PQ.CREATOR')")
+    public ProposedQuestionDto updateProposedQuestion(@PathVariable Integer proposedQuestionId, @Valid @RequestBody ProposedQuestionDto pqDto) {
+        return proposedQuestionService.updateProposedQuestion(proposedQuestionId, pqDto);
+    }
 }

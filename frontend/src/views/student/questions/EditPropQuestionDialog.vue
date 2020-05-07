@@ -28,7 +28,7 @@
           }}</v-card-subtitle>
         </v-card>
 
-        <v-form lazy-validation>
+        <v-form ref="questionForm" lazy-validation>
           <v-text-field
             v-model="editPropQuestion.question.title"
             :rules="[rules[0]]"
@@ -218,7 +218,9 @@ export default class EditPropQuestionDialog extends Vue {
           this.image,
           result.question.id
         );
-        confirm('Image ' + imageURL + ' was uploaded!');
+        //this.editPropQuestion.question.image = new Image();
+        //this.editPropQuestion.question.image.url = imageURL;
+        //confirm('Image ' + imageURL + ' was uploaded!');
       }
       this.$emit('save-proposed-question', result);
     } catch (error) {

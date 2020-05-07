@@ -78,7 +78,7 @@ public class ProposedQuestionService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ProposedQuestionDto> getStudentProposedQuestions(int id) {
-        User student = findStudentById(id);
+        User student = userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
         return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).
                 sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
                 collect(Collectors.toList());
@@ -133,10 +133,6 @@ public class ProposedQuestionService {
         return userRepository.findByUsername(pqDto.getTeacher().getUsername());
     }
 
-    private User findStudentById(int id){
-        return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
-    }
-
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Course getCourse(int pqId) {
         ProposedQuestion proposedQuestion = pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
@@ -147,7 +143,7 @@ public class ProposedQuestionService {
     public void deleteProposedQuestion(int proposedQuestionId) {
         ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
 
-        if (proposedQuestion.canBeRemoved()) {
+        if (proposedQuestion.canBeRemovedOrUpdated()) {
             Course course = getCourse(proposedQuestionId);
             course.removeProposedQuestion(proposedQuestion);
             pqRepository.delete(proposedQuestion);
@@ -170,6 +166,18 @@ public class ProposedQuestionService {
         Course course = getCourse(pqId);
         course.removeProposedQuestion(pq);
 
-    return new ProposedQuestionDto(pq);
+        return new ProposedQuestionDto(pq);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestionDto updateProposedQuestion(Integer propQuestionId, ProposedQuestionDto proposedQuestionDto) {
+        ProposedQuestion proposedQuestion = findProposedQuestion(propQuestionId);
+        if (proposedQuestion.canBeRemovedOrUpdated()) {
+            questionService.updateQuestion(proposedQuestion.getQuestion().getId(), proposedQuestionDto.getQuestion());
+            proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING);
+            return new ProposedQuestionDto(proposedQuestion);
+        }
+        else
+            throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_UPDATED);
     }
 }

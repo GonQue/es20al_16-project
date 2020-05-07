@@ -1,12 +1,9 @@
-describe('Evaluation', () => {
+describe('Proposed Question walkthrough', () => {
   beforeEach(() => {
-    cy.demoStudentLogin();
     cy.openProposeQuestionStudentMenu();
     cy.createProposedQuestion('TEST', 'Question', 'Options', 1);
     cy.showProposedQuestion('TEST');
     cy.contains('Logout').click();
-
-    cy.demoTeacherLogin();
     cy.openProposedQuestionsMenu();
   });
 
@@ -16,8 +13,6 @@ describe('Evaluation', () => {
 
   it('evaluate proposed question', () => {
     cy.evaluate('TEST', 'APPROVED', 'Justification');
-    cy.get('[data-cy="search"').clear();
-    cy.evaluate('TEST', 'REJECTED', 'Justification');
     cy.get('[data-cy="search"').clear();
     cy.evaluate('TEST', 'AWAITING', ' ');
     cy.get('[data-cy="search"').clear();
@@ -35,4 +30,14 @@ describe('Evaluation', () => {
     cy.get('[data-cy="search"').clear();
     cy.exec('PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost < tests/e2e/specs/teacher/deleteAvailableQuestion.sql');
   })
+
+  it('student resubmit rejected proposed question', () => {
+    cy.evaluate('TEST', 'REJECTED', 'Justification');
+    cy.openProposeQuestionStudentMenu();
+    cy.updateProposedQuestion('TEST', 'New_Content');
+
+    cy.contains('Logout').click();
+    cy.openProposeQuestionStudentMenu();
+    cy.deleteProposedQuestion('TEST');
+  });
 });

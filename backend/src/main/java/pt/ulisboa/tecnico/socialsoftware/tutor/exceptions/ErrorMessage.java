@@ -110,6 +110,7 @@ public enum ErrorMessage {
     PROPQUESTION_CANT_BE_REMOVED("The Proposed Question was approved so it can't be removed"),
     PROPQUESTION_NOT_APPROVED("The Proposed Question is not approved"),
     PROPQUESTION_ALREADY_APPROVED("The Proposed Question is already approved"),
+    PROPQUESTION_CANT_BE_UPDATED("The proposed question can't be updated because it was already approved"),
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file");
