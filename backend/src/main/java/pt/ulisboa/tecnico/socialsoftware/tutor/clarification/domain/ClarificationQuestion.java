@@ -123,8 +123,8 @@ public class ClarificationQuestion {
     }
 
     public void remove() {
-        getStudent().getClarification_questions().remove(this);
-        getQuestion().getClarification_questions().remove(this);
+        getStudent().getClarificationQuestions().remove(this);
+        getQuestion().getClarificationQuestions().remove(this);
         getResponses().forEach(response -> response.setClarificationQuestion(null));
         getResponses().clear();
         responses = null;

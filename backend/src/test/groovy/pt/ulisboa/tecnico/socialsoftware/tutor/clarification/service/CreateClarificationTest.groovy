@@ -126,9 +126,9 @@ class CreateClarificationTest extends Specification{
         result.getContent() == CONTENT
         result.getCreationDate() != null
         and: "clarification questions list of the student, question and answer"
-        student.getClarification_questions().size() == 1L
-        question.getClarification_questions().size() == 1L
-        answer.getClarification_questions().size() == 1L
+        student.getClarificationQuestions().size() == 1L
+        question.getClarificationQuestions().size() == 1L
+        answer.getClarificationQuestions().size() == 1L
     }
 
     def 'create a clarification request with non-existing question'() {
