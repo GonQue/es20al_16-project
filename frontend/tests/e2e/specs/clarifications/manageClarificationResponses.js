@@ -11,7 +11,7 @@ describe('Clarification Response Tests', () => {
   });
 
   afterEach(() => {
-    cy.contains('Logout').click();
+    cy.contains('Logout').click({force:true});
     cy.demoStudentLogin();
     cy.deleteClarificationQuestion(/^test question$/);
     cy.deleteClarificationQuestion(/^test question 2$/);

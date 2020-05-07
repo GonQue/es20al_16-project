@@ -144,7 +144,7 @@
               data-cy="Clarifications"
             >
               <v-list-item-action>
-                <v-icon>fas fa-file-alt</v-icon>
+                <v-icon>mdi-comment-text-multiple</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>Clarifications</v-list-item-title>
@@ -323,7 +323,7 @@
           </v-list-item>
           <v-list-item to="/management/clarifications/status">
             <v-list-item-action>
-              <v-icon>forum</v-icon>
+              <v-icon>mdi-comment-text-multiple</v-icon>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Clarifications</v-list-item-title>

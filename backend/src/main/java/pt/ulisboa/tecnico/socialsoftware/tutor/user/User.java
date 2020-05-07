@@ -14,7 +14,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -42,6 +41,8 @@ public class User implements UserDetails, DomainEntity {
     private String name;
     private String enrolledCoursesAcronyms;
 
+    private Boolean publicDashboard;
+
     private Integer numberOfTeacherQuizzes;
     private Integer numberOfStudentQuizzes;
     private Integer numberOfInClassQuizzes;
@@ -51,6 +52,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfClarificationQuestions;
+    private Integer numberOfPublicClarificationQuestions;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -71,10 +74,10 @@ public class User implements UserDetails, DomainEntity {
     private Set<Tournament> tournamentsEnrolled = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
+    private List<ClarificationQuestion> clarificationQuestions = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacher", orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<ClarificationResponse> clarification_responses = new ArrayList<>();
+    private List<ClarificationResponse> clarificationResponses = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "student", orphanRemoval=true, fetch=FetchType.LAZY)
     private Set<ProposedQuestion> proposedQuestions = new HashSet<>();
@@ -88,6 +91,7 @@ public class User implements UserDetails, DomainEntity {
         this.key = key;
         this.role = role;
         this.creationDate = DateHandler.now();
+        setPublicDashboard(false);
         this.numberOfTeacherQuizzes = 0;
         this.numberOfInClassQuizzes = 0;
         this.numberOfStudentQuizzes = 0;
@@ -97,6 +101,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfClarificationQuestions = 0;
     }
 
     public void addTournament(Tournament tournament) {
@@ -323,6 +328,42 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
 
+    public Boolean getPublicDashboard() {
+        return this.publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
+    }
+
+    public Integer getNumberOfClarificationQuestions() {
+        if (this.numberOfClarificationQuestions == null)
+            this.numberOfClarificationQuestions = this.getClarificationQuestions().size();
+
+        return numberOfClarificationQuestions;
+    }
+
+    public void setNumberOfClarificationQuestions(Integer numberOfClarificationQuestions) {
+        this.numberOfClarificationQuestions = numberOfClarificationQuestions;
+    }
+
+    public Integer getNumberOfPublicClarificationQuestions() {
+        if (this.numberOfPublicClarificationQuestions == null)
+            this.numberOfPublicClarificationQuestions = (int) this.getClarificationQuestions().stream()
+                    .filter(ClarificationQuestion::getAvailableToOtherStudents)
+                    .count();
+
+        return numberOfPublicClarificationQuestions;
+    }
+
+    public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
+        this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -341,6 +382,8 @@ public class User implements UserDetails, DomainEntity {
                 ", numberOfCorrectTeacherAnswers=" + numberOfCorrectTeacherAnswers +
                 ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
+                ", numberOfClarificationQuestions=" + numberOfClarificationQuestions +
+                ", numberOfPublicClarificationQuestion=" + numberOfPublicClarificationQuestions +
                 ", creationDate=" + creationDate +
                 ", lastAccess=" + lastAccess +
                 '}';
@@ -407,17 +450,17 @@ public class User implements UserDetails, DomainEntity {
         this.courseExecutions.add(course);
     }
 
-    public List<ClarificationQuestion> getClarification_questions() { return clarification_questions; }
+    public List<ClarificationQuestion> getClarificationQuestions() { return clarificationQuestions; }
 
-    public void setClarification_questions(List<ClarificationQuestion> clarification_questions) { this.clarification_questions = clarification_questions; }
+    public void setClarificationQuestions(List<ClarificationQuestion> clarificationQuestions) { this.clarificationQuestions = clarificationQuestions; }
 
-    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarification_questions.add(clarificationQuestion); }
+    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarificationQuestions.add(clarificationQuestion); }
 
-    public List<ClarificationResponse> getClarification_responses() { return clarification_responses; }
+    public List<ClarificationResponse> getClarificationResponses() { return clarificationResponses; }
 
-    public void setClarification_responses(List<ClarificationResponse> clarification_responses) { this.clarification_responses = clarification_responses; }
+    public void setClarificationResponses(List<ClarificationResponse> clarificationResponses) { this.clarificationResponses = clarificationResponses; }
 
-    public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarification_responses.add(clarificationResponse); }
+    public void addClarificationResponse(ClarificationResponse clarificationResponse) { clarificationResponses.add(clarificationResponse); }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
