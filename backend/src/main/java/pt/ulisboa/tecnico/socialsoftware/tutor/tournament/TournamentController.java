@@ -58,7 +58,7 @@ public class TournamentController {
         return tournamentService.createTournament(executionId, user.getId(), tournamentDto);
     }
 
-    @DeleteMapping("/tournaments/{tournamentId}/delete-tournament")
+    @DeleteMapping("/tournaments/{tournamentId}")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity deleteTournament(@PathVariable Integer tournamentId, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();

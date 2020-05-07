@@ -747,6 +747,14 @@ export default class RemoteServices {
       });
   }
 
+  static async deleteTournament(tournamentId: number) {
+    return httpClient
+      .delete(`/tournaments/${tournamentId}`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
 
   static async getStudentProposedQuestions(): Promise<ProposedQuestion[]> {
     return httpClient
