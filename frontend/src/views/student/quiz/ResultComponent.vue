@@ -69,6 +69,9 @@
         />
       </li>
     </ul>
+    <v-btn @click="showClarifications()" data-cy="ShowPublicClarifications">
+      Public clarifications
+    </v-btn>
     <v-dialog v-model="dialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn
@@ -191,6 +194,16 @@ export default class ResultComponent extends Vue {
     await this.$store.dispatch('clearLoading');
 
     this.dialog = false;
+  }
+
+  async showClarifications() {
+    if (this.question.questionId != null)
+      await this.$router.push({
+        name: 'clarificationsPublic',
+        params: {
+          questionId: this.question.questionId.toString()
+        }
+      });
   }
 }
 </script>

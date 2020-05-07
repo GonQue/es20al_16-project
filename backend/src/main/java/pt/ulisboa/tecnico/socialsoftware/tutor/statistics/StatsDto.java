@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.statistics;
 import java.io.Serializable;
 
 public class StatsDto implements Serializable {
+    private Boolean publicDashboard = false;
     private Integer totalQuizzes = 0;
     private Integer totalAnswers = 0;
     private Integer totalUniqueQuestions = 0;
@@ -11,6 +12,20 @@ public class StatsDto implements Serializable {
     private Integer uniqueCorrectAnswers = 0;
     private Integer uniqueWrongAnswers = 0;
     private Integer totalAvailableQuestions = 0;
+    private Integer totalClarificationQuestions = 0;
+    private Integer totalPublicClarificationQuestions = 0;
+
+    public Boolean getPublicDashboard() {
+        return publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
+    }
 
     public Integer getTotalQuizzes() {
         return totalQuizzes;
@@ -76,16 +91,35 @@ public class StatsDto implements Serializable {
         this.totalAvailableQuestions = totalAvailableQuestions;
     }
 
+    public Integer getTotalClarificationQuestions() {
+        return totalClarificationQuestions;
+    }
+
+    public void setTotalClarificationQuestions(Integer totalClarificationQuestions) {
+        this.totalClarificationQuestions = totalClarificationQuestions;
+    }
+
+    public Integer getTotalPublicClarificationQuestions() {
+        return totalPublicClarificationQuestions;
+    }
+
+    public void setTotalPublicClarificationQuestions(Integer totalPublicClarificationQuestions) {
+        this.totalPublicClarificationQuestions = totalPublicClarificationQuestions;
+    }
+
     @Override
     public String toString() {
         return "StatsDto{" +
-                "totalQuizzes=" + totalQuizzes +
+                "publicDashboard=" + publicDashboard +
+                ", totalQuizzes=" + totalQuizzes +
                 ", totalAnswers=" + totalAnswers +
                 ", totalUniqueQuestions=" + totalUniqueQuestions +
                 ", correctAnswers=" + correctAnswers +
                 ", improvedCorrectAnswers=" + improvedCorrectAnswers +
                 ", uniqueCorrectAnswers=" + uniqueCorrectAnswers +
                 ", uniqueWrongAnswers=" + uniqueWrongAnswers +
+                ", totalClarificationQuestions=" + totalClarificationQuestions +
+                ", totalPublicClarificationQuestions=" + totalPublicClarificationQuestions +
                 '}';
     }
 }

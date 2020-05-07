@@ -573,6 +573,21 @@ export default class RemoteServices {
       });
   }
 
+  static getPublicClarificationQuestions(
+    questionId: number | undefined
+  ): Promise<StatementClarificationQuestion[]> {
+    return httpClient
+      .get('/student/' + questionId + '/clarifications')
+      .then(response => {
+        return response.data.map((clarificationQuestion: any) => {
+          return new StatementClarificationQuestion(clarificationQuestion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createClarificationQuestion(
     questionId: number | undefined,
     clarificationQuestion: StatementClarificationQuestion | null
@@ -667,6 +682,26 @@ export default class RemoteServices {
   ) {
     return httpClient
       .delete('/management/clarifications/' + clarificationResponseId)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async askForAdditionalClarification(clarificationQuestionId: number) {
+    return httpClient
+      .post(`/student/clarifications/${clarificationQuestionId}/additional`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeClarificationAvailability(
+    clarificationQuestionId: number
+  ) {
+    return httpClient
+      .post(
+        `/management/clarifications/${clarificationQuestionId}/availability`
+      )
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
@@ -831,5 +866,11 @@ export default class RemoteServices {
       console.log(error);
       return 'Unknown Error - Contact admin';
     }
+  }
+
+  static async togglePublicDashboard() {
+    return httpClient.post('/executions/dashboard').catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 }

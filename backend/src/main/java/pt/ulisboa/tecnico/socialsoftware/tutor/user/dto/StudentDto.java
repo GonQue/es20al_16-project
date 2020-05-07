@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class StudentDto implements Serializable {
     private String username;
     private String name;
+    private Boolean publicDashboard;
     private Integer numberOfTeacherQuizzes;
     private Integer numberOfInClassQuizzes;
     private Integer numberOfStudentQuizzes;
@@ -15,6 +16,8 @@ public class StudentDto implements Serializable {
     private Integer numberOfTeacherAnswers;
     private Integer numberOfInClassAnswers;
     private Integer numberOfStudentAnswers;
+    private Integer numberOfClarificationQuestions;
+    private Integer numberOfPublicClarificationQuestions;
     private int percentageOfCorrectAnswers = 0;
     private int percentageOfCorrectTeacherAnswers = 0;
     private int percentageOfCorrectInClassAnswers = 0;
@@ -25,6 +28,7 @@ public class StudentDto implements Serializable {
     public StudentDto(User user) {
         this.username = user.getUsername();
         this.name = user.getName();
+        this.publicDashboard = user.getPublicDashboard();
         this.numberOfTeacherQuizzes = user.getNumberOfTeacherQuizzes();
         this.numberOfInClassQuizzes = user.getNumberOfInClassQuizzes();
         this.numberOfStudentQuizzes = user.getNumberOfStudentQuizzes();
@@ -32,6 +36,8 @@ public class StudentDto implements Serializable {
         this.numberOfTeacherAnswers = user.getNumberOfTeacherAnswers();
         this.numberOfInClassAnswers = user.getNumberOfInClassAnswers();
         this.numberOfStudentAnswers = user.getNumberOfStudentAnswers();
+        this.numberOfClarificationQuestions = user.getNumberOfClarificationQuestions();
+        this.numberOfPublicClarificationQuestions = user.getNumberOfPublicClarificationQuestions();
         this.lastAccess = DateHandler.toISOString(user.getLastAccess());
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
@@ -60,6 +66,18 @@ public class StudentDto implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getPublicDashboard() {
+        return publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
     }
 
     public Integer getNumberOfTeacherQuizzes() {
@@ -150,6 +168,20 @@ public class StudentDto implements Serializable {
         this.numberOfStudentAnswers = numberOfStudentAnswers;
     }
 
+    public Integer getNumberOfClarificationQuestions() { return numberOfClarificationQuestions; }
+
+    public void setNumberOfClarificationQuestions(Integer numberOfClarificationQuestions) {
+        this.numberOfClarificationQuestions = numberOfClarificationQuestions;
+    }
+
+    public Integer getNumberOfPublicClarificationQuestions() {
+        return numberOfPublicClarificationQuestions;
+    }
+
+    public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
+        this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
     public int getPercentageOfCorrectInClassAnswers() {
         return percentageOfCorrectInClassAnswers;
     }
@@ -171,12 +203,15 @@ public class StudentDto implements Serializable {
         return "StudentDto{" +
                 "username='" + username + '\'' +
                 ", name='" + name + '\'' +
+                ", publicDashboard='" + publicDashboard + '\'' +
                 ", numberOfTeacherQuizzes=" + numberOfTeacherQuizzes +
                 ", numberOfStudentQuizzes=" + numberOfStudentQuizzes +
                 ", numberOfAnswers=" + numberOfAnswers +
                 ", numberOfTeacherAnswers=" + numberOfTeacherAnswers +
                 ", percentageOfCorrectAnswers=" + percentageOfCorrectAnswers +
                 ", percentageOfCorrectTeacherAnswers=" + percentageOfCorrectTeacherAnswers +
+                ", numberOfClarificationQuestions=" + numberOfClarificationQuestions +
+                ", numberOfPublicClarificationQuestions=" + numberOfPublicClarificationQuestions +
                 ", creationDate='" + creationDate + '\'' +
                 ", lastAccess='" + lastAccess + '\'' +
                 '}';
