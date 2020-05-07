@@ -16,6 +16,8 @@ import ListTeacherClarificationQuestionsView from './views/teacher/clarification
 import ListClarificationResponsesView from './views/teacher/clarifications/ListClarificationResponsesView.vue';
 import StudentView from '@/views/student/StudentView.vue';
 import ListClarificationQuestionsView from './views/student/clarification/ListClarificationQuestionsView.vue';
+import ListPublicClarificationQuestionsView from './views/student/clarification/ListPublicClarificationQuestionsView.vue';
+import ListPublicClarificationResponsesView from './views/teacher/clarifications/ListPublicClarificationResponsesView.vue';
 import AvailableQuizzesView from '@/views/student/AvailableQuizzesView.vue';
 import SolvedQuizzesView from '@/views/student/SolvedQuizzesView.vue';
 import QuizView from '@/views/student/quiz/QuizView.vue';
@@ -248,9 +250,29 @@ let router = new Router({
           }
         },
         {
+          path: 'clarifications/public',
+          name: 'clarificationsPublic',
+          component: ListPublicClarificationQuestionsView,
+          props: true,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Public Clarifications',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'responses',
           name: 'show-student-clarification-responses',
           component: ListClarificationResponsesView,
+          props: true,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Responses',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'responses',
+          name: 'show-public-student-clarification-responses',
+          component: ListPublicClarificationResponsesView,
           props: true,
           meta: {
             title: process.env.VUE_APP_NAME + ' - List Responses',
