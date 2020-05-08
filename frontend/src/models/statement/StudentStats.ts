@@ -17,6 +17,11 @@ export default class StudentStats {
   totalTournamentsCreated!: number;
   totalTournamentsJoined!: number;
 
+  totalTournamentsCreated!: number;
+  totalTournamentsJoined!:number;
+  totalPoints!:number;
+  tournamentCorrectAnswersPerc!: number;
+
   constructor(jsonObj?: StudentStats) {
     if (jsonObj) {
       this.totalQuizzes = jsonObj.totalQuizzes;
@@ -31,11 +36,16 @@ export default class StudentStats {
       this.totalClarificationQuestions = jsonObj.totalClarificationQuestions;
       this.totalPublicClarificationQuestions =
         jsonObj.totalPublicClarificationQuestions;
+              
+      this.totalTournamentsCreated=jsonObj.totalTournamentsCreated;
+      this.totalTournamentsJoined=jsonObj.totalTournamentsJoined;
+      this.totalPoints=jsonObj.totalPoints;
+              
+      this.tournamentCorrectAnswersPerc=jsonObj.tournamentCorrectAnswersPerc;
       this.totalProposedQuestions = jsonObj.totalProposedQuestions;
       this.totalApprovedProposedQuestions =
         jsonObj.totalApprovedProposedQuestions;
-      this.totalTournamentsCreated = jsonObj.totalTournamentsCreated;
-      this.totalTournamentsJoined = jsonObj.totalTournamentsJoined;
+
     }
   }
 }

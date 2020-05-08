@@ -746,6 +746,7 @@ export default class RemoteServices {
   static async getOpenTournaments(): Promise<Tournament[]> {
     return httpClient
       .get(`/executions/${Store.getters.getCurrentCourse.courseExecutionId}`)
+
       .then(response => {
         return response.data.map((tournament: any) => {
           return new Tournament(tournament);
@@ -767,6 +768,7 @@ export default class RemoteServices {
       });
   }
 
+
   static async getTournamentQuiz(tournamentId: number): Promise<StatementQuiz> {
     return httpClient
       .get(`/tournaments/${tournamentId}/quiz`)
@@ -785,6 +787,7 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
 
   static async getStudentProposedQuestions(): Promise<ProposedQuestion[]> {
     return httpClient

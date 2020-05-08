@@ -376,6 +376,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
     }
 
+
     public Integer getNumberOfProposedQuestions() {
        if (this.numberOfProposedQuestions == null)
            this.numberOfProposedQuestions = this.getProposedQuestions().size();
@@ -400,6 +401,7 @@ public class User implements UserDetails, DomainEntity {
     public void setNumberOfApprovedProposedQuestions(Integer numberOfApprovedProposedQuestions) {
         this.numberOfApprovedProposedQuestions = numberOfApprovedProposedQuestions;
     }
+
 
     public Integer getNumberOfTournamentsCreated() {
         this.numberOfTournamentsCreated = this.tournamentsCreated.size();

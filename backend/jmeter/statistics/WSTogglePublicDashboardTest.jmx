@@ -92,11 +92,8 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-<<<<<<< HEAD
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to change clarification availability" enabled="true">
-=======
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to change dashboard privacy" enabled="true">
->>>>>>> develop
+
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -131,11 +128,9 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-<<<<<<< HEAD
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to get stats" enabled="true">
-=======
+
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to get dashboard privacy" enabled="true">
->>>>>>> develop
+
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>

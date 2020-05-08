@@ -50,6 +50,7 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="saveButton"]').click();
 });
 
+
 Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
   cy.contains('Error')
     .parent()
@@ -87,6 +88,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'createTournament',
+
   (
     name,
     topics,
@@ -96,6 +98,7 @@ Cypress.Commands.add(
     nextMonth,
     pickQuestionNumber
   ) => {
+
     cy.get('[data-cy="createButton"]').click();
 
     //Name
@@ -112,6 +115,7 @@ Cypress.Commands.add(
       cy.get('i[class="v-icon notranslate mdi mdi-chevron-right theme--light"]')
         .click()
         .wait(500);
+
     cy.get('button')
       .contains(day1)
       .click()
@@ -143,18 +147,19 @@ Cypress.Commands.add(
         .contains('Number of questions')
         .type('{rightarrow}');
 
+
     //Topics
     cy.get('[data-cy="topics"]').click();
     topics.forEach(function(topics) {
       cy.contains(topics)
         .click()
-        .wait(100);
+        .wait(500);
     });
 
     //Save
     cy.get('[data-cy="saveButton"]')
       .click()
-      .wait(200);
+      .wait(1000);
   }
 );
 
@@ -173,6 +178,7 @@ Cypress.Commands.add('answerQuestions', name => {
     .children()
     .find('[data-cy="joinButton"]')
     .click();
+
 
   cy.get('[data-cy="EndQuiz"]').click();
   cy.get('[data-cy="ImSure"]').click();
@@ -206,6 +212,7 @@ Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
     }
   );
 });
+
 
 Cypress.Commands.add('deleteTournament', name => {
   cy.contains(name)
@@ -246,6 +253,7 @@ Cypress.Commands.add('removeTournamentFromDB', name => {
         dbUser: Cypress.env('dbUser')
       }
     }
+
   );
 });
 
@@ -331,6 +339,7 @@ Cypress.Commands.add('assignPublicClarificationToAnotherStudent', content => {
         dbUser: Cypress.env('dbUser')
       }
     }
+
   );
 });
 
@@ -354,6 +363,7 @@ Cypress.Commands.add('deletePublicClarification', content => {
         dbUser: Cypress.env('dbUser')
       }
     }
+
   );
 });
 
@@ -361,6 +371,7 @@ Cypress.Commands.add('deletePublicStudent', () => {
   cy.exec(
     'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM users WHERE id=999999999"',
     { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
+
   );
 });
 
@@ -697,6 +708,7 @@ Cypress.Commands.add(
   }
 );
 
+
 Cypress.Commands.add('toggleDashboardPrivacy', () => {
   cy.contains('Stats').click();
   cy.get('[data-cy="privacyButton"]').click();
@@ -706,6 +718,7 @@ Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
   cy.exec(
     'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"',
     { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
+
   );
 });
 

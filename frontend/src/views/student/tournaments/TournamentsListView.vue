@@ -14,7 +14,11 @@
       show-expand
       class="elevation-1"
     >
+
+
+
       <template v-slot:top>
+
         <v-card-title>
           <v-text-field
             v-model="search"
@@ -31,9 +35,11 @@
             >New Tournament</v-btn
           >
         </v-card-title>
+
       </template>
 
       <template v-slot:item.enrollment="{ item }">
+
         <v-tooltip>
           <template v-slot:activator="{ on }">
             <v-btn
@@ -64,7 +70,9 @@
             <v-icon
               large
               class="mr-2"
+
               v-show="checkIfCreator(item)"
+
               v-on="on"
               @click="deleteTournament(item)"
               color="red"
@@ -177,7 +185,9 @@ export default class TournamentsListView extends Vue {
     try {
       this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
       this.topics = await RemoteServices.getTopics();
+
       this.sucessAlert = true;
+
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -204,6 +214,7 @@ export default class TournamentsListView extends Vue {
     await this.$store.dispatch('loading');
     try {
       let statementManager: StatementManager = StatementManager.getInstance;
+
       statementManager.statementQuiz = await RemoteServices.getTournamentQuiz(
         tournament.id
       );
@@ -213,6 +224,7 @@ export default class TournamentsListView extends Vue {
         statementManager.statementQuiz.timeToAvailability,
         statementManager.statementQuiz.tournamentId
       );
+
       await this.$router.push({ name: 'tournament-start' });
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -234,17 +246,21 @@ export default class TournamentsListView extends Vue {
     let user = this.$store.getters.getUser;
     let usersMap = tournament.enrolled;
     for (let i = 0; i < usersMap.length; i++) {
+
       if (usersMap[i] != null && usersMap[i] == user.username) {
+
         return true;
       }
     }
     return false;
   }
 
+
   checkIfCreator(tournament: Tournament): boolean {
     let user = this.$store.getters.getUser;
     let creator = tournament.creator;
     if (creator.username == user.username) return true;
+
     return false;
   }
 
@@ -266,4 +282,6 @@ export default class TournamentsListView extends Vue {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>

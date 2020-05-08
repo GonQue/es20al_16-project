@@ -7,7 +7,13 @@
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-        <collectionProp name="Arguments.arguments"/>
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="tournamentId" elementType="Argument">
+            <stringProp name="Argument.name">tournamentId</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
@@ -74,8 +80,14 @@
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="queryType">Update Statement</stringProp>
           <stringProp name="query">insert into tournaments(id, end_date, name, number_of_questions, start_date, status, course_execution_id, tournament_creator_id, quiz_id)
-values (${tournamentId},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 651, 5360)
-</stringProp>
+
+values (1,&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 651, 5360);
+
+insert into users(id, role, username) values(9999,&apos; STUDENT&apos;, &apos;test user 1&apos;);
+
+insert into tournaments_enrolled(tournaments_enrolled_id , enrolled_id )
+values(1, 9999);</stringProp>
+
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="variableNames"></stringProp>
@@ -171,7 +183,7 @@ values (${tournamentId},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&ap
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">false</boolProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP login as demo student" enabled="true">
@@ -223,7 +235,7 @@ values (${tournamentId},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&ap
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/tournaments/${tournamentId}</stringProp>
+            <stringProp name="HTTPSampler.path">/tournaments/1</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -270,9 +282,9 @@ values (${tournamentId},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&ap
               <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert tournament enrolled " enabled="true">
-              <stringProp name="JSON_PATH">$.enrolled[0]</stringProp>
-              <stringProp name="EXPECTED_VALUE">Demo-Student</stringProp>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert number of enrolled" enabled="true">
+              <stringProp name="JSON_PATH">$.enrolled.length()</stringProp>
+              <stringProp name="EXPECTED_VALUE">2</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -393,7 +405,9 @@ values (${tournamentId},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&ap
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id=${tournamentId};
 DELETE FROM tournaments WHERE id=${tournamentId};
-</stringProp>
+DELETE FROM tournaments_enrolled WHERE enrolled_id=9999;
+DELETE FROM tournaments WHERE id=9999;
+delete from users WHERE username=&apos;test user 1&apos;;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>

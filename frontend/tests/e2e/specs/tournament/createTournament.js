@@ -7,7 +7,9 @@ describe('Student walkthrough', () => {
       .click()
       .wait(5000);
 
-    tournamentName = 'Demo Tournament';
+    tournamentName = 'Demo Tournament 1';
+    tournamentName2 = 'Demo Tournament 2';
+
     topics = ['Availability'];
     startDay = 20;
     endDay = 21;
@@ -33,6 +35,9 @@ describe('Student walkthrough', () => {
 
     cy.checkTournament(tournamentName, 1);
     cy.deleteTournament(tournamentName);
+
+    cy.removeTournamentFromDB(tournamentName);
+
   });
 
   it('Login creates tournament with wrong date', () => {
@@ -93,7 +98,7 @@ describe('Student walkthrough', () => {
       pickQuestionNumber
     );
     cy.createTournament(
-      tournamentName,
+      tournamentName2,
       topics,
       startDay,
       endDay,
@@ -103,5 +108,6 @@ describe('Student walkthrough', () => {
     );
 
     cy.removeTournamentFromDB(tournamentName)
+    cy.removeTournamentFromDB(tournamentName2)
   });
 });
