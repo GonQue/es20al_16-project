@@ -8,7 +8,7 @@ describe('Student walkthrough', () => {
       .wait(5000);
     tournamentName1 = 'Demo Tournament 1';
     tournamentName2 = 'Demo Tournament 2';
-    topics = ['Adventure Builder'];
+    topics = ['Availability'];
     startDay = 20;
     endDay = 20;
     nextMonth = true;

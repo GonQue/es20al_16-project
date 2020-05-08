@@ -4,11 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.TournamentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament
@@ -37,6 +48,11 @@ class StudentEnrollTournamentTest extends Specification {
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
     public static final String USERNAME = "username"
+    public static final String TOPIC_NAME_1= "topic name 1"
+    public static final String TOPIC_NAME_2= "topic name 2"
+    public static final String QUESTION_NAME_1 = "question 1"
+    public static final String QUESTION_NAME_2 = "question 2"
+    public static final String QUESTION_NAME_3 = "question 3"
 
     @Autowired
     TournamentService tournamentService
@@ -56,6 +72,12 @@ class StudentEnrollTournamentTest extends Specification {
     @Autowired
     QuizRepository quizRepository
 
+    @Autowired
+    TopicRepository topicRepository
+
+    @Autowired
+    QuestionRepository questionRepository
+
     def tournament
     def tournamentDto
     def tournamentId
@@ -66,7 +88,14 @@ class StudentEnrollTournamentTest extends Specification {
     def userDto
     def user2Dto
     def formatter
-    def quiz
+    def topicOne
+    def topicDtoOne
+    def topicTwo
+    def topicDtoTwo
+    def questionOne
+    def questionTwo
+    def questionThree
+    def questions
 
     def setup(){
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -94,15 +123,60 @@ class StudentEnrollTournamentTest extends Specification {
         tournament.setCreator(user)
         tournament.setStartDate(LocalDateTime.now())
         tournament.setEndDate(LocalDateTime.now().plusDays(1))
-        tournament.setNumberOfQuestions(5)
+        tournament.setNumberOfQuestions(1)
 
-        quiz = new Quiz()
-        quiz.setKey(1)
-        quiz.setType(Quiz.QuizType.PROPOSED.toString())
-        quizRepository.save(quiz)
-        tournament.setQuiz(quiz)
+        topicOne = new Topic()
+        topicOne.setName(TOPIC_NAME_1)
+        topicRepository.save(topicOne)
+        tournament.setTopics(new HashSet<Topic>(Arrays.asList(topicOne)))
+
+        questionOne = new Question()
+        questionOne.setKey(1)
+        questionOne.setStatus(Question.Status.AVAILABLE)
+        questionOne.setCourse(course1)
+        questionOne.setTitle(QUESTION_NAME_1)
+        course1.addQuestion(questionOne)
+        questionOne.addTopic(topicOne)
+        topicOne.addQuestion(questionOne)
+        topicDtoOne = new TopicDto(topicOne);
+        questionRepository.save(questionOne)
+
+
+        topicTwo = new Topic()
+        topicTwo.setName(TOPIC_NAME_2)
+        topicRepository.save(topicTwo)
+
+        questionTwo = new Question()
+        questionTwo.setKey(2)
+        questionTwo.setStatus(Question.Status.AVAILABLE)
+        questionTwo.setCourse(course1)
+        questionTwo.setTitle(QUESTION_NAME_2)
+        course1.addQuestion(questionTwo)
+        questionTwo.addTopic(topicTwo)
+        topicTwo.addQuestion(questionTwo)
+        topicDtoTwo = new TopicDto(topicTwo);
+        questionRepository.save(questionTwo)
+
+        questionThree = new Question()
+        questionThree.setKey(3)
+        questionThree.setStatus(Question.Status.AVAILABLE)
+        questionThree.setCourse(course1)
+        questionThree.setTitle(QUESTION_NAME_3)
+        course1.addQuestion(questionThree)
+        questionThree.addTopic(topicTwo)
+        topicTwo.addQuestion(questionThree)
+        topicDtoTwo = new TopicDto(topicTwo);
+        questionRepository.save(questionThree)
+
         tournament.setStatus(Tournament.Status.STARTED)
         tournamentDto = new TournamentDto(tournament)
+
+        questions = new ArrayList<Question>(Arrays.asList(questionOne, questionTwo, questionThree))
+
+        List<TopicDto> topicsDto = new ArrayList<TopicDto>();
+        topicsDto.add(topicDtoOne);
+
+        tournamentDto.setTopics(topicsDto);
 
     }
 
@@ -123,7 +197,7 @@ class StudentEnrollTournamentTest extends Specification {
 
     }
 
-    def "student enrolls in a tournament that has students enrolled already"(){
+    def "student enrolls in a tournament that has students enrolled already and generates quiz"(){
         given:"a closed tournament"
         tournamentDto.setName(TOURNAMENT_NAME)
 
@@ -151,7 +225,44 @@ class StudentEnrollTournamentTest extends Specification {
         result.getEnrolled().stream().anyMatch({ u -> (u == user.getUsername()) })
         result.getEnrolled().stream().anyMatch({ u -> (u == user2Dto.getUsername()) })
 
+        tournament.getQuiz().getQuizQuestions().size()==1
+        tournament.getQuiz().getQuizQuestions()[0].getQuestion().getTitle() == QUESTION_NAME_1
+
     }
+
+    def "student enrolls in a tournament and generates quiz with 2 topics and 3 questions"(){
+        given:"a closed tournament"
+        tournamentDto.setName(TOURNAMENT_NAME)
+
+        and:"a student in a course execution"
+        user.addCourse(courseExecution1)
+        userDto = new UserDto(user)
+
+        and: "another student enrolled in the tournament"
+        user2 = new User()
+        user2.setKey(2)
+        user2.setRole(User.Role.STUDENT)
+        user2.addCourse(courseExecution1)
+        userRepository.save(user2)
+        user2Dto = new UserDto(user2)
+        tournament.getEnrolled().add(user2)
+        tournamentDto.setEnrolled(new ArrayList<>(Arrays.asList(user2Dto)))
+        tournamentRepository.save(tournament)
+
+        and: "tournament with 2 topics"
+        tournament.setNumberOfQuestions(3);
+        tournament.setTopics(new HashSet<Topic>(Arrays.asList(topicOne, topicTwo)))
+
+        when:
+        def result = tournamentService.enrollStudent(tournamentId, user.getId())
+
+        then:
+        tournament.getQuiz().getQuizQuestions().size()==3
+        questions.contains(tournament.getQuiz().getQuizQuestions()[0].getQuestion())
+        questions.contains(tournament.getQuiz().getQuizQuestions()[1].getQuestion())
+        questions.contains(tournament.getQuiz().getQuizQuestions()[2].getQuestion())
+    }
+
 
     def "user enrolling is not a student"(){
         given:"a tournament"
@@ -245,6 +356,24 @@ class StudentEnrollTournamentTest extends Specification {
         @Bean
         TournamentService tournamentService(){
             return new TournamentService()
+        }
+
+        @Bean
+        QuizService quizService(){
+            return new QuizService()
+        }
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
 
     }
