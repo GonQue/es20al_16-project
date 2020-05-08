@@ -15,7 +15,10 @@
         <i class="fas fa-clock"></i>
         <span v-if="!hideTime">{{ submissionTimer }}</span>
       </span>
-      <span class="end-quiz" @click="confirmationDialog = true" data-cy="EndQuiz"
+      <span
+        class="end-quiz"
+        @click="confirmationDialog = true"
+        data-cy="EndQuiz"
         ><i class="fas fa-times" />End Quiz</span
       >
     </header>

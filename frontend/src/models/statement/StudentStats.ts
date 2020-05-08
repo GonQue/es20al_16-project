@@ -12,6 +12,10 @@ export default class StudentStats {
   publicDashboard!: boolean;
   totalClarificationQuestions!: number;
   totalPublicClarificationQuestions!: number;
+  totalProposedQuestions!: number;
+  totalApprovedProposedQuestions!: number;
+  totalTournamentsCreated!: number;
+  totalTournamentsJoined!: number;
 
   totalTournamentsCreated!: number;
   totalTournamentsJoined!:number;
@@ -32,10 +36,16 @@ export default class StudentStats {
       this.totalClarificationQuestions = jsonObj.totalClarificationQuestions;
       this.totalPublicClarificationQuestions =
         jsonObj.totalPublicClarificationQuestions;
+              
       this.totalTournamentsCreated=jsonObj.totalTournamentsCreated;
       this.totalTournamentsJoined=jsonObj.totalTournamentsJoined;
       this.totalPoints=jsonObj.totalPoints;
+              
       this.tournamentCorrectAnswersPerc=jsonObj.tournamentCorrectAnswersPerc;
+      this.totalProposedQuestions = jsonObj.totalProposedQuestions;
+      this.totalApprovedProposedQuestions =
+        jsonObj.totalApprovedProposedQuestions;
+
     }
   }
 }

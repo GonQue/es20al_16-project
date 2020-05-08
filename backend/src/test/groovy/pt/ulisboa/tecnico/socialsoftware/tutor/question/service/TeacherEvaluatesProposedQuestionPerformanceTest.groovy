@@ -22,8 +22,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
-import java.time.LocalDateTime
-
 @DataJpaTest
 class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
 

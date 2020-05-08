@@ -35,9 +35,13 @@
       <template v-slot:item.needClarification="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon data-cy="NeedClarificationIcon" class="mr-2" :color="needClarificationColor(item.needClarification)" v-on="on">{{
-              needClarificationIcon(item.needClarification)
-              }}</v-icon>
+            <v-icon
+              data-cy="NeedClarificationIcon"
+              class="mr-2"
+              :color="needClarificationColor(item.needClarification)"
+              v-on="on"
+              >{{ needClarificationIcon(item.needClarification) }}</v-icon
+            >
           </template>
           <span>{{ needClarificationSpan(item.needClarification) }}</span>
         </v-tooltip>
@@ -109,7 +113,12 @@ export default class ListClarificationQuestionsView extends Vue {
       width: '30%'
     },
     { text: 'Answered?', value: 'status', align: 'center', width: '5%' },
-    { text: 'Clarified?', value: 'needClarification', align: 'center', width: '10%' },
+    {
+      text: 'Clarified?',
+      value: 'needClarification',
+      align: 'center',
+      width: '10%'
+    },
     {
       text: 'Creation Date',
       value: 'creationDate',

@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ProposedQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.util.List;
 @Table(name = "proposed_questions")
 public class ProposedQuestion {
     public enum Evaluation {
-        APPROVED, REJECTED, AWAITING
+        APPROVED, REJECTED, AWAITING, AVAILABLE
     }
 
     @Id
@@ -73,6 +74,12 @@ public class ProposedQuestion {
         if (evaluation == Evaluation.REJECTED && justification.trim().isEmpty()){
             throw new TutorException(ErrorMessage.JUSTIFICATION_IS_BLANK);
         }
+        if (evaluation == Evaluation.AVAILABLE && this.evaluation != Evaluation.APPROVED){
+            throw new TutorException(ErrorMessage.PROPQUESTION_NOT_APPROVED);
+        }
+        if (evaluation != Evaluation.AVAILABLE && this.evaluation == Evaluation.AVAILABLE){
+            throw new TutorException(ErrorMessage.PROPQUESTION_ALREADY_APPROVED);
+        }
         setJustification(justification);
         setEvaluation(evaluation);
     }
@@ -109,7 +116,7 @@ public class ProposedQuestion {
         this.question = question;
     }
 
-    public boolean canBeRemoved() {
-        return this.evaluation != Evaluation.APPROVED;
+    public boolean canBeRemovedOrUpdated() {
+        return this.evaluation != Evaluation.APPROVED && this.evaluation != Evaluation.AVAILABLE;
     }
 }

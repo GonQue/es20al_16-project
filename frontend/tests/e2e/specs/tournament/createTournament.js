@@ -9,6 +9,7 @@ describe('Student walkthrough', () => {
 
     tournamentName = 'Demo Tournament 1';
     tournamentName2 = 'Demo Tournament 2';
+
     topics = ['Availability'];
     startDay = 20;
     endDay = 21;
@@ -36,6 +37,7 @@ describe('Student walkthrough', () => {
     cy.deleteTournament(tournamentName);
 
     cy.removeTournamentFromDB(tournamentName);
+
   });
 
   it('Login creates tournament with wrong date', () => {
