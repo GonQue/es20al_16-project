@@ -29,7 +29,8 @@ describe('Proposed Question walkthrough', () => {
     cy.turnAvailable('TEST', 'NEWTITLE', 'NEWCONTENT');
     cy.get('[data-cy="search"').clear();
     cy.exec(
-      'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost < tests/e2e/specs/proposedQuestions/deleteAvailableQuestion.sql'
+      'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost < tests/e2e/specs/proposedQuestions/deleteAvailableQuestion.sql',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
     );
   });
 

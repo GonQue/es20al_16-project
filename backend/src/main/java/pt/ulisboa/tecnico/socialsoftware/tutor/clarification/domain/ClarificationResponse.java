@@ -69,9 +69,13 @@ public class ClarificationResponse {
     }
 
     public void remove() {
-        getTeacher().getClarification_responses().remove(this);
+        getTeacher().getClarificationResponses().remove(this);
         getClarificationQuestion().getResponses().remove(this);
         this.teacher = null;
+        if(this.clarificationQuestion.getResponses().isEmpty()) {
+            this.clarificationQuestion.setStatus(ClarificationQuestion.Status.NOT_ANSWERED);
+            this.clarificationQuestion.setNeedClarification(true);
+        }
         this.clarificationQuestion = null;
     }
 

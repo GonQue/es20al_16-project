@@ -6,12 +6,6 @@ describe('Administration walkthrough', () => {
   });
 
   afterEach(() => {
-    cy.logout();
-    cy.get('[data-cy="administrationMenuButton"]').click();
-    cy.get('[data-cy="manageCoursesMenuButton"]').click();
-  });
-
-  afterEach(() => {
     cy.contains('Logout').click();
   });
 

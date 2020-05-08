@@ -89,9 +89,9 @@ public class StatsService {
                 .filter(Option::getCorrect)
                 .count();
 
-        int clarificationQuestions = user.getClarification_questions().size();
+        int clarificationQuestions = user.getClarificationQuestions().size();
 
-        int publicClarificationQuestions = (int) user.getClarification_questions().stream()
+        int publicClarificationQuestions = (int) user.getClarificationQuestions().stream()
                 .filter(clarificationQuestion -> Objects.nonNull(clarificationQuestion.getAvailableToOtherStudents()))
                 .filter(ClarificationQuestion::getAvailableToOtherStudents)
                 .count();
@@ -107,6 +107,18 @@ public class StatsService {
 
         int totalAvailableQuestions = questionRepository.getAvailableQuestionsSize(course.getId());
 
+        int totalTournamentsCreated = user.getNumberOfTournamentsCreated();
+
+        int totalTournamentsJoined = user.getNumberOfTournamentsJoined();
+
+        int totalPoints = user.getNumberOfCorrectTournamentAnswers();
+
+        int tournamentCorrectAnswersPerc;
+        if(user.getNumberOfTournamentAnswers()!=0)
+            tournamentCorrectAnswersPerc = user.getNumberOfCorrectTournamentAnswers()*100 / user.getNumberOfTournamentAnswers();
+        else
+            tournamentCorrectAnswersPerc = 0;
+
         statsDto.setPublicDashboard(user.getPublicDashboard());
         statsDto.setTotalQuizzes(totalQuizzes);
         statsDto.setTotalAnswers(totalAnswers);
@@ -116,6 +128,11 @@ public class StatsService {
         statsDto.setTotalPublicClarificationQuestions(publicClarificationQuestions);
         statsDto.setTotalProposedQuestions(proposedQuestions);
         statsDto.setTotalApprovedProposedQuestions(approvedProposedQuestions);
+        statsDto.setTotalTournamentsCreated(totalTournamentsCreated);
+        statsDto.setTotalTournamentsJoined(totalTournamentsJoined);
+        statsDto.setTotalPoints(totalPoints);
+        statsDto.setTournamentCorrectAnswersPerc(tournamentCorrectAnswersPerc);
+
         if (totalAnswers != 0) {
             statsDto.setCorrectAnswers(((float)correctAnswers)*100/totalAnswers);
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);

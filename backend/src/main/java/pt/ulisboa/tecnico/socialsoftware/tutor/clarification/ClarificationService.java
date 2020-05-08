@@ -13,7 +13,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarificatio
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
@@ -21,9 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -237,7 +234,7 @@ public class ClarificationService {
     }
 
     private List<ClarificationQuestionDto> listOfClarificationQuestionsDto(User student) {
-        return student.getClarification_questions().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+        return student.getClarificationQuestions().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
 
     @Retryable(
@@ -254,6 +251,7 @@ public class ClarificationService {
 
         return listPublicClarificationQuestionsDto(questionId, studentId);
     }
+
 
     private List<ClarificationQuestionDto> listPublicClarificationQuestionsDto(Integer questionId, Integer studentId) {
         return clarificationQuestionRepository.findOtherPublicClarificationQuestions(questionId, studentId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());

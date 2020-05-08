@@ -34,6 +34,19 @@
             <stringProp name="Argument.value">11</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+<<<<<<< HEAD
+=======
+          <elementProp name="tournamentId1" elementType="Argument">
+            <stringProp name="Argument.name">tournamentId1</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="tournamentId2" elementType="Argument">
+            <stringProp name="Argument.name">tournamentId2</stringProp>
+            <stringProp name="Argument.value">2</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+>>>>>>> develop
         </collectionProp>
       </Arguments>
       <hashTree/>
@@ -72,6 +85,7 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
+<<<<<<< HEAD
           <stringProp name="query">INSERT INTO questions(id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id) VALUES (999999, &apos;test_question&apos;, 1, 1, &apos;test_title&apos;, &apos;AVAILABLE&apos;, &apos;2019-10-22 20:19:30.843479&apos;, 2);
 INSERT INTO questions(id, title, content, course_id, status) VALUES (999998, &apos;Question_Title2&apos;, &apos;Question_Content&apos;, 2, &apos;SUBMITTED&apos;);
 INSERT INTO questions(id, title, content, course_id, status) VALUES (999997, &apos;Question_Title3&apos;, &apos;Question_Content&apos;, 2, &apos;SUBMITTED&apos;);
@@ -94,6 +108,29 @@ INSERT INTO question_answers(id, time_taken, option_id, quiz_answer_id, quiz_que
 INSERT INTO clarifications(id, available_to_other_students, content, creation_date, need_clarification, status, answer_id, question_id, user_id) VALUES (999999, &apos;t&apos; ,&apos;CONTENT_1&apos;, &apos;2017-06-25 12:28:37&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
 
 INSERT INTO clarifications(id, available_to_other_students, content, creation_date, need_clarification, status, answer_id, question_id, user_id) VALUES (999998, &apos;f&apos;, &apos;CONTENT_2&apos;, &apos;2017-08-10 15:30:30&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
+=======
+          <stringProp name="query">INSERT INTO questions VALUES (999999, &apos;test_question&apos;, 1, 1, &apos;test_title&apos;, &apos;AVAILABLE&apos;, &apos;2019-10-22 20:19:30.843479&apos;, 2, 999999);
+
+INSERT INTO quiz_answers VALUES (999999, &apos;2019-10-18 21:17:28.460416&apos;, &apos;t&apos;, 5373, 676, &apos;f&apos;);
+
+INSERT INTO quiz_questions VALUES (999999, 0, 999999, 5373);
+
+INSERT INTO options VALUES (999999, &apos;test_content&apos;, &apos;f&apos;, 999999, 0);
+
+INSERT INTO question_answers VALUES (999999, 41640, 999999, 999999, 999999, 0);
+
+INSERT INTO clarifications VALUES (999999, &apos;t&apos; ,&apos;CONTENT_1&apos;, &apos;2017-06-25 12:28:37&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
+
+INSERT INTO clarifications VALUES (999998, &apos;f&apos;, &apos;CONTENT_2&apos;, &apos;2017-08-10 15:30:30&apos;,&apos;t&apos;, &apos;NOT_ANSWERED&apos;, 999999, 999999, 676);
+
+insert into tournaments(id, start_date, name, number_of_questions, end_date, status, course_execution_id, tournament_creator_id)
+values (${tournamentId1},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 676);
+
+insert into tournaments(id, start_date, name, number_of_questions, end_date, status, course_execution_id, tournament_creator_id)
+values (${tournamentId2},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 676);
+
+insert into tournaments_enrolled(tournaments_enrolled_id,  enrolled_id) values(${tournamentId1}, 676);
+>>>>>>> develop
 
 UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="queryArguments"></stringProp>
@@ -232,7 +269,11 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
             </collectionProp>
           </HeaderManager>
           <hashTree/>
+<<<<<<< HEAD
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
+=======
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to get Stats" enabled="true">
+>>>>>>> develop
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -278,18 +319,48 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
               <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
+<<<<<<< HEAD
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert numberOfProposedQuestions" enabled="true">
               <stringProp name="JSON_PATH">$.totalProposedQuestions</stringProp>
               <stringProp name="EXPECTED_VALUE">3</stringProp>
+=======
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="AsserttotalTournamentsCreated" enabled="true">
+              <stringProp name="JSON_PATH">$.totalTournamentsCreated</stringProp>
+              <stringProp name="EXPECTED_VALUE">2</stringProp>
+>>>>>>> develop
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
               <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
+<<<<<<< HEAD
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert numberOfApprovedProposedQuestions" enabled="true">
               <stringProp name="JSON_PATH">$.totalApprovedProposedQuestions</stringProp>
               <stringProp name="EXPECTED_VALUE">2</stringProp>
+=======
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert totalTournamentsJoined" enabled="true">
+              <stringProp name="JSON_PATH">$.totalTournamentsJoined</stringProp>
+              <stringProp name="EXPECTED_VALUE">1</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="totalPoints" enabled="true">
+              <stringProp name="JSON_PATH">$.totalPoints</stringProp>
+              <stringProp name="EXPECTED_VALUE">0</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="tournamentCorrectAnswersPerc" enabled="true">
+              <stringProp name="JSON_PATH">$.tournamentCorrectAnswersPerc</stringProp>
+              <stringProp name="EXPECTED_VALUE">0</stringProp>
+>>>>>>> develop
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -410,17 +481,35 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">DELETE FROM clarifications WHERE content LIKE &apos;CONTENT_%&apos;;
 
+<<<<<<< HEAD
 DELETE FROM question_answers WHERE id &gt;= 999997;
 
 DELETE FROM proposed_questions WHERE id &gt;= 999997;
 
 DELETE FROM options WHERE id &gt;= 999997;
+=======
+DELETE FROM question_answers WHERE id = 999999;
+
+DELETE FROM options WHERE id = 999999;
+>>>>>>> develop
 
 DELETE FROM quiz_questions WHERE id = 999999;
 
 DELETE FROM quiz_answers WHERE id = 999999;
 
+<<<<<<< HEAD
 DELETE FROM questions WHERE id &gt;= 999997;</stringProp>
+=======
+DELETE FROM questions WHERE id = 999999;
+
+DELETE FROM tournaments_topics WHERE tournaments_id=${tournamentId1};
+DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id=${tournamentId1};
+DELETE FROM tournaments WHERE id=${tournamentId1};
+
+DELETE FROM tournaments_topics WHERE tournaments_id=${tournamentId2};
+DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id=${tournamentId2};
+DELETE FROM tournaments WHERE id=${tournamentId2};</stringProp>
+>>>>>>> develop
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
