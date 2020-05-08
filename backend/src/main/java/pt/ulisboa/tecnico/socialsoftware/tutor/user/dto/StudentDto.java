@@ -18,6 +18,8 @@ public class StudentDto implements Serializable {
     private Integer numberOfStudentAnswers;
     private Integer numberOfClarificationQuestions;
     private Integer numberOfPublicClarificationQuestions;
+    private Integer numberOfProposedQuestions;
+    private Integer numberOfApprovedProposedQuestions;
     private int percentageOfCorrectAnswers = 0;
     private int percentageOfCorrectTeacherAnswers = 0;
     private int percentageOfCorrectInClassAnswers = 0;
@@ -38,6 +40,8 @@ public class StudentDto implements Serializable {
         this.numberOfStudentAnswers = user.getNumberOfStudentAnswers();
         this.numberOfClarificationQuestions = user.getNumberOfClarificationQuestions();
         this.numberOfPublicClarificationQuestions = user.getNumberOfPublicClarificationQuestions();
+        this.numberOfProposedQuestions = user.getNumberOfProposedQuestions();
+        this.numberOfApprovedProposedQuestions = user.getNumberOfApprovedProposedQuestions();
         this.lastAccess = DateHandler.toISOString(user.getLastAccess());
         this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
@@ -180,6 +184,18 @@ public class StudentDto implements Serializable {
 
     public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
         this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
+    public Integer getNumberOfProposedQuestions() { return numberOfProposedQuestions; }
+
+    public void setNumberOfProposedQuestions(Integer numberOfProposedQuestions) {
+        this.numberOfProposedQuestions = numberOfProposedQuestions;
+    }
+
+    public Integer getNumberOfApprovedProposedQuestions() { return numberOfApprovedProposedQuestions; }
+
+    public void setNumberOfApprovedProposedQuestions(Integer numberOfApprovedProposedQuestions) {
+        this.numberOfApprovedProposedQuestions = numberOfApprovedProposedQuestions;
     }
 
     public int getPercentageOfCorrectInClassAnswers() {

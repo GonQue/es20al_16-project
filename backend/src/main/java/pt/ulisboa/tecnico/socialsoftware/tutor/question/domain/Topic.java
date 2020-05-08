@@ -26,11 +26,11 @@ public class Topic implements DomainEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Question> questions = new HashSet<>();
+    @ManyToMany
+    private final Set<Question> questions = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TopicConjunction> topicConjunctions = new ArrayList<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    private final List<TopicConjunction> topicConjunctions = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "course_id")

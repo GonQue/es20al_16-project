@@ -28,7 +28,12 @@
               class="mx-2"
             />
             <v-spacer />
-            <v-dialog v-model="dialog" persistent max-width="400px">
+            <v-dialog
+              v-model="dialog"
+              persistent
+              max-width="400px"
+              v-if="!isTeacher"
+            >
               <template v-slot:activator="{ on }">
                 <v-btn v-on="on" data-cy="askForAdditionalClarificationButton">
                   Ask for additional clarification

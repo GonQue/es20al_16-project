@@ -20,7 +20,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
-import java.time.LocalDateTime
 
 @DataJpaTest
 class GetProposedQuestionsPerformanceTest extends Specification {

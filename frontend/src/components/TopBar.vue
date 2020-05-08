@@ -62,7 +62,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              to="/management/proposedQuestions"
+              to="/management/proposed-questions"
               data-cy="ProposedQuestions"
             >
               <v-list-item-action>
@@ -287,7 +287,7 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item
-            to="/management/proposedQuestions"
+            to="/management/proposed-questions"
             data-cy="ProposedQuestions"
           >
             <v-list-item-action>

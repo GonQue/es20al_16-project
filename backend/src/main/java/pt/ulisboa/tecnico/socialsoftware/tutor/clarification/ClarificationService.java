@@ -252,6 +252,7 @@ public class ClarificationService {
         return listPublicClarificationQuestionsDto(questionId, studentId);
     }
 
+
     private List<ClarificationQuestionDto> listPublicClarificationQuestionsDto(Integer questionId, Integer studentId) {
         return clarificationQuestionRepository.findOtherPublicClarificationQuestions(questionId, studentId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }

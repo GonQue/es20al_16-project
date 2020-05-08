@@ -70,7 +70,9 @@
             <v-icon
               large
               class="mr-2"
-              v-show = "checkIfCreator(item)"
+
+              v-show="checkIfCreator(item)"
+
               v-on="on"
               @click="deleteTournament(item)"
               color="red"
@@ -183,7 +185,9 @@ export default class TournamentsListView extends Vue {
     try {
       this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
       this.topics = await RemoteServices.getTopics();
-      this.sucessAlert = true
+
+      this.sucessAlert = true;
+
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -210,9 +214,17 @@ export default class TournamentsListView extends Vue {
     await this.$store.dispatch('loading');
     try {
       let statementManager: StatementManager = StatementManager.getInstance;
-      statementManager.statementQuiz = (await RemoteServices.getTournamentQuiz(tournament.id));
+
+      statementManager.statementQuiz = await RemoteServices.getTournamentQuiz(
+        tournament.id
+      );
       statementManager.statementQuiz.tournamentId = tournament.id;
-      console.log('List', statementManager.statementQuiz.timeToAvailability, statementManager.statementQuiz.tournamentId);
+      console.log(
+        'List',
+        statementManager.statementQuiz.timeToAvailability,
+        statementManager.statementQuiz.tournamentId
+      );
+
       await this.$router.push({ name: 'tournament-start' });
     } catch (error) {
       await this.$store.dispatch('error', error);
@@ -234,18 +246,21 @@ export default class TournamentsListView extends Vue {
     let user = this.$store.getters.getUser;
     let usersMap = tournament.enrolled;
     for (let i = 0; i < usersMap.length; i++) {
-      if ( usersMap[i]!=null && usersMap[i] == user.username) {
+
+      if (usersMap[i] != null && usersMap[i] == user.username) {
+
         return true;
       }
     }
     return false;
   }
 
-  checkIfCreator(tournament:Tournament):boolean{
+
+  checkIfCreator(tournament: Tournament): boolean {
     let user = this.$store.getters.getUser;
     let creator = tournament.creator;
-    if(creator.username==user.username)
-      return true;
+    if (creator.username == user.username) return true;
+
     return false;
   }
 

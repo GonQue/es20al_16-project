@@ -115,10 +115,11 @@ export default class ListClarificationQuestionsView extends Vue {
   async created() {
     await this.$store.dispatch('loading');
     try {
-      this.clarificationQuestions = await RemoteServices.getPublicClarificationQuestions(parseInt(this.questionId));
+      this.clarificationQuestions = await RemoteServices.getPublicClarificationQuestions(
+        parseInt(this.questionId)
+      );
     } catch (error) {
-      if(this.questionId != null)
-        await this.$store.dispatch('error', error);
+      if (this.questionId != null) await this.$store.dispatch('error', error);
       else
         await this.$router.push({
           name: 'solved-quizzes'

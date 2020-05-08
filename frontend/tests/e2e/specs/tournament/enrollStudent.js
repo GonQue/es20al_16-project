@@ -20,6 +20,7 @@ describe('Student walkthrough', () => {
     cy.contains('Logout').click();
   });
 
+
   it('Login creates tournament, enrolls, tries to join before it starts, deletes the tournament', () => {
     cy.createTournament(
       tournamentName1,
@@ -47,6 +48,7 @@ describe('Student walkthrough', () => {
       endDay,
       startMonthBefore,
       endNextMonth,
+
       pickQuestionNumber
     );
     cy.getTopics(tournamentName1); //open
@@ -55,11 +57,13 @@ describe('Student walkthrough', () => {
     cy.closeErrorMessage();
     cy.insertStudentInTournament(tournamentName1, 651);
     cy.enrollStudent(tournamentName1);
-    cy.answerQuestions(tournamentName1)
+
+    cy.answerQuestions(tournamentName1);
 
     cy.removeTournamentFromDB(tournamentName1);
-  });
 
+
+  });
 
 
   it('Login creates two tournaments, enrolls in both and deletes', () => {
@@ -88,5 +92,6 @@ describe('Student walkthrough', () => {
 
     cy.removeTournamentFromDB(tournamentName1);
     cy.removeTournamentFromDB(tournamentName2);
+
   });
 });
