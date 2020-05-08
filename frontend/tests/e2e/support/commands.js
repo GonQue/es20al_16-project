@@ -178,7 +178,7 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
 Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
   cy.exec(
     'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "Insert into tournaments_enrolled(tournaments_enrolled_id, enrolled_id) ' +
-                                                  'select id, $enrolled_id from tournaments where name=\'$name\';\n"',
+    '                                                                        select id, $enrolled_id from tournaments where name=\'$name\';\n"',
     { env: { name: name , enrolled_id: enrolled_id, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
@@ -555,12 +555,17 @@ Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
     .should('have.text',publicClarifs)
 });
 
-Cypress.Commands.add('checkTournamentStats', (tournamentsCreated, tournamentsJoined) => {
+Cypress.Commands.add('checkTournamentStats', (tournamentsCreated, tournamentsJoined, points, correctAnswers) => {
   cy.contains('Stats').click();
   cy.get('[data-cy="totalTournamentsCreated"]')
     .should('have.text',tournamentsCreated)
   cy.get('[data-cy="totalTournamentsJoined"]')
     .should('have.text',tournamentsJoined)
+  cy.get('[data-cy="totalPoints"]')
+    .should('have.text', points)
+  cy.get('[data-cy="tournamentCorrectAnswersPerc"]')
+    .should('have.text',correctAnswers)
+
 });
 
 Cypress.Commands.add('toggleDashboardPrivacy', () => {
