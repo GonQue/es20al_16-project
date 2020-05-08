@@ -195,7 +195,7 @@ class DashboardTest extends Specification {
         stats.getTotalTournamentsCreated() == 2
         stats.getTotalTournamentsJoined() == 1
         stats.getTotalPoints() == 1
-        stats.getTournamentCorrectAnswersPerc() == 50
+        stats.getTournamentCorrectAnswersPerc() == 100
     }
 
     def 'the dashboard is public'(){

@@ -178,7 +178,7 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
 Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
   cy.exec(
     'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "Insert into tournaments_enrolled(tournaments_enrolled_id, enrolled_id) ' +
-    '                                                                        select id, $enrolled_id from tournaments where name=\'$name\';\n"',
+                                                  'select id, $enrolled_id from tournaments where name=\'$name\';\n"',
     { env: { name: name , enrolled_id: enrolled_id, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
