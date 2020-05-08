@@ -4,8 +4,14 @@
   "integrationFolder": "tests/e2e/specs",
   "pluginsFile": "tests/e2e/plugins/index.js",
   "supportFile": "tests/e2e/support/index.js",
+
   "env": {
     "dbUser" : "rafa",
     "dbpass" : "123"
-  }
+  },
+
+  "video": false
+
+
+
 }

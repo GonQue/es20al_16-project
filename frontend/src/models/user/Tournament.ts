@@ -5,6 +5,7 @@ import { Quiz } from '@/models/management/Quiz';
 export class Tournament {
   id!: number;
   name: string = '';
+  creator!: User;
   startDate: string = '';
   endDate: string = '';
   numberOfQuestions: number | null = null;
@@ -16,6 +17,7 @@ export class Tournament {
     if (jsonObj) {
       this.id = jsonObj.id;
       this.name = jsonObj.name;
+      this.creator = jsonObj.creator;
       this.startDate = jsonObj.startDate;
       this.endDate = jsonObj.endDate;
       this.numberOfQuestions = jsonObj.numberOfQuestions;

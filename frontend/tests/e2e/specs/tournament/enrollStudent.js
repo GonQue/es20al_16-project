@@ -10,8 +10,9 @@ describe('Student walkthrough', () => {
     tournamentName2 = 'Demo Tournament 2';
     topics = ['Availability'];
     startDay = 20;
-    endDay = 20;
-    nextMonth = true;
+    endDay = 21;
+    startMonthBefore = false;
+    endNextMonth = true;
     pickQuestionNumber = true;
   });
 
@@ -19,28 +20,37 @@ describe('Student walkthrough', () => {
     cy.contains('Logout').click();
   });
 
-  it('Login creates tournament, open topics, and enrolls', () => {
+  it('Login creates tournament, open topics, enrolls, answers the quiz and tries to delete', () => {
+    startMonthBefore=true;
     cy.createTournament(
       tournamentName1,
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.getTopics(tournamentName1); //open
     cy.getTopics(tournamentName1); //close
+    cy.deleteTournament(tournamentName1);
+    cy.closeErrorMessage();
+    cy.insertStudentInTournament(tournamentName1, 651);
     cy.enrollStudent(tournamentName1);
+    cy.answerQuestions(tournamentName1);
     cy.removeTournamentFromDB(tournamentName1);
+
+
   });
 
-  it('Login creates two tournaments and enrolls in both', () => {
+  it('Login creates two tournaments, enrolls in both and deletes', () => {
     cy.createTournament(
       tournamentName1,
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.createTournament(
@@ -48,12 +58,14 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.enrollStudent(tournamentName1);
-    cy.enrollStudent(tournamentName2);
-    cy.removeTournamentFromDB(tournamentName1);
-    cy.removeTournamentFromDB(tournamentName2);
+    cy.enrollStudent(tournamentName2);7
+    cy.deleteTournament(tournamentName1);
+    cy.deleteTournament(tournamentName2);
+
   });
 });

@@ -157,4 +157,13 @@ public class Tournament {
     public void setEnrolled(Set<User> enrolled) {
         this.enrolled = enrolled;
     }
+
+    public void delete (){
+        if (LocalDateTime.now().isAfter(this.getStartDate())){
+            throw new TutorException(TOURNAMENT_STARTED);
+        }
+        if (getQuiz()!=null)
+            getQuiz().remove();
+
+    }
 }

@@ -96,6 +96,8 @@ class RemoveCourseExecutionsTest extends Specification {
         courseExecutionRepository.findAll().size() == 2
     }
 
+
+
     @TestConfiguration
     static class ServiceImplTestContextConfiguration {
 
