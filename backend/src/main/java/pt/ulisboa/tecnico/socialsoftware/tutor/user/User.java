@@ -54,6 +54,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfCorrectStudentAnswers;
     private Integer numberOfClarificationQuestions;
     private Integer numberOfPublicClarificationQuestions;
+    private Integer numberOfTournamentsCreated;
+    private Integer numberOfTournamentsJoined;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -102,6 +104,8 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
         this.numberOfClarificationQuestions = 0;
+        this.numberOfTournamentsCreated = 0;
+        this.numberOfTournamentsJoined = 0;
     }
 
     public void addTournament(Tournament tournament) {
@@ -363,6 +367,22 @@ public class User implements UserDetails, DomainEntity {
     public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
         this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
     }
+
+    public Integer getNumberOfTournamentsCreated() {
+        if(this.numberOfTournamentsCreated == null)
+            this.numberOfTournamentsCreated = this.tournamentsCreated.size();
+
+        return numberOfTournamentsCreated; }
+
+    public void setNumberOfTournamentsCreated(Integer numberOfTournamentsCreated) { this.numberOfTournamentsCreated = numberOfTournamentsCreated; }
+
+    public Integer getNumberOfTournamentsJoined() {
+        if(this.numberOfTournamentsJoined == null)
+            this.numberOfTournamentsJoined = this.tournamentsEnrolled.size();
+
+        return numberOfTournamentsJoined; }
+
+    public void setNumberOfTournamentsJoined(Integer numberOfTournamentsJoined) { this.numberOfTournamentsJoined = numberOfTournamentsJoined; }
 
     @Override
     public String toString() {

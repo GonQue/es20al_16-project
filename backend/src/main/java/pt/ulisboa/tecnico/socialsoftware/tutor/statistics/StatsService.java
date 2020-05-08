@@ -99,6 +99,10 @@ public class StatsService {
 
         int totalAvailableQuestions = questionRepository.getAvailableQuestionsSize(course.getId());
 
+        int totalTournamentsCreated = user.getNumberOfTournamentsCreated();
+
+        int totalTournamentsJoined = user.getNumberOfTournamentsJoined();
+
         statsDto.setPublicDashboard(user.getPublicDashboard());
         statsDto.setTotalQuizzes(totalQuizzes);
         statsDto.setTotalAnswers(totalAnswers);
@@ -106,6 +110,8 @@ public class StatsService {
         statsDto.setTotalAvailableQuestions(totalAvailableQuestions);
         statsDto.setTotalClarificationQuestions(clarificationQuestions);
         statsDto.setTotalPublicClarificationQuestions(publicClarificationQuestions);
+        statsDto.setTotalTournamentsCreated(totalTournamentsCreated);
+        statsDto.setTotalTournamentsJoined(totalTournamentsJoined);
         if (totalAnswers != 0) {
             statsDto.setCorrectAnswers(((float)correctAnswers)*100/totalAnswers);
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);

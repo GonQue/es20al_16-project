@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 
@@ -103,14 +102,12 @@ public class TournamentService {
       if (tournament.getEndDate() == null || DateHandler.now().isAfter(tournament.getStartDate())) {
          StatementQuizDto quizDto = new StatementQuizDto(quizAnswer);
          quizDto.setTimeToAvailability(0L);
-         quizDto.setTournamentId(tournament.getId());
          return quizDto;
 
 
       } else { // Send timer
          StatementQuizDto quizDto = new StatementQuizDto();
          quizDto.setTimeToAvailability(ChronoUnit.MILLIS.between(DateHandler.now(), tournament.getStartDate()));
-         quizDto.setTournamentId(tournament.getId());
          return quizDto;
       }
 
@@ -195,7 +192,7 @@ public class TournamentService {
       enrollStud(tournament, user);
 
       if(tournament.getQuiz()==null && tournament.getEnrolled().size() > 1){
-         generateQuiz(tournament, user);
+         generateQuiz(tournament);
       }
 
       List<UserDto> enrolled = getUserDtos(tournament);
@@ -205,16 +202,17 @@ public class TournamentService {
       return tDto;
    }
 
-   private void generateQuiz(Tournament tournament, User user){
+   private void generateQuiz(Tournament tournament){
       Quiz quiz = new Quiz();
       quiz.setKey(quizService.getMaxQuizKey() + 1);
-      quiz.setType(Quiz.QuizType.TOURNAMENT.toString());
 
       int executionId = tournament.getCourseExecution().getId();
       CourseExecution courseExecution = courseExecutionRepository.findById(executionId).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, executionId));
       List<Question> availableQuestions = pickRandomQuestions(tournament);
       quiz.generate(availableQuestions);
 
+      quiz.setType(Quiz.QuizType.TOURNAMENT.toString());
+      quiz.setTitle("Tournament Quiz");
       quiz.setCreationDate(LocalDateTime.now());
       quiz.setAvailableDate(tournament.getStartDate());
       quiz.setConclusionDate(tournament.getEndDate());
@@ -251,8 +249,8 @@ public class TournamentService {
    }
 
    private void checkUserInCourseExecution(User user, CourseExecution courseExecution, ErrorMessage em) {
-      if (!user.getCourseExecutions().stream()
-              .anyMatch(t -> t.getId().equals(courseExecution.getId()))) {
+      if (user.getCourseExecutions().stream()
+              .noneMatch(t -> t.getId().equals(courseExecution.getId()))) {
          throw new TutorException(em);
       }
    }
