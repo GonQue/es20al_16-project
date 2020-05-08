@@ -573,6 +573,21 @@ export default class RemoteServices {
       });
   }
 
+  static getPublicClarificationQuestions(
+    questionId: number | undefined
+  ): Promise<StatementClarificationQuestion[]> {
+    return httpClient
+      .get('/student/' + questionId + '/clarifications')
+      .then(response => {
+        return response.data.map((clarificationQuestion: any) => {
+          return new StatementClarificationQuestion(clarificationQuestion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createClarificationQuestion(
     questionId: number | undefined,
     clarificationQuestion: StatementClarificationQuestion | null
@@ -672,6 +687,26 @@ export default class RemoteServices {
       });
   }
 
+  static async askForAdditionalClarification(clarificationQuestionId: number) {
+    return httpClient
+      .post(`/student/clarifications/${clarificationQuestionId}/additional`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeClarificationAvailability(
+    clarificationQuestionId: number
+  ) {
+    return httpClient
+      .post(
+        `/management/clarifications/${clarificationQuestionId}/availability`
+      )
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
@@ -697,7 +732,7 @@ export default class RemoteServices {
   static async createTournament(tournament: Tournament): Promise<Tournament> {
     return httpClient
       .post(
-        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/create-tournament`,
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}`,
         tournament
       )
       .then(response => {
@@ -711,7 +746,7 @@ export default class RemoteServices {
   static async getOpenTournaments(): Promise<Tournament[]> {
     return httpClient
       .get(
-        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/list-tournament`
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}`
       )
       .then(response => {
         return response.data.map((tournament: any) => {
@@ -725,7 +760,7 @@ export default class RemoteServices {
 
   static async enrollStudent(tournament: Tournament): Promise<Tournament> {
     return httpClient
-      .post(`/tournaments/${tournament.id}/enroll-student`)
+      .post(`/tournaments/${tournament.id}`)
       .then(response => {
         return new Tournament(response.data);
       })
@@ -733,6 +768,28 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  static async getTournamentQuiz(tournamentId: number): Promise<StatementQuiz>{
+    return httpClient
+      .get(
+        `/tournaments/${tournamentId}/quiz`
+      )
+      .then(response => {
+        return new StatementQuiz(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteTournament(tournamentId: number) {
+    return httpClient
+      .delete(`/tournaments/${tournamentId}`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
 
   static async getStudentProposedQuestions(): Promise<ProposedQuestion[]> {
     return httpClient
@@ -815,5 +872,11 @@ export default class RemoteServices {
       console.log(error);
       return 'Unknown Error - Contact admin';
     }
+  }
+
+  static async togglePublicDashboard() {
+    return httpClient.post('/executions/dashboard').catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
   }
 }

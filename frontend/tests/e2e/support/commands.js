@@ -27,7 +27,7 @@
 
 Cypress.Commands.add('demoAdminLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="adminButton"]').click();
+  cy.get('[data-cy="demoAdminLoginButton"]').click();
   cy.contains('Administration').click();
   cy.contains('Manage Courses').click();
 });
@@ -49,6 +49,7 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="courseExecutionAcademicTermInput"]').type(academicTerm);
   cy.get('[data-cy="saveButton"]').click();
 });
+
 
 Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
   cy.contains('Error')
@@ -87,7 +88,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'createTournament',
-  (name, topics, day1, day2, nextMonth, pickQuestionNumber) => {
+  (name, topics, day1, day2, startMonthBefore, nextMonth, pickQuestionNumber) => {
     cy.get('[data-cy="createButton"]').click();
 
     //Name
@@ -95,6 +96,11 @@ Cypress.Commands.add(
 
     //Start date
     cy.get('[data-cy=startDate]').click();
+
+    if(startMonthBefore)
+      cy.get('i[class="v-icon notranslate mdi mdi-chevron-left theme--light"]').click().wait(500);
+    else
+      cy.get('i[class="v-icon notranslate mdi mdi-chevron-right theme--light"]').click().wait(500);
     cy.get('button')
       .contains(day1)
       .click()
@@ -120,7 +126,8 @@ Cypress.Commands.add(
       .click();
 
     //Number of questions
-    if (pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').click();
+    if (pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').get('label').contains('Number of questions').type('{rightarrow}');
+
 
     //Topics
     cy.get('[data-cy="topics"]').click();
@@ -142,10 +149,17 @@ Cypress.Commands.add('enrollStudent', name => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="enrollButton"]')
     .click();
 });
+Cypress.Commands.add('answerQuestions', name => {
+  cy.contains(name).parent().children().find('[data-cy="joinButton"]').click()
+
+  cy.get('[data-cy="EndQuiz"]').click();
+  cy.get('[data-cy="ImSure"]').click();
+});
+
 
 Cypress.Commands.add('getTopics', name => {
   cy.get('td[class="text-start"]')
@@ -158,20 +172,38 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
     .parent()
     .should('have.length', numberOfTournaments)
     .children()
-    .should('have.length', 7);
+    .should('have.length', 8);
 });
+
+Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
+  cy.exec(
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "Insert into tournaments_enrolled(tournaments_enrolled_id, enrolled_id) ' +
+    '                                                                        select id, $enrolled_id from tournaments where name=\'$name\';\n"',
+    { env: { name: name , enrolled_id: enrolled_id, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
+  );
+});
+
+Cypress.Commands.add('deleteTournament', name => {
+  cy.contains(name)
+    .parent()
+    .children()
+    .should('have.length', 8)
+    .find('[data-cy="deleteTournament"]')
+    .click({ force: true });
+});
+
 Cypress.Commands.add('removeTournamentFromDB', name => {
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 
@@ -207,7 +239,6 @@ Cypress.Commands.add('deleteClarificationQuestion', clarificationQuestion => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 6)
     .find('[data-cy="DeleteClarificationIcon"]')
     .click();
 });
@@ -237,10 +268,121 @@ Cypress.Commands.add('successMessage', (name, acronym, academicTerm) => {
     .click();
 });
 
+// Student - get public or own clarifications
+
+Cypress.Commands.add('showPublicClarifications', content => {
+  cy.get('[data-cy="ShowPublicClarifications"]').click();
+  cy.contains(content);
+});
+
+Cypress.Commands.add('assignPublicClarificationToAnotherStudent', content => {
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "INSERT INTO users VALUES (999999999, \'2019-10-18 21:17:28.460416\', \'n\', \'r\', \'u\', 1, 1, 1, 1, \'e\', \'2019-10-18 21:17:28.460416\', 999999999, 1, 1, 1, 1, 1)"'
+  );
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "UPDATE clarifications SET user_id = 999999999, available_to_other_students = \'t\' WHERE content = \'$content\'"',
+    { env: { content: content } }
+  );
+});
+
+Cypress.Commands.add('deletePublicClarification', content => {
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarification_responses WHERE clarification_id IN (SELECT id FROM clarifications WHERE content=\'$content\')"',
+    { env: { content: content } }
+  );
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarifications WHERE content=\'$content\'"',
+    { env: { content: content } }
+  );
+});
+
+Cypress.Commands.add('deletePublicStudent', () => {
+  cy.exec(
+    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM users WHERE id=999999999"'
+  );
+});
+
+Cypress.Commands.add(
+  'checkPublicResponses',
+  (clarificationContent, responseContent) => {
+    cy.contains(clarificationContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="ShowResponses"]')
+      .click({ force: true });
+    cy.contains(responseContent);
+  }
+);
+
+Cypress.Commands.add(
+  'checkNoPublicResponses',
+  (clarificationContent, responseContent) => {
+    cy.contains(clarificationContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 4)
+      .find('[data-cy="ShowResponses"]')
+      .click({ force: true });
+    cy.contains(responseContent).should('not.exist');
+  }
+);
+
+// Student - ask for additional clarification
+
+Cypress.Commands.add('askForAdditionalClarification', clarificationContent => {
+  cy.contains('Questions').click();
+  cy.get('[data-cy="Clarifications"]').click();
+  cy.contains(clarificationContent)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 7)
+    .find('[data-cy="ShowResponses"]')
+    .click({ force: true });
+  cy.get('[data-cy="askForAdditionalClarificationButton"').click();
+  cy.get('[data-cy="SubmitButton"').click();
+});
+
+Cypress.Commands.add('checkAdditionalClarification', clarificationContent => {
+  cy.contains('Questions').click();
+  cy.contains('Clarifications').click();
+  cy.contains(clarificationContent)
+    .get('[data-cy="NeedClarificationIcon"')
+    .should('have.class', 'mdi-comment-remove');
+});
+
+Cypress.Commands.add(
+  'cancelAskForAdditionalClarification',
+  clarificationContent => {
+    cy.contains('Questions').click();
+    cy.get('[data-cy="Clarifications"]').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 7)
+      .find('[data-cy="ShowResponses"]')
+      .click({ force: true });
+    cy.get('[data-cy="askForAdditionalClarificationButton"').click();
+    cy.get('[data-cy="CancelButton"').click();
+  }
+);
+
+Cypress.Commands.add('checkNoAdditionalClarification', clarificationContent => {
+  cy.contains('Questions').click();
+  cy.contains('Clarifications').click();
+  cy.contains(clarificationContent)
+    .get('[data-cy="NeedClarificationIcon"')
+    .should('have.class', 'mdi-comment-check');
+});
+
 Cypress.Commands.add('openProposeQuestionStudentMenu', () => {
   cy.contains('Questions').click();
   cy.get('[data-cy="ProposeQuestion"').click();
-})
+});
 
 Cypress.Commands.add(
   'createProposedQuestion',
@@ -304,7 +446,7 @@ Cypress.Commands.add(
       .parent()
       .should('have.length', 1)
       .children()
-      .should('have.length', 6)
+      .should('have.length', 8)
       .find('[data-cy="AnswerClarification"]')
       .click();
     cy.get('[data-cy="TeacherResponse"]')
@@ -321,9 +463,8 @@ Cypress.Commands.add(
       .parent()
       .should('have.length', 1)
       .children()
-      .should('have.length', 6)
       .find('[data-cy="ShowResponses"]')
-      .click({force:true});
+      .click({ force: true });
     cy.contains(responseContent)
       .first()
       .parent()
@@ -353,4 +494,89 @@ Cypress.Commands.add('evaluate', (title, evaluation, justification) => {
   cy.get('[data-cy="evaluation"]').click({ force: true });
   cy.contains(evaluation).click({ force: true });
   cy.get('[data-cy="saveButton"]').click();
+});
+
+// Teacher - change clarification availability
+
+Cypress.Commands.add(
+  'changeClarificationAvailability',
+  clarificationContent => {
+    cy.contains('Management').click();
+    cy.contains('Clarifications').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .within(() => {
+        cy.get('[data-cy="AvailabilityDiv"]')
+          .first()
+          .click();
+      });
+  }
+);
+
+Cypress.Commands.add(
+  'checkIfClarificationIsAvailable',
+  clarificationContent => {
+    cy.contains('Management').click();
+    cy.contains('Clarifications').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .within(() => {
+        cy.get('[data-cy="AvailabilityDiv"]')
+          .first()
+          .within(() => {
+            cy.get('[data-cy="AvailabilitySwitch"]').should('be.checked');
+          });
+      });
+  }
+);
+
+Cypress.Commands.add(
+  'checkIfClarificationIsUnavailable',
+  clarificationContent => {
+    cy.contains('Management').click();
+    cy.contains('Clarifications').click();
+    cy.contains(clarificationContent)
+      .parent()
+      .within(() => {
+        cy.get('[data-cy="AvailabilityDiv"]')
+          .first()
+          .within(() => {
+            cy.get('[data-cy="AvailabilitySwitch"]').should('not.be.checked');
+          });
+      });
+  }
+);
+
+Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="totalClarificationQuestions"]')
+    .should('have.text',clarifs)
+  cy.get('[data-cy="totalPublicClarificationQuestions"]')
+    .should('have.text',publicClarifs)
+});
+
+Cypress.Commands.add('checkTournamentStats', (tournamentsCreated, tournamentsJoined) => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="totalTournamentsCreated"]')
+    .should('have.text',tournamentsCreated)
+  cy.get('[data-cy="totalTournamentsJoined"]')
+    .should('have.text',tournamentsJoined)
+});
+
+Cypress.Commands.add('toggleDashboardPrivacy', () => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="privacyButton"]')
+    .click();
+});
+
+Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
+  cy.exec(
+    'PGPASSWORD=a psql -d tutordb -U a -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"'
+  );
+});
+
+Cypress.Commands.add('checkDashboardPrivacy', (content) => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="privacyInfo"]')
+    .contains(/PUBLIC/)
 });

@@ -66,7 +66,7 @@ public class Question implements DomainEntity {
     private Course course;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "question", fetch = FetchType.LAZY, orphanRemoval=true)
-    private List<ClarificationQuestion> clarification_questions = new ArrayList<>();
+    private List<ClarificationQuestion> clarificationQuestions = new ArrayList<>();
 
     public Question() {
     }
@@ -227,11 +227,11 @@ public class Question implements DomainEntity {
         course.addQuestion(this);
     }
 
-    public List<ClarificationQuestion> getClarification_questions() { return clarification_questions; }
+    public List<ClarificationQuestion> getClarificationQuestions() { return clarificationQuestions; }
 
-    public void setClarification_questions(List<ClarificationQuestion> clarification_questions) { this.clarification_questions = clarification_questions; }
+    public void setClarificationQuestions(List<ClarificationQuestion> clarificationQuestions) { this.clarificationQuestions = clarificationQuestions; }
 
-    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarification_questions.add(clarificationQuestion); }
+    public void addClarificationQuestion(ClarificationQuestion clarificationQuestion) { clarificationQuestions.add(clarificationQuestion); }
 
     @Override
     public String toString() {
@@ -323,5 +323,9 @@ public class Question implements DomainEntity {
 
         getTopics().forEach(topic -> topic.getQuestions().remove(this));
         getTopics().clear();
+    }
+
+    public boolean hasAnyTopics(Set<Topic> topics){
+        return !Collections.disjoint(this.topics, topics);
     }
 }

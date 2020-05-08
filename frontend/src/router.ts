@@ -16,6 +16,8 @@ import ListTeacherClarificationQuestionsView from './views/teacher/clarification
 import ListClarificationResponsesView from './views/teacher/clarifications/ListClarificationResponsesView.vue';
 import StudentView from '@/views/student/StudentView.vue';
 import ListClarificationQuestionsView from './views/student/clarification/ListClarificationQuestionsView.vue';
+import ListPublicClarificationQuestionsView from './views/student/clarification/ListPublicClarificationQuestionsView.vue';
+import ListPublicClarificationResponsesView from './views/teacher/clarifications/ListPublicClarificationResponsesView.vue';
 import AvailableQuizzesView from '@/views/student/AvailableQuizzesView.vue';
 import SolvedQuizzesView from '@/views/student/SolvedQuizzesView.vue';
 import QuizView from '@/views/student/quiz/QuizView.vue';
@@ -29,6 +31,7 @@ import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
 import TournamentsListView from '@/views/student/tournaments/TournamentsListView.vue';
+import TournamentStartView from '@/views/student/tournaments/TournamentStartView.vue';
 import ProposedQuestionsView from '@/views/teacher/proposedQuestions/ProposedQuestionsView.vue';
 import ProposeQuestionView from '@/views/student/questions/ProposeQuestionView.vue';
 
@@ -229,6 +232,15 @@ let router = new Router({
           }
         },
         {
+          path: 'tournament/start',
+          name: 'tournament-start',
+          component: TournamentStartView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Tournaments',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'clarifications/status',
           name: 'clarificationQuestions',
           component: ListClarificationQuestionsView,
@@ -238,9 +250,29 @@ let router = new Router({
           }
         },
         {
+          path: 'clarifications/public',
+          name: 'clarificationsPublic',
+          component: ListPublicClarificationQuestionsView,
+          props: true,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Public Clarifications',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'responses',
           name: 'show-student-clarification-responses',
           component: ListClarificationResponsesView,
+          props: true,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - List Responses',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'responses',
+          name: 'show-public-student-clarification-responses',
+          component: ListPublicClarificationResponsesView,
           props: true,
           meta: {
             title: process.env.VUE_APP_NAME + ' - List Responses',

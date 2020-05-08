@@ -69,7 +69,7 @@ public class ClarificationResponse {
     }
 
     public void remove() {
-        getTeacher().getClarification_responses().remove(this);
+        getTeacher().getClarificationResponses().remove(this);
         getClarificationQuestion().getResponses().remove(this);
         this.teacher = null;
         this.clarificationQuestion = null;
