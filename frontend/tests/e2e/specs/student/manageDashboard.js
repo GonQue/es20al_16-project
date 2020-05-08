@@ -7,6 +7,7 @@ describe('Dashboard Walkthrough', () => {
   afterEach(() => {
     cy.contains('Logout').click();
   });
+
   it('dashboard shows 0 tournaments, 0 public', () => {
     cy.checkTournamentStats('0','0');
   });
@@ -53,8 +54,4 @@ describe('Dashboard Walkthrough', () => {
    cy.deleteClarificationQuestion(/^test question 2$/);
    cy.get('[data-cy="Questions"]').click();
   });
-
-
-
-
 });

@@ -277,28 +277,30 @@ Cypress.Commands.add('showPublicClarifications', content => {
 
 Cypress.Commands.add('assignPublicClarificationToAnotherStudent', content => {
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "INSERT INTO users VALUES (999999999, \'2019-10-18 21:17:28.460416\', \'n\', \'r\', \'u\', 1, 1, 1, 1, \'e\', \'2019-10-18 21:17:28.460416\', 999999999, 1, 1, 1, 1, 1)"'
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "INSERT INTO users VALUES (999999999, \'2019-10-18 21:17:28.460416\', \'n\', \'r\', \'u\', 1, 1, 1, 1, \'e\', \'2019-10-18 21:17:28.460416\', 999999999, 1, 1, 1, 1, 1)"',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "UPDATE clarifications SET user_id = 999999999, available_to_other_students = \'t\' WHERE content = \'$content\'"',
-    { env: { content: content } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "UPDATE clarifications SET user_id = 999999999, available_to_other_students = \'t\' WHERE content = \'$content\'"',
+    { env: { content: content, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
   );
 });
 
 Cypress.Commands.add('deletePublicClarification', content => {
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarification_responses WHERE clarification_id IN (SELECT id FROM clarifications WHERE content=\'$content\')"',
-    { env: { content: content } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM clarification_responses WHERE clarification_id IN (SELECT id FROM clarifications WHERE content=\'$content\')"',
+    { env: { content: content, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
   );
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarifications WHERE content=\'$content\'"',
-    { env: { content: content } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM clarifications WHERE content=\'$content\'"',
+    { env: { content: content, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
   );
 });
 
 Cypress.Commands.add('deletePublicStudent', () => {
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM users WHERE id=999999999"'
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM users WHERE id=999999999"',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 
@@ -571,7 +573,8 @@ Cypress.Commands.add('toggleDashboardPrivacy', () => {
 
 Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
   cy.exec(
-    'PGPASSWORD=a psql -d tutordb -U a -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"'
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 

@@ -14,6 +14,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.statistics.StatsDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.statistics.StatsService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
@@ -90,7 +92,6 @@ class DashboardTest extends Specification {
     def option
     def quizAnswer
     def question
-
 
     def setup(){
         student = new User()
@@ -195,7 +196,6 @@ class DashboardTest extends Specification {
         stats.getTotalTournamentsCreated() == 2
         stats.getTotalTournamentsJoined() == 1
         stats.getTotalPoints() == 1
-        stats.getTournamentCorrectAnswersPerc() == 50
     }
 
     def 'the dashboard is public'(){

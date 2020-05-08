@@ -6,12 +6,10 @@
   "supportFile": "tests/e2e/support/index.js",
 
   "env": {
-    "dbUser" : "rafa",
-    "dbpass" : "123"
+    "dbUser" : "joaodias",
+    "dbpass" : "jrd1999"
   },
 
   "video": false
-
-
 
 }

@@ -408,8 +408,6 @@ public class User implements UserDetails, DomainEntity {
         return numberOfTournamentAnswers;
     }
 
-
-
     @Override
     public String toString() {
         return "User{" +

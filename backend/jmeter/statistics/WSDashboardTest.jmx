@@ -71,13 +71,13 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">123</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">rafa</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
@@ -103,8 +103,6 @@ insert into tournaments(id, start_date, name, number_of_questions, end_date, sta
 values (${tournamentId2},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&apos;2222-12-01 22:22&apos;, &apos;CREATED&apos;, 11, 676);
 
 insert into tournaments_enrolled(tournaments_enrolled_id,  enrolled_id) values(${tournamentId1}, 676);
-
-
 
 UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="queryArguments"></stringProp>
@@ -426,13 +424,13 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">123</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">rafa</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">

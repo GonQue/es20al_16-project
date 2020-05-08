@@ -123,6 +123,7 @@ public class StatsService {
         statsDto.setTotalTournamentsJoined(totalTournamentsJoined);
         statsDto.setTotalPoints(totalPoints);
         statsDto.setTournamentCorrectAnswersPerc(tournamentCorrectAnswersPerc);
+
         if (totalAnswers != 0) {
             statsDto.setCorrectAnswers(((float)correctAnswers)*100/totalAnswers);
             statsDto.setImprovedCorrectAnswers(((float)uniqueCorrectAnswers)*100/uniqueQuestions);
