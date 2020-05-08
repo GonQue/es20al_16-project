@@ -4,15 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.ClarificationQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.statistics.StatsDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.statistics.StatsService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament
@@ -48,6 +59,24 @@ class DashboardTest extends Specification {
     @Autowired
     TournamentRepository tournamentRepository
 
+    @Autowired
+    QuizRepository quizRepository
+
+    @Autowired
+    QuestionRepository questionRepository
+
+    @Autowired
+    OptionRepository optionRepository
+
+    @Autowired
+    QuizAnswerRepository quizAnswerRepository
+
+    @Autowired
+    QuestionAnswerRepository questionAnswerRepository
+
+    @Autowired
+    QuizQuestionRepository quizQuestionRepository
+
     def course
     def courseExecution
     def student
@@ -55,7 +84,12 @@ class DashboardTest extends Specification {
     def clarificationQuestion2
     def tournament1
     def tournament2
-
+    def quiz
+    def quizQuestion
+    def questionAnswer
+    def option
+    def quizAnswer
+    def question
 
 
     def setup(){
@@ -102,7 +136,48 @@ class DashboardTest extends Specification {
         student.addTournament(tournament2)
 
 
+        def question = new Question()
+        question.setCourse(course)
+        question.setKey(1)
+        question.setTitle("title")
+        question.setContent("question")
+        question.setStatus(Question.Status.AVAILABLE)
+        questionRepository.save(question)
 
+        def option = new Option()
+        option.setContent("option")
+        option.setCorrect(true)
+        option.setSequence(0)
+        option.setQuestion(question)
+        optionRepository.save(option)
+
+        quiz = new Quiz()
+        quiz.setKey(1)
+        quiz.setTitle("title")
+        quiz.setType(Quiz.QuizType.TOURNAMENT.toString())
+        quiz.setCourseExecution(courseExecution)
+        quiz.setSeries(1)
+        quizRepository.save(quiz)
+
+        quizQuestion = new QuizQuestion(quiz, question, 0)
+        quiz.addQuizQuestion(quizQuestion)
+        quizQuestionRepository.save(quizQuestion)
+
+        courseExecution.addQuiz(quiz)
+
+        quizAnswer = new QuizAnswer()
+        quizAnswer.setQuiz(quiz)
+        quizAnswer.setUser(student)
+        quizAnswer.setCompleted(true)
+        quizAnswerRepository.save(quizAnswer)
+
+        questionAnswer = new QuestionAnswer()
+        questionAnswer.setQuizAnswer(quizAnswer)
+        questionAnswer.setTimeTaken(1)
+        questionAnswer.setOption(option)
+        questionAnswer.setSequence(0)
+        questionAnswer.setQuizQuestion(quizQuestion)
+        questionAnswerRepository.save(questionAnswer)
 
         userRepository.save(student)
         clarificationQuestionRepository.save(clarificationQuestion1)
@@ -119,6 +194,8 @@ class DashboardTest extends Specification {
         stats.getTotalPublicClarificationQuestions() == 1
         stats.getTotalTournamentsCreated() == 2
         stats.getTotalTournamentsJoined() == 1
+        stats.getTotalPoints() == 1
+        stats.getTournamentCorrectAnswersPerc() == 50
     }
 
     def 'the dashboard is public'(){

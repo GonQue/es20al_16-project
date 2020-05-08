@@ -104,6 +104,8 @@ values (${tournamentId2},&apos;2000-12-22 22:22&apos;, &apos;torneio&apos;, 5,&a
 
 insert into tournaments_enrolled(tournaments_enrolled_id,  enrolled_id) values(${tournamentId1}, 676);
 
+
+
 UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
@@ -299,6 +301,24 @@ UPDATE users SET public_dashboard = true WHERE id = 676;</stringProp>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert totalTournamentsJoined" enabled="true">
               <stringProp name="JSON_PATH">$.totalTournamentsJoined</stringProp>
               <stringProp name="EXPECTED_VALUE">1</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="totalPoints" enabled="true">
+              <stringProp name="JSON_PATH">$.totalPoints</stringProp>
+              <stringProp name="EXPECTED_VALUE">0</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="tournamentCorrectAnswersPerc" enabled="true">
+              <stringProp name="JSON_PATH">$.tournamentCorrectAnswersPerc</stringProp>
+              <stringProp name="EXPECTED_VALUE">0</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>

@@ -16,6 +16,8 @@ public class StatsDto implements Serializable {
     private Integer totalPublicClarificationQuestions = 0;
     private Integer totalTournamentsCreated = 0;
     private Integer totalTournamentsJoined = 0;
+    private Integer totalPoints = 0;
+    private Integer tournamentCorrectAnswersPerc = 0;
 
     public Boolean getPublicDashboard() {
         return publicDashboard;
@@ -116,6 +118,14 @@ public class StatsDto implements Serializable {
     public Integer getTotalTournamentsJoined() { return totalTournamentsJoined; }
 
     public void setTotalTournamentsJoined(Integer totalTournamentsJoined) { this.totalTournamentsJoined = totalTournamentsJoined; }
+
+    public Integer getTotalPoints() { return totalPoints; }
+
+    public void setTotalPoints(Integer totalPoints) { this.totalPoints = totalPoints; }
+
+    public Integer getTournamentCorrectAnswersPerc() { return tournamentCorrectAnswersPerc; }
+
+    public void setTournamentCorrectAnswersPerc(Integer tournamentCorrectAnswersPerc) { this.tournamentCorrectAnswersPerc = tournamentCorrectAnswersPerc; }
 
     @Override
     public String toString() {

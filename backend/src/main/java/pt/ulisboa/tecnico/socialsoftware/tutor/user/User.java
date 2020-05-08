@@ -56,6 +56,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfPublicClarificationQuestions;
     private Integer numberOfTournamentsCreated;
     private Integer numberOfTournamentsJoined;
+    private Integer numberOfCorrectTournamentAnswers;
+    private Integer numberOfTournamentAnswers;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -106,6 +108,8 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfClarificationQuestions = 0;
         this.numberOfTournamentsCreated = 0;
         this.numberOfTournamentsJoined = 0;
+        this.numberOfCorrectTournamentAnswers = 0;
+        this.numberOfTournamentAnswers = 0;
     }
 
     public void addTournament(Tournament tournament) {
@@ -369,16 +373,42 @@ public class User implements UserDetails, DomainEntity {
     }
 
     public Integer getNumberOfTournamentsCreated() {
-        return this.tournamentsCreated.size();
+        this.numberOfTournamentsCreated = this.tournamentsCreated.size();
+        return this.numberOfTournamentsCreated;
     }
 
     public void setNumberOfTournamentsCreated(Integer numberOfTournamentsCreated) { this.numberOfTournamentsCreated = numberOfTournamentsCreated; }
 
     public Integer getNumberOfTournamentsJoined() {
-        return this.tournamentsEnrolled.size();
+        this.numberOfTournamentsJoined = this.tournamentsEnrolled.size();
+        return this.numberOfTournamentsJoined;
     }
 
     public void setNumberOfTournamentsJoined(Integer numberOfTournamentsJoined) { this.numberOfTournamentsJoined = numberOfTournamentsJoined; }
+
+    public Integer getNumberOfCorrectTournamentAnswers(){
+        this.numberOfCorrectTournamentAnswers = (int) this.getQuizAnswers().stream()
+                .filter(QuizAnswer::isCompleted)
+                .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.TOURNAMENT))
+                .flatMap(quizAnswer -> quizAnswer.getQuestionAnswers().stream())
+                .filter(questionAnswer -> questionAnswer.getOption() != null &&
+                        questionAnswer.getOption().getCorrect())
+                .count();
+
+        return numberOfCorrectTournamentAnswers;
+    }
+
+    public Integer getNumberOfTournamentAnswers(){
+        this.numberOfTournamentAnswers = getQuizAnswers().stream()
+                .filter(QuizAnswer::isCompleted)
+                .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.TOURNAMENT))
+                .mapToInt(quizAnswer -> quizAnswer.getQuiz().getQuizQuestions().size())
+                .sum();
+
+        return numberOfTournamentAnswers;
+    }
+
+
 
     @Override
     public String toString() {
