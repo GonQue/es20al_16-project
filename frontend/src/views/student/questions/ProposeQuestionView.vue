@@ -74,7 +74,12 @@
           <span>Show Question</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
+          <template
+            v-slot:activator="{ on }"
+            v-if="
+              item.evaluation === 'AWAITING' || item.evaluation === 'REJECTED'
+            "
+          >
             <v-icon
               large
               class="mr-2"
@@ -86,6 +91,22 @@
             >
           </template>
           <span>Delete Proposed Question</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              large
+              class="mr-2"
+              v-on="on"
+              v-if="
+                item.evaluation === 'AWAITING' || item.evaluation === 'REJECTED'
+              "
+              @click="editPropQuestion(item)"
+              data-cy="editProposedQuestion"
+              >edit</v-icon
+            >
+          </template>
+          <span>Edit Question</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -106,6 +127,7 @@
       v-model="justificationDialog"
       :proposedQuestion="currentPropQuestion"
       v-on:close-show-justification-dialog="onCloseShowJustificationDialog"
+      v-on:save-proposed-question="onSaveProposedQuestion"
     />
   </v-card>
 </template>
@@ -136,7 +158,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
-    { text: 'Actions', value: 'action', align: 'center', sortable: false },
+    { text: 'Actions', value: 'action', align: 'left', sortable: false },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
     {
@@ -153,7 +175,12 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'question.image.url', align: 'center' }
+    {
+      text: 'Image',
+      value: 'question.image.url',
+      align: 'center',
+      sortable: false
+    }
   ];
 
   async created() {
@@ -169,7 +196,13 @@ export default class ProposeQuestionView extends Vue {
   getEvaluationColor(evaluation: string) {
     if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
+    else if (evaluation === 'AVAILABLE') return 'light-blue';
     else return 'red';
+  }
+
+  editPropQuestion(proposedQuestion: ProposedQuestion) {
+    this.currentPropQuestion = proposedQuestion;
+    this.editPropQuestionDialog = true;
   }
 
   showQuestionDialog(proposedQuestion: ProposedQuestion) {
@@ -217,6 +250,7 @@ export default class ProposeQuestionView extends Vue {
     );
     this.proposedQuestions.unshift(proposedQuestion);
     this.editPropQuestionDialog = false;
+    this.justificationDialog = false;
     this.currentPropQuestion = null;
   }
 }

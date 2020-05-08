@@ -9,35 +9,49 @@
   >
     <v-card>
       <v-card-title>
-        <span class="headline">New Proposed Question</span>
+        <span class="headline">{{
+          editPropQuestion && editPropQuestion.id === null
+            ? 'New Proposed Question'
+            : 'Edit Proposed Question'
+        }}</span>
       </v-card-title>
 
       <v-card-text class="text-left" v-if="editPropQuestion">
-        <v-container grid-list-md fluid>
-          <v-layout column wrap>
-            <v-flex xs24 sm12 md8>
-              <v-text-field
-                v-model="editPropQuestion.question.title"
-                label="Title"
-                data-cy="Title"
-              />
-            </v-flex>
-            <v-flex xs24 sm12 md12>
-              <v-textarea
-                outline
-                rows="5"
-                v-model="editPropQuestion.question.content"
-                label="Question"
-                data-cy="Question"
-              ></v-textarea>
-            </v-flex>
-            <v-flex
-              xs24
-              sm12
-              md12
-              v-for="index in editPropQuestion.question.options.length"
-              :key="index"
-            >
+        <v-card
+          class="mb-md-6"
+          v-if="editPropQuestion.justification && !isTeacher"
+          color="grey lighten-3"
+        >
+          <v-card-title>Justification</v-card-title>
+          <v-card-subtitle>{{
+            editPropQuestion.justification
+          }}</v-card-subtitle>
+        </v-card>
+
+        <v-form ref="questionForm" lazy-validation>
+          <v-text-field
+            v-model="editPropQuestion.question.title"
+            :rules="[rules[0]]"
+            label="Title"
+            required
+            outlined
+            data-cy="Title"
+          />
+          <v-textarea
+            outlined
+            rows="3"
+            auto-grow
+            required
+            :rules="[rules[1]]"
+            v-model="editPropQuestion.question.content"
+            label="Question"
+            data-cy="Question"
+          ></v-textarea>
+          <div
+            v-for="index in editPropQuestion.question.options.length"
+            :key="index"
+          >
+            <v-row style="margin-right: 0;">
               <v-switch
                 v-model="editPropQuestion.question.options[index - 1].correct"
                 class="ma-4"
@@ -45,29 +59,22 @@
                 data-cy="CorrectOption"
               />
               <v-textarea
-                outline
+                outlined
                 rows="1"
+                auto-grow
                 v-model="editPropQuestion.question.options[index - 1].content"
                 :label="`Option ${index}`"
                 data-cy="Option"
               ></v-textarea>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-card-text>
-
-      <v-layout row>
-        <v-col cols="5" offset="1">
-          <span
-            style="position: relative; top: 45%; right: 60%; font-size: large"
-            >Topics:</span
-          >
-          <v-form>
+            </v-row>
+          </div>
+          <v-form style="margin-left: 2.3%">
             <v-autocomplete
               v-model="questionTopics"
               :items="topics"
               multiple
               return-object
+              label="Topics"
               item-text="name"
               item-value="name"
               @change="selectTopics"
@@ -90,49 +97,56 @@
               </template>
             </v-autocomplete>
           </v-form>
-        </v-col>
-      </v-layout>
-
-      <v-layout row>
-        <v-col cols="5" offset="1">
-          <span
-            style="position: relative; top: 45%; right: 60%; font-size: large"
-            >Image:</span
-          >
           <v-file-input
             show-size
             dense
             small-chips
             @change="saveImage($event)"
             accept="image/*"
+            label="Image"
           />
-        </v-col>
-      </v-layout>
-
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          color="blue darken-1"
-          @click="$emit('dialog', false)"
-          data-cy="cancelButton"
-          >Cancel</v-btn
-        >
-        <v-btn
-          color="blue darken-1"
-          @click="savePropQuestion"
-          data-cy="saveButton"
-          >Save</v-btn
-        >
-      </v-card-actions>
+        </v-form>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="blue-grey lighten-4"
+            @click="$emit('dialog', false)"
+            data-cy="cancelButton"
+            >Cancel</v-btn
+          >
+          <v-btn
+            color="blue darken-1"
+            v-if="editPropQuestion.id === null && !isTeacher"
+            @click="savePropQuestion"
+            data-cy="saveButton"
+            >Submit</v-btn
+          >
+          <v-btn
+            color="blue darken-1"
+            v-if="editPropQuestion.id !== null && !isTeacher"
+            @click="savePropQuestion"
+            data-cy="resubmitButton"
+            >Resubmit</v-btn
+          >
+          <v-btn
+            color="blue darken-1"
+            v-if="isTeacher"
+            @click="turnAvailable"
+            data-cy="turnAvailable"
+            >Turn Available</v-btn
+          >
+        </v-card-actions>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang="ts">
-import { Component, Model, Prop, Vue } from 'vue-property-decorator';
+import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import Topic from '@/models/management/Topic';
+import Store from '@/store';
 import Image from '@/models/management/Image';
 
 @Component
@@ -145,9 +159,19 @@ export default class EditPropQuestionDialog extends Vue {
   topics: Topic[] = [];
   questionTopics: Topic[] = [];
   image: File | null = null;
+  rules: Function[] = [this.titleRequired, this.contentRequired];
+  isTeacher: boolean = Store.getters.isTeacher;
+
+  titleRequired(value: String) {
+    return !!value || 'Title is required';
+  }
+
+  contentRequired(value: String) {
+    return !!value || 'Question content is required';
+  }
 
   async created() {
-    this.editPropQuestion = new ProposedQuestion(this.proposedQuestion);
+    this.updatePropQuestion();
     await this.$store.dispatch('loading');
     try {
       this.topics = await RemoteServices.getTopics();
@@ -155,6 +179,11 @@ export default class EditPropQuestionDialog extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  @Watch('proposedQuestion', { immediate: true, deep: true })
+  updatePropQuestion() {
+    this.editPropQuestion = new ProposedQuestion(this.proposedQuestion);
   }
 
   selectTopics() {
@@ -180,29 +209,38 @@ export default class EditPropQuestionDialog extends Vue {
       return;
     }
 
-    if (this.editPropQuestion) {
-      try {
-        const result = await RemoteServices.createProposedQuestion(
-          this.editPropQuestion
+    try {
+      const result =
+        this.editPropQuestion.id != null
+          ? await RemoteServices.updateProposedQuestion(this.editPropQuestion)
+          : await RemoteServices.createProposedQuestion(this.editPropQuestion);
+      if (this.image != null && result.question.id) {
+        const imageURL = await RemoteServices.uploadImage(
+          this.image,
+          result.question.id
         );
-        if (this.image != null && result.question.id) {
-          const imageURL = await RemoteServices.uploadImage(
-            this.image,
-            result.question.id
-          );
-          this.editPropQuestion.question.image = new Image();
-          this.editPropQuestion.question.image.url = imageURL;
-          confirm('Image ' + imageURL + ' was uploaded!');
-        }
-        this.$emit('save-proposed-question', result);
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+        this.editPropQuestion.question.image = new Image();
+        this.editPropQuestion.question.image.url = imageURL;
+        confirm('Image ' + imageURL + ' was uploaded!');
       }
+      this.$emit('save-proposed-question', result);
+    } catch (error) {
+      await this.$store.dispatch('error', error);
     }
   }
 
   async saveImage(file: File) {
     this.image = file;
+  }
+
+  async turnAvailable() {
+    this.editPropQuestion.teacher = Store.getters.getUser;
+    try {
+      const result = await RemoteServices.turnAvailable(this.editPropQuestion);
+      this.$emit('available', result);
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
   }
 }
 </script>

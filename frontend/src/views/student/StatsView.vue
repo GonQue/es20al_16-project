@@ -99,6 +99,33 @@
       </div>
     </div>
 
+    <h2>Proposed Questions</h2>
+    <div v-if="stats != null" class="stats-container">
+      <div class="items">
+        <div class="icon-wrapper" ref="totalProposedQuestions">
+          <animated-number
+            :number="stats.totalProposedQuestions"
+            data-cy="totalProposedQuestions"
+          />
+        </div>
+        <div class="project-name">
+          <p>Proposed Questions</p>
+        </div>
+      </div>
+      <div class="items">
+        <div
+          class="icon-wrapper"
+          ref="totalApprovedProposedQuestions"
+          data-cy="totalApprovedProposedQuestions"
+        >
+          <animated-number :number="stats.totalApprovedProposedQuestions" />
+        </div>
+        <div class="project-name">
+          <p>Approved Proposed Questions</p>
+        </div>
+      </div>
+    </div>
+
     <h2>Tournaments</h2>
     <div v-if="stats != null" class="stats-container">
       <div class="items">
@@ -125,7 +152,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
