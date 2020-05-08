@@ -147,6 +147,7 @@ import RemoteServices from '@/services/RemoteServices';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import Topic from '@/models/management/Topic';
 import Store from '@/store';
+import Image from '@/models/management/Image';
 
 @Component
 export default class EditPropQuestionDialog extends Vue {
@@ -218,9 +219,9 @@ export default class EditPropQuestionDialog extends Vue {
           this.image,
           result.question.id
         );
-        //this.editPropQuestion.question.image = new Image();
-        //this.editPropQuestion.question.image.url = imageURL;
-        //confirm('Image ' + imageURL + ' was uploaded!');
+        this.editPropQuestion.question.image = new Image();
+        this.editPropQuestion.question.image.url = imageURL;
+        confirm('Image ' + imageURL + ' was uploaded!');
       }
       this.$emit('save-proposed-question', result);
     } catch (error) {
