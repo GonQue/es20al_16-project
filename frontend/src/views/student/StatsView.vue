@@ -98,6 +98,34 @@
         </div>
       </div>
     </div>
+
+    <h2>Tournaments</h2>
+    <div v-if="stats != null" class="stats-container">
+      <div class="items">
+        <div class="icon-wrapper" ref="totalTournamentsCreated">
+          <animated-number
+            :number="stats.totalTournamentsCreated"
+            data-cy="totalTournamentsCreated"
+          />
+        </div>
+        <div class="project-name">
+          <p>Tournaments Created</p>
+        </div>
+      </div>
+      <div class="items">
+        <div
+          class="icon-wrapper"
+          ref="totalTournamentsEnrolled"
+          data-cy="totalTournamentsEnrolled"
+        >
+          <animated-number :number="stats.totalTournamentsEnrolled" />
+        </div>
+        <div class="project-name">
+          <p>Tournaments Joined</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
