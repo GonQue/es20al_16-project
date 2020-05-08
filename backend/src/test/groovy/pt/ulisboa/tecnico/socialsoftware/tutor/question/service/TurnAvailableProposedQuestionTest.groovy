@@ -47,7 +47,6 @@ class TurnAvailableProposedQuestionTest extends Specification {
     @Autowired
     UserRepository userRepository
 
-    def question
     def proposedQuestion
 
     def setup() {
@@ -79,7 +78,8 @@ class TurnAvailableProposedQuestionTest extends Specification {
         options.add(optionDto)
         questionDto.setOptions(options)
 
-        question = new Question(course, questionDto)
+        def question = new Question(course, questionDto)
+        question.setStatus(Question.Status.SUBMITTED)
         questionRepository.save(question)
 
         proposedQuestion = new ProposedQuestion()
@@ -135,11 +135,11 @@ class TurnAvailableProposedQuestionTest extends Specification {
     def 'update and turn available a proposed question'() {
         given: "a changed question"
         proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.APPROVED)
-        question.setTitle("NEW_QUESTION_TITLE")
-        question.setContent("NEW_QUESTION_CONTENT")
-        question.setStatus(Question.Status.SUBMITTED)
-        question.getOptions().get(0).setContent("NEW_OPTION_CONTENT")
+
         def proposedQuestionDto = new ProposedQuestionDto(proposedQuestion)
+        proposedQuestionDto.getQuestion().setTitle("NEW_QUESTION_TITLE")
+        proposedQuestionDto.getQuestion().setContent("NEW_QUESTION_CONTENT")
+        proposedQuestionDto.getQuestion().getOptions().get(0).setContent("NEW_OPTION_CONTENT")
 
         when:
         def result = proposedQuestionService.turnAvailable(proposedQuestion.getId(), proposedQuestionDto)
