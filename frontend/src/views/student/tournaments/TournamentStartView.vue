@@ -2,7 +2,7 @@
     <div class="container">
         <v-card>
             <v-card-title class="justify-center">
-                Hold on and wait {{ timer() }} to start the quiz!
+                Hold on and wait {{ timer() }} to start the Tournament!
             </v-card-title>
         </v-card>
     </div>
@@ -26,16 +26,12 @@
 
 
     async getTournamentQuiz() {
-      console.log('statement', this.statementQuiz?.tournamentId, this.statementQuiz?.id, this.statementQuiz?.availableDate, this.statementQuiz?.conclusionDate);
-      console.log('getournamentquiz', this.statementQuiz?.timeToAvailability, this.tournamentId);
+
       if (this.statementQuiz && this.tournamentId && this.$router.currentRoute.name === 'tournament-start') {
-        console.log('in1');
         try {
-          console.log('supose to end after', this.statementQuiz.timeToAvailability, this.statementQuiz.timeToAvailability === 0, this.statementQuiz);
           this.statementQuiz = await RemoteServices.getTournamentQuiz(this.tournamentId);
-          console.log('supose to end after', this.statementQuiz.timeToAvailability, this.statementQuiz.timeToAvailability === 0, this.statementQuiz);
+
           if (this.statementQuiz.timeToAvailability === 0) {
-            console.log('END END END ');
             let statementManager: StatementManager = StatementManager.getInstance;
             statementManager.statementQuiz = this.statementQuiz;
             await this.$router.push({ name: 'solve-quiz' });

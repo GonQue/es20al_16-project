@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
@@ -164,11 +165,11 @@ class GetTournamentQuizTest  extends Specification {
         user2.addCourse(courseExecution1)
         userRepository.save(user2)
         userDto = new UserDto(user2)
-        tournament.setEnrolled(new HashSet<User>(Arrays.asList((user2))))
+        tournament.setEnrolled(new HashSet<User>(Arrays.asList(user, user2)))
 
         and:"a tournament that already started"
-        tournament.setStartDate(LocalDateTime.now().minusDays(1))
-        tournament.setEndDate(LocalDateTime.now().plusDays(1))
+        tournament.setStartDate(DateHandler.now().minusDays(1))
+        tournament.setEndDate(DateHandler.now().plusDays(1))
 
         when:
         def result = tournamentService.getTournamentQuiz(tournament.getId(), user2.getId());
@@ -177,6 +178,30 @@ class GetTournamentQuizTest  extends Specification {
         //questionRepository.findById(result.getQuestions()[1].getQuestionId())
         result.getQuestions().size() == 1
         result.getQuestions()[0].getQuestionId() == questionOne.getId()
+    }
+
+    def "student tries to get tournament quiz that didnt start yet"(){
+        given:"a student in the tournament"
+        def user2 = new User()
+        user2.setKey(2)
+        user2.setRole(User.Role.STUDENT)
+        user2.setUsername(USERNAME_2)
+        user2.addCourse(courseExecution1)
+        userRepository.save(user2)
+        userDto = new UserDto(user2)
+        tournament.setEnrolled(new HashSet<User>(Arrays.asList(user, user2)))
+
+        and:"a tournament that hasnt started"
+        tournament.setStartDate(DateHandler.now().plusDays(1))
+        tournament.setEndDate(DateHandler.now().plusDays(2))
+
+        when:
+        def result = tournamentService.getTournamentQuiz(tournament.getId(), user2.getId());
+
+        then:
+        //questionRepository.findById(result.getQuestions()[1].getQuestionId())
+        result.getQuestions().size() == 0
+        result.getTimeToAvailability() > 0
     }
 
     def "student tries to get tournament that already ended"(){
@@ -188,11 +213,11 @@ class GetTournamentQuizTest  extends Specification {
         user2.addCourse(courseExecution1)
         userRepository.save(user2)
         userDto = new UserDto(user2)
-        tournament.setEnrolled(new HashSet<User>(Arrays.asList((user2))))
+        tournament.setEnrolled(new HashSet<User>(Arrays.asList(user, user2)))
 
         and:"a tournament that already ended"
-        tournament.setStartDate(LocalDateTime.now().minusDays(2))
-        tournament.setEndDate(LocalDateTime.now())
+        tournament.setStartDate(DateHandler.now().minusDays(2))
+        tournament.setEndDate(DateHandler.now())
 
         when:
         def result = tournamentService.getTournamentQuiz(tournament.getId(), user2.getId());
@@ -201,6 +226,21 @@ class GetTournamentQuizTest  extends Specification {
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NO_LONGER_AVAILABLE
     }
+
+    def "student tries to get tournament that didnt generate quiz because it only has 1 participant"() {
+        given: "a tournament with one user"
+        tournament.setStartDate(DateHandler.now().minusDays(1))
+        tournament.setEndDate(DateHandler.now().plusDays(1))
+        tournament.setEnrolled(new HashSet<User>(Arrays.asList(user)))
+        tournament.setQuiz(null)
+        when:
+        def result = tournamentService.getTournamentQuiz(tournament.getId(), user.getId());
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.NOT_ENOUGH_PARTICIPANTS
+    }
+
 
     @TestConfiguration
     static class TournamentServiceImplTestContextConfiguration{
