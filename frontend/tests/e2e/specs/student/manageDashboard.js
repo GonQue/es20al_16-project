@@ -18,9 +18,9 @@ describe('Dashboard Walkthrough', () => {
     cy.createTournament('Demo Tournament 2', ['Availability'], 20, 21, false, true, true);
     cy.enrollStudent('Demo Tournament 1');
     cy.checkTournamentStats('2','1');
+    cy.contains('Tournaments').click()
     cy.deleteTournament('Demo Tournament 1');
     cy.deleteTournament('Demo Tournament 2');
-    cy.get('[data-cy="Tournaments"]').click();
   });
 
   it('toggleDashboard to Public, check if still public', () => {

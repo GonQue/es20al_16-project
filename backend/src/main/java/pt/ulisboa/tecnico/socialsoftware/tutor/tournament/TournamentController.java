@@ -32,7 +32,7 @@ public class TournamentController {
 
 
 
-    @PostMapping("/tournaments/{tournamentId}/enroll-student")
+    @PostMapping("/tournaments/{tournamentId}")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public TournamentDto studentEnrollTournament(@PathVariable int tournamentId, Principal principal){
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -45,7 +45,7 @@ public class TournamentController {
     }
   
   
-    @PostMapping("/executions/{executionId}/create-tournament")
+    @PostMapping("/executions/{executionId}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public TournamentDto createTournament(Principal principal, @PathVariable int executionId, @RequestBody TournamentDto tournamentDto){
         logger.debug("createTournament"+ tournamentDto.getId()+ tournamentDto.getName());
@@ -69,7 +69,7 @@ public class TournamentController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/executions/{executionId}/list-tournament")
+    @GetMapping("/executions/{executionId}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#executionId, 'EXECUTION.ACCESS')")
     public List<TournamentDto> listOpenTournaments(@PathVariable int executionId) {
         return tournamentService.listOpenTournaments(executionId);

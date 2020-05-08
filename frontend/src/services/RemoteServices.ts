@@ -732,7 +732,7 @@ export default class RemoteServices {
   static async createTournament(tournament: Tournament): Promise<Tournament> {
     return httpClient
       .post(
-        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/create-tournament`,
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}`,
         tournament
       )
       .then(response => {
@@ -746,7 +746,7 @@ export default class RemoteServices {
   static async getOpenTournaments(): Promise<Tournament[]> {
     return httpClient
       .get(
-        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}/list-tournament`
+        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}`
       )
       .then(response => {
         return response.data.map((tournament: any) => {
@@ -760,7 +760,7 @@ export default class RemoteServices {
 
   static async enrollStudent(tournament: Tournament): Promise<Tournament> {
     return httpClient
-      .post(`/tournaments/${tournament.id}/enroll-student`)
+      .post(`/tournaments/${tournament.id}`)
       .then(response => {
         return new Tournament(response.data);
       })

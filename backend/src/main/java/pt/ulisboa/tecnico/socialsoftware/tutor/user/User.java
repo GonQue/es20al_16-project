@@ -369,18 +369,14 @@ public class User implements UserDetails, DomainEntity {
     }
 
     public Integer getNumberOfTournamentsCreated() {
-        if(this.numberOfTournamentsCreated == null)
-            this.numberOfTournamentsCreated = this.tournamentsCreated.size();
-
-        return numberOfTournamentsCreated; }
+        return this.tournamentsCreated.size();
+    }
 
     public void setNumberOfTournamentsCreated(Integer numberOfTournamentsCreated) { this.numberOfTournamentsCreated = numberOfTournamentsCreated; }
 
     public Integer getNumberOfTournamentsJoined() {
-        if(this.numberOfTournamentsJoined == null)
-            this.numberOfTournamentsJoined = this.tournamentsEnrolled.size();
-
-        return numberOfTournamentsJoined; }
+        return this.tournamentsEnrolled.size();
+    }
 
     public void setNumberOfTournamentsJoined(Integer numberOfTournamentsJoined) { this.numberOfTournamentsJoined = numberOfTournamentsJoined; }
 

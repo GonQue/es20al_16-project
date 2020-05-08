@@ -83,7 +83,6 @@ describe('Student walkthrough', () => {
   it('Login creates 2 tournaments with multiple topics', () => {
     topics = ['Availability', 'Architectural Style', 'Chrome'];
 
-    cy.log('try to create with 0 questions');
     cy.createTournament(
       tournamentName,
       topics,

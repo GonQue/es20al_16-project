@@ -115,10 +115,10 @@
       <div class="items">
         <div
           class="icon-wrapper"
-          ref="totalTournamentsEnrolled"
-          data-cy="totalTournamentsEnrolled"
+          ref="totalTournamentsJoined"
+          data-cy="totalTournamentsJoined"
         >
-          <animated-number :number="stats.totalTournamentsEnrolled" />
+          <animated-number :number="stats.totalTournamentsJoined" />
         </div>
         <div class="project-name">
           <p>Tournaments Joined</p>

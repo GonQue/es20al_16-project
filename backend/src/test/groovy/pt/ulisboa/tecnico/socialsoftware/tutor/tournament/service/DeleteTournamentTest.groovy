@@ -32,6 +32,7 @@ class DeleteTournamentTest extends Specification {
     public static final String COURSE_NAME = "Software Architecture"
     public static final String TOURNAMENT_NAME = "Tournament name"
     public static final String STUDENT_USERNAME= "student username test"
+    public static final String STUDENT_USERNAME_2= "student username test 2"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
     public static final int NUMBER_OF_QUESTIONS = 5
@@ -58,6 +59,7 @@ class DeleteTournamentTest extends Specification {
     def courseExecution
     def user
     def userDto
+    def user2
     def creatorId
     def startDate
     def formatter
@@ -113,6 +115,25 @@ class DeleteTournamentTest extends Specification {
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_STARTED
+    }
+
+    def "student tries to delete a tournament that he didnt create"(){
+        given: "a tournament"
+        tournamentId=tournament.getId()
+        and: "a creator"
+        tournament.setCreator(user)
+        creatorId=user.getId()
+        and: "a student"
+        user2 = new User('name', STUDENT_USERNAME_2, 2, User.Role.STUDENT)
+        user2.addCourse(courseExecution)
+        userRepository.save(user2)
+
+        when:
+        tournamentService.deleteTournament(tournamentId, user2.getId())
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NOT_THE_CREATOR
     }
 
     @TestConfiguration

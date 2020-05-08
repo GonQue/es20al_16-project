@@ -14,7 +14,7 @@ export default class StudentStats {
   totalPublicClarificationQuestions!: number;
 
   totalTournamentsCreated!: number;
-  totalTournamentsEnrolled!:number;
+  totalTournamentsJoined!:number;
 
   constructor(jsonObj?: StudentStats) {
     if (jsonObj) {
@@ -31,7 +31,7 @@ export default class StudentStats {
       this.totalPublicClarificationQuestions =
         jsonObj.totalPublicClarificationQuestions;
       this.totalTournamentsCreated=jsonObj.totalTournamentsCreated;
-      this.totalTournamentsEnrolled=jsonObj.totalTournamentsEnrolled;
+      this.totalTournamentsJoined=jsonObj.totalTournamentsJoined;
     }
   }
 }
