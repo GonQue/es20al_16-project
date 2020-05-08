@@ -20,7 +20,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 import spock.lang.Specification
 
-import java.time.LocalDateTime;
 
 @DataJpaTest
 class StudentSubmitQuestionPerformanceTest extends Specification {
@@ -92,6 +91,7 @@ class StudentSubmitQuestionPerformanceTest extends Specification {
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         questionDto.setOptions(options)
+
         return questionDto
     }
 

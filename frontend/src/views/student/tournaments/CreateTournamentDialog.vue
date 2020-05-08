@@ -6,9 +6,6 @@
     max-width="75%"
     max-height="80%"
   >
-
-
-
     <v-card>
       <v-card-title>
         <span class="headline">

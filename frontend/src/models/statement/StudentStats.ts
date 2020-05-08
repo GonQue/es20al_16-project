@@ -12,9 +12,10 @@ export default class StudentStats {
   publicDashboard!: boolean;
   totalClarificationQuestions!: number;
   totalPublicClarificationQuestions!: number;
-
+  totalProposedQuestions!: number;
+  totalApprovedProposedQuestions!: number;
   totalTournamentsCreated!: number;
-  totalTournamentsJoined!:number;
+  totalTournamentsJoined!: number;
 
   constructor(jsonObj?: StudentStats) {
     if (jsonObj) {
@@ -30,8 +31,11 @@ export default class StudentStats {
       this.totalClarificationQuestions = jsonObj.totalClarificationQuestions;
       this.totalPublicClarificationQuestions =
         jsonObj.totalPublicClarificationQuestions;
-      this.totalTournamentsCreated=jsonObj.totalTournamentsCreated;
-      this.totalTournamentsJoined=jsonObj.totalTournamentsJoined;
+      this.totalProposedQuestions = jsonObj.totalProposedQuestions;
+      this.totalApprovedProposedQuestions =
+        jsonObj.totalApprovedProposedQuestions;
+      this.totalTournamentsCreated = jsonObj.totalTournamentsCreated;
+      this.totalTournamentsJoined = jsonObj.totalTournamentsJoined;
     }
   }
 }

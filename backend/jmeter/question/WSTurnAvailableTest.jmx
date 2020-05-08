@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Web Service teacherEvaluatesProposedQuestion" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Web Service turnAvailable" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -61,13 +61,13 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">olacrl</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">raquel</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
@@ -76,7 +76,7 @@
 
 INSERT INTO options(content, correct, question_id) VALUES (&apos;Content&apos;, true, (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;));
 
-INSERT INTO proposed_questions(id, student_id, question_id, evaluation) VALUES (1, 676, (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;), &apos;AWAITING&apos;); 
+INSERT INTO proposed_questions(id, student_id, question_id, teacher_id, evaluation) VALUES (1, 676, (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;), 677,&apos;APPROVED&apos;); 
 
 INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES (2, 1);</stringProp>
           <stringProp name="queryArguments"></stringProp>
@@ -182,19 +182,21 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to evaluate proposed question" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request to turn available proposed question" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: 1,&#xd;
-	&quot;teacher&quot;: {&#xd;
-    		&quot;username&quot;: &quot;Demo-Teacher&quot; &#xd;
-  	},&#xd;
-	&quot;justification&quot;: &quot;Justification&quot;,&#xd;
-	&quot;evaluation&quot;: &quot;APPROVED&quot;&#xd;
+    &quot;id&quot;: 1, &#xd;
+    &quot;question&quot;: {&#xd;
+        &quot;title&quot;: &quot;New_Question_Title&quot;,&#xd;
+        &quot;content&quot;: &quot;New_Question_Content&quot;,&#xd;
+        &quot;options&quot;: [{&#xd;
+                &quot;content&quot;: &quot;Option 1&quot;,&#xd;
+                &quot;correct&quot;: true }]&#xd;
+    }&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -204,7 +206,7 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/proposed-questions/1</stringProp>
+            <stringProp name="HTTPSampler.path">/proposed-questions/1/turn-available</stringProp>
             <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -216,6 +218,24 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert id" enabled="true">
+              <stringProp name="JSON_PATH">$.id</stringProp>
+              <stringProp name="EXPECTED_VALUE">1</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert student id" enabled="true">
+              <stringProp name="JSON_PATH">$.student.id</stringProp>
+              <stringProp name="EXPECTED_VALUE">676</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert teacher id" enabled="true">
               <stringProp name="JSON_PATH">$.teacher.id</stringProp>
               <stringProp name="EXPECTED_VALUE">677</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
@@ -224,9 +244,18 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
               <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert justification" enabled="true">
-              <stringProp name="JSON_PATH">$.justification</stringProp>
-              <stringProp name="EXPECTED_VALUE">Justification</stringProp>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question title" enabled="true">
+              <stringProp name="JSON_PATH">$.question.title</stringProp>
+              <stringProp name="EXPECTED_VALUE">New_Question_Title</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question content" enabled="true">
+              <stringProp name="JSON_PATH">$.question.content</stringProp>
+              <stringProp name="EXPECTED_VALUE">New_Question_Content</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -235,7 +264,16 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert evaluation" enabled="true">
               <stringProp name="JSON_PATH">$.evaluation</stringProp>
-              <stringProp name="EXPECTED_VALUE">APPROVED</stringProp>
+              <stringProp name="EXPECTED_VALUE">AVAILABLE</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+              <boolProp name="ISREGEX">false</boolProp>
+            </JSONPathAssertion>
+            <hashTree/>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert question evaluation" enabled="true">
+              <stringProp name="JSON_PATH">$.question.status</stringProp>
+              <stringProp name="EXPECTED_VALUE">AVAILABLE</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -343,21 +381,21 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">olacrl</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">raquel</stringProp>
+          <stringProp name="username"></stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">DELETE FROM courses_proposed_questions WHERE course_id = 2;
 DELETE FROM proposed_questions WHERE student_id = 676;
-DELETE FROM options WHERE question_id = (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;);
-DELETE FROM questions WHERE title = &apos;Question_Title&apos;; 
+DELETE FROM options WHERE question_id in (SELECT id FROM questions WHERE title = &apos;New_Question_Title&apos;);
+DELETE FROM questions WHERE title = &apos;New_Question_Title&apos;; 
 
 </stringProp>
           <stringProp name="queryArguments"></stringProp>

@@ -58,6 +58,7 @@
       <template v-slot:item.status="{ item }">
         <v-select
           v-model="item.status"
+          v-if="item.status !== 'SUBMITTED'"
           :items="statusList"
           dense
           @change="setStatus(item.id, item.status)"
@@ -68,6 +69,9 @@
             </v-chip>
           </template>
         </v-select>
+        <v-chip v-else :color="getStatusColor(item.status)" small>
+          <span>{{ item.status }}</span>
+        </v-chip>
       </template>
 
       <template v-slot:item.image="{ item }">

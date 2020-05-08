@@ -63,4 +63,15 @@ public class ProposedQuestionController {
         return  ResponseEntity.ok().build();
     }
 
+    @PutMapping("/proposed-questions/{proposedQuestionId}/turn-available")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#proposedQuestionId, 'PQ.ACCESS')")
+    public ProposedQuestionDto turnAvailable(@PathVariable Integer proposedQuestionId, @Valid @RequestBody ProposedQuestionDto pqDto) {
+        return this.proposedQuestionService.turnAvailable(proposedQuestionId, pqDto);
+    }
+
+    @PutMapping("/student/proposed-questions/{proposedQuestionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#proposedQuestionId, 'PQ.CREATOR')")
+    public ProposedQuestionDto updateProposedQuestion(@PathVariable Integer proposedQuestionId, @Valid @RequestBody ProposedQuestionDto pqDto) {
+        return proposedQuestionService.updateProposedQuestion(proposedQuestionId, pqDto);
+    }
 }

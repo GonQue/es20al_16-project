@@ -745,9 +745,7 @@ export default class RemoteServices {
 
   static async getOpenTournaments(): Promise<Tournament[]> {
     return httpClient
-      .get(
-        `/executions/${Store.getters.getCurrentCourse.courseExecutionId}`
-      )
+      .get(`/executions/${Store.getters.getCurrentCourse.courseExecutionId}`)
       .then(response => {
         return response.data.map((tournament: any) => {
           return new Tournament(tournament);
@@ -769,11 +767,9 @@ export default class RemoteServices {
       });
   }
 
-  static async getTournamentQuiz(tournamentId: number): Promise<StatementQuiz>{
+  static async getTournamentQuiz(tournamentId: number): Promise<StatementQuiz> {
     return httpClient
-      .get(
-        `/tournaments/${tournamentId}/quiz`
-      )
+      .get(`/tournaments/${tournamentId}/quiz`)
       .then(response => {
         return new StatementQuiz(response.data);
       })
@@ -789,7 +785,6 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
-
 
   static async getStudentProposedQuestions(): Promise<ProposedQuestion[]> {
     return httpClient
@@ -812,6 +807,22 @@ export default class RemoteServices {
     return httpClient
       .post(
         `/courses/${Store.getters.getCurrentCourse.courseId}/proposed-questions/`,
+        proposedQuestion
+      )
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateProposedQuestion(
+    proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
+    return httpClient
+      .put(
+        `/student/proposed-questions/${proposedQuestion.id}`,
         proposedQuestion
       )
       .then(response => {
@@ -850,6 +861,22 @@ export default class RemoteServices {
   ): Promise<ProposedQuestion> {
     return httpClient
       .put(`/proposed-questions/${proposedQuestion.id}`, proposedQuestion)
+      .then(response => {
+        return new ProposedQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async turnAvailable(
+    proposedQuestion: ProposedQuestion
+  ): Promise<ProposedQuestion> {
+    return httpClient
+      .put(
+        `/proposed-questions/${proposedQuestion.id}/turn-available`,
+        proposedQuestion
+      )
       .then(response => {
         return new ProposedQuestion(response.data);
       })

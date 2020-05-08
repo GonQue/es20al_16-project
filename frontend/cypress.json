@@ -6,8 +6,8 @@
   "supportFile": "tests/e2e/support/index.js",
 
   "env": {
-    "dbUser" : "joaodias",
-    "dbpass" : "jrd1999"
+    "dbUser" : "goncalo",
+    "dbpass" : ""
   },
 
   "video": false
