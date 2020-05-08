@@ -394,8 +394,8 @@ INSERT INTO courses_proposed_questions(course_id, proposed_questions_id) VALUES 
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">DELETE FROM courses_proposed_questions WHERE course_id = 2;
 DELETE FROM proposed_questions WHERE student_id = 676;
-DELETE FROM options WHERE question_id = (SELECT id FROM questions WHERE title = &apos;Question_Title&apos;);
-DELETE FROM questions WHERE title = &apos;Question_Title&apos;; 
+DELETE FROM options WHERE question_id in (SELECT id FROM questions WHERE title = &apos;New_Question_Title&apos;);
+DELETE FROM questions WHERE title = &apos;New_Question_Title&apos;; 
 
 </stringProp>
           <stringProp name="queryArguments"></stringProp>
