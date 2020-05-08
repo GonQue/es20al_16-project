@@ -50,6 +50,7 @@ Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="saveButton"]').click();
 });
 
+
 Cypress.Commands.add('closeErrorMessage', (name, acronym, academicTerm) => {
   cy.contains('Error')
     .parent()
@@ -87,7 +88,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'createTournament',
-  (name, topics, day1, day2, nextMonth, pickQuestionNumber) => {
+  (name, topics, day1, day2, startMonthBefore, nextMonth, pickQuestionNumber) => {
     cy.get('[data-cy="createButton"]').click();
 
     //Name
@@ -95,6 +96,11 @@ Cypress.Commands.add(
 
     //Start date
     cy.get('[data-cy=startDate]').click();
+
+    if(startMonthBefore)
+      cy.get('i[class="v-icon notranslate mdi mdi-chevron-left theme--light"]').click().wait(500);
+    else
+      cy.get('i[class="v-icon notranslate mdi mdi-chevron-right theme--light"]').click().wait(500);
     cy.get('button')
       .contains(day1)
       .click()
@@ -120,7 +126,8 @@ Cypress.Commands.add(
       .click();
 
     //Number of questions
-    if (pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').click();
+    if (pickQuestionNumber) cy.get('[data-cy=numberOfQuestions]').get('label').contains('Number of questions').type('{rightarrow}');
+
 
     //Topics
     cy.get('[data-cy="topics"]').click();
@@ -142,10 +149,17 @@ Cypress.Commands.add('enrollStudent', name => {
     .parent()
     .should('have.length', 1)
     .children()
-    .should('have.length', 7)
+    .should('have.length', 8)
     .find('[data-cy="enrollButton"]')
     .click();
 });
+Cypress.Commands.add('answerQuestions', name => {
+  cy.contains(name).parent().children().find('[data-cy="joinButton"]').click()
+
+  cy.get('[data-cy="EndQuiz"]').click();
+  cy.get('[data-cy="ImSure"]').click();
+});
+
 
 Cypress.Commands.add('getTopics', name => {
   cy.get('td[class="text-start"]')
@@ -158,20 +172,38 @@ Cypress.Commands.add('checkTournament', (name, numberOfTournaments) => {
     .parent()
     .should('have.length', numberOfTournaments)
     .children()
-    .should('have.length', 7);
+    .should('have.length', 8);
 });
+
+Cypress.Commands.add('insertStudentInTournament', (name, enrolled_id) => {
+  cy.exec(
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "Insert into tournaments_enrolled(tournaments_enrolled_id, enrolled_id) ' +
+    '                                                                        select id, $enrolled_id from tournaments where name=\'$name\';\n"',
+    { env: { name: name , enrolled_id: enrolled_id, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
+  );
+});
+
+Cypress.Commands.add('deleteTournament', name => {
+  cy.contains(name)
+    .parent()
+    .children()
+    .should('have.length', 8)
+    .find('[data-cy="deleteTournament"]')
+    .click({ force: true });
+});
+
 Cypress.Commands.add('removeTournamentFromDB', name => {
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_topics WHERE tournaments_id in(select id from tournaments where name=\'$name\')"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments_enrolled WHERE tournaments_enrolled_id in(select id from tournaments where name=\'$name\')"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=123 psql -d tutordb -U rafa -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"',
-    { env: { name: name } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM tournaments WHERE name=\'$name\'"',
+    { env: { name: name , dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 
@@ -245,28 +277,30 @@ Cypress.Commands.add('showPublicClarifications', content => {
 
 Cypress.Commands.add('assignPublicClarificationToAnotherStudent', content => {
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "INSERT INTO users VALUES (999999999, \'2019-10-18 21:17:28.460416\', \'n\', \'r\', \'u\', 1, 1, 1, 1, \'e\', \'2019-10-18 21:17:28.460416\', 999999999, 1, 1, 1, 1, 1)"'
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "INSERT INTO users VALUES (999999999, \'2019-10-18 21:17:28.460416\', \'n\', \'r\', \'u\', 1, 1, 1, 1, \'e\', \'2019-10-18 21:17:28.460416\', 999999999, 1, 1, 1, 1, 1)"',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "UPDATE clarifications SET user_id = 999999999, available_to_other_students = \'t\' WHERE content = \'$content\'"',
-    { env: { content: content } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "UPDATE clarifications SET user_id = 999999999, available_to_other_students = \'t\' WHERE content = \'$content\'"',
+    { env: { content: content, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
   );
 });
 
 Cypress.Commands.add('deletePublicClarification', content => {
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarification_responses WHERE clarification_id IN (SELECT id FROM clarifications WHERE content=\'$content\')"',
-    { env: { content: content } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM clarification_responses WHERE clarification_id IN (SELECT id FROM clarifications WHERE content=\'$content\')"',
+    { env: { content: content, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
   );
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM clarifications WHERE content=\'$content\'"',
-    { env: { content: content } }
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM clarifications WHERE content=\'$content\'"',
+    { env: { content: content, dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser') } }
   );
 });
 
 Cypress.Commands.add('deletePublicStudent', () => {
   cy.exec(
-    'PGPASSWORD=jrd1999 psql -d tutordb -U joaodias -h localhost -c "DELETE FROM users WHERE id=999999999"'
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "DELETE FROM users WHERE id=999999999"',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 
@@ -523,6 +557,14 @@ Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
     .should('have.text',publicClarifs)
 });
 
+Cypress.Commands.add('checkTournamentStats', (tournamentsCreated, tournamentsJoined) => {
+  cy.contains('Stats').click();
+  cy.get('[data-cy="totalTournamentsCreated"]')
+    .should('have.text',tournamentsCreated)
+  cy.get('[data-cy="totalTournamentsJoined"]')
+    .should('have.text',tournamentsJoined)
+});
+
 Cypress.Commands.add('toggleDashboardPrivacy', () => {
   cy.contains('Stats').click();
   cy.get('[data-cy="privacyButton"]')
@@ -531,7 +573,8 @@ Cypress.Commands.add('toggleDashboardPrivacy', () => {
 
 Cypress.Commands.add('addPrivateDashboardToDemoStudent', () => {
   cy.exec(
-    'PGPASSWORD=a psql -d tutordb -U a -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"'
+    'PGPASSWORD=$dbpass psql -d tutordb -U $dbUser -h localhost -c "UPDATE users SET public_dashboard = false WHERE id = 676"',
+      { env: { dbpass: Cypress.env('dbpass'), dbUser: Cypress.env('dbUser')} }
   );
 });
 

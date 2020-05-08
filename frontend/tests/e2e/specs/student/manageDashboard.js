@@ -8,6 +8,22 @@ describe('Dashboard Walkthrough', () => {
     cy.contains('Logout').click();
   });
 
+  it('dashboard shows 0 tournaments, 0 public', () => {
+    cy.checkTournamentStats('0','0');
+  });
+
+  it('dashboard shows 2 tournaments, 1 joined', () => {
+    cy.demoStudentLogin();
+    cy.contains('Tournaments').click();
+    cy.createTournament('Demo Tournament 1', ['Availability'], 20, 21, false, true, true);
+    cy.createTournament('Demo Tournament 2', ['Availability'], 20, 21, false, true, true);
+    cy.enrollStudent('Demo Tournament 1');
+    cy.checkTournamentStats('2','1');
+    cy.contains('Tournaments').click()
+    cy.deleteTournament('Demo Tournament 1');
+    cy.deleteTournament('Demo Tournament 2');
+  });
+
   it('toggleDashboard to Public, check if still public', () => {
     cy.addPrivateDashboardToDemoStudent();
     cy.toggleDashboardPrivacy();
@@ -38,6 +54,4 @@ describe('Dashboard Walkthrough', () => {
    cy.deleteClarificationQuestion(/^test question 2$/);
    cy.get('[data-cy="Questions"]').click();
   });
-
-
 });

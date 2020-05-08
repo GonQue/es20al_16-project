@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
@@ -12,9 +13,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
@@ -46,7 +52,8 @@ class CreateTournamentTest extends Specification {
     public static final String TOPIC_NAME_1= "topic name 1"
     public static final String TOPIC_NAME_2= "topic name 2"
     public static final String STUDENT_USERNAME= "student username test"
-    public static final int NUMBER_OF_QUESTIONS = 5
+    public static final String QUESTION_NAME_1 = "student username test"
+    public static final int NUMBER_OF_QUESTIONS = 1
 
     @Autowired
     TournamentService tournamentService
@@ -69,6 +76,9 @@ class CreateTournamentTest extends Specification {
     @Autowired
     TopicRepository topicRepository
 
+    @Autowired
+    QuestionRepository questionRepository
+
     //def tournamentService
     def tournamentDto
     def formatter
@@ -84,6 +94,7 @@ class CreateTournamentTest extends Specification {
     def topicTwo
     def quizDto
     def quiz
+    def questionOne
 
 
     def setup(){
@@ -120,7 +131,6 @@ class CreateTournamentTest extends Specification {
         quizRepository.save(quiz)
 
         quizDto = new QuizDto(quiz, false)
-        tournamentDto.setQuiz(quizDto)
 
         //Topics
         topicOne = new Topic()
@@ -133,6 +143,17 @@ class CreateTournamentTest extends Specification {
         topicDtoOne = new TopicDto(topicOne)
         topicDtoTwo = new TopicDto(topicTwo)
         tournamentDto.setTopics(new ArrayList<>(Arrays.asList(topicDtoOne, topicDtoTwo)))
+
+        questionOne = new Question()
+        questionOne.setKey(1)
+        questionOne.setStatus(Question.Status.AVAILABLE)
+        questionOne.setCourse(course)
+        questionOne.setTitle(QUESTION_NAME_1)
+        course.addQuestion(questionOne)
+        questionOne.addTopic(topicOne)
+        topicOne.addQuestion(questionOne)
+        topicDtoOne = new TopicDto(topicOne);
+        questionRepository.save(questionOne)
     }
 
     def "create a tournament with 2 topics"(){
@@ -148,28 +169,13 @@ class CreateTournamentTest extends Specification {
         result.getStartDate() == startDate.format(formatter)
         result.getEndDate() == endDate.format(formatter)
         result.getTopics().size() == 2
-        result.getTopics().contains(topicDtoOne)
-        result.getTopics().contains(topicDtoTwo)
+        result.getTopics()[0].getName() == TOPIC_NAME_1
+        result.getTopics()[1].getName() == TOPIC_NAME_2
         result.getNumberOfQuestions() == NUMBER_OF_QUESTIONS
-        result.getQuiz().getKey() == 1
         result.getCreator().getUsername()==STUDENT_USERNAME
         
     }
 
-    def "create tournament with 0 topics"(){
-        // create a tournament with 0 topics
-        given:"a tournament with 0 topics"
-        tournamentDto.setName(TOURNAMENT_NAME)
-        tournamentDto.setTopics(new ArrayList<>(Arrays.asList()))
-
-        when:
-        def result = tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
-
-        then:
-        result.getTopics() != null
-        result.getTopics().size() == 0
-
-    }
 
     def "tournament creator is not a student"(){
         //throw exception
@@ -238,14 +244,26 @@ class CreateTournamentTest extends Specification {
         exception.getErrorMessage() == ErrorMessage.TOURNAMENT_NUMBER_OF_QUESTIONS_INVALID
     }
 
-    @Unroll("Invalid arguments: #name | #hasCreator | #hasQuiz || errorMessage")
+    def "not enough questions to create tournament quiz"(){
+        given:"a tournament with 5 questions"
+        tournamentDto.setName(TOURNAMENT_NAME)
+        tournamentDto.setNumberOfQuestions(5)
+
+        when:
+        tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.NOT_ENOUGH_QUESTIONS
+    }
+
+    @Unroll("Invalid arguments: #name | #hasCreator | errorMessage")
     def "invalid input values"(){
         given: "a tournament"
         tournamentDto = new TournamentDto()
         tournamentDto.setName(name)
         tournamentDto.setNumberOfQuestions(NUMBER_OF_QUESTIONS)
         createUserCreator(hasCreator)
-        createQuiz(hasQuiz)
 
         when:
         tournamentService.createTournament(courseExecution.getId(), user.getId(), tournamentDto)
@@ -255,20 +273,16 @@ class CreateTournamentTest extends Specification {
         exception.errorMessage == errorMessage
 
         where:
-        name            | hasCreator| hasQuiz      || errorMessage
-        null            | true      | true      || TOURNAMENT_NAME_INVALID
-        "  "            | true      | true      || TOURNAMENT_NAME_INVALID
-        TOURNAMENT_NAME | false     | true      || TOURNAMENT_NO_CREATOR
+        name            | hasCreator|| errorMessage
+        null            | true      || TOURNAMENT_NAME_INVALID
+        "  "            | true      || TOURNAMENT_NAME_INVALID
+        TOURNAMENT_NAME | false     || TOURNAMENT_NO_CREATOR
         //TOURNAMENT_NAME | true      | false     || TOURNAMENT_QUIZ_NOT_FOUND
 
     }
 
     def createUserCreator(hasCreator){
         if(!hasCreator){  user.id=0 }
-    }
-    def createQuiz(hasQuiz){
-        if(hasQuiz){ tournamentDto.setQuiz(quizDto) }
-        else{ tournamentDto.setQuiz(null) }
     }
 
 
@@ -278,6 +292,24 @@ class CreateTournamentTest extends Specification {
         @Bean
         TournamentService tournamentService(){
             return new TournamentService()
+        }
+
+        @Bean
+        QuizService quizService(){
+            return new QuizService()
+        }
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
 
     }

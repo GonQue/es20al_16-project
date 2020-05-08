@@ -14,6 +14,7 @@ export default class StatementQuiz {
   timeToAvailability!: number | null;
   timeToSubmission!: number | null;
   timeToResults!: number | null;
+  tournamentId!: number | null;
   questions: StatementQuestion[] = [];
   answers: StatementAnswer[] = [];
   private lastTimeCalled: number = Date.now();
@@ -27,6 +28,7 @@ export default class StatementQuiz {
       this.title = jsonObj.title;
       this.qrCodeOnly = jsonObj.qrCodeOnly;
       this.oneWay = jsonObj.oneWay;
+      this.tournamentId = jsonObj.tournamentId;
       this.availableDate = ISOtoString(jsonObj.availableDate);
       this.conclusionDate = ISOtoString(jsonObj.conclusionDate);
 
