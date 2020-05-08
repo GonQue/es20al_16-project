@@ -555,12 +555,17 @@ Cypress.Commands.add('checkClarificationStats', (clarifs, publicClarifs) => {
     .should('have.text',publicClarifs)
 });
 
-Cypress.Commands.add('checkTournamentStats', (tournamentsCreated, tournamentsJoined) => {
+Cypress.Commands.add('checkTournamentStats', (tournamentsCreated, tournamentsJoined, points, correctAnswers) => {
   cy.contains('Stats').click();
   cy.get('[data-cy="totalTournamentsCreated"]')
     .should('have.text',tournamentsCreated)
   cy.get('[data-cy="totalTournamentsJoined"]')
     .should('have.text',tournamentsJoined)
+  cy.get('[data-cy="totalPoints"]')
+    .should('have.text', points)
+  cy.get('[data-cy="tournamentCorrectAnswersPerc"]')
+    .should('have.text',correctAnswers)
+
 });
 
 Cypress.Commands.add('toggleDashboardPrivacy', () => {
