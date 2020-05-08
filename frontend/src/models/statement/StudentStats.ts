@@ -15,9 +15,6 @@ export default class StudentStats {
   totalProposedQuestions!: number;
   totalApprovedProposedQuestions!: number;
   totalTournamentsCreated!: number;
-  totalTournamentsJoined!: number;
-
-  totalTournamentsCreated!: number;
   totalTournamentsJoined!:number;
   totalPoints!:number;
   tournamentCorrectAnswersPerc!: number;
