@@ -124,6 +124,30 @@
           <p>Tournaments Joined</p>
         </div>
       </div>
+      <div class="items">
+        <div
+          class="icon-wrapper"
+          ref="totalPoints"
+          data-cy="totalPoints"
+        >
+          <animated-number :number="stats.totalPoints"/>
+        </div>
+        <div class="project-name">
+          <p>Tournaments Points</p>
+        </div>
+      </div>
+      <div class="items">
+        <div
+          class="icon-wrapper"
+          ref="tournamentCorrectAnswersPerc"
+          data-cy="tournamentCorrectAnswersPerc"
+        >
+          <animated-number :number="stats.tournamentCorrectAnswersPerc">%</animated-number>
+        </div>
+        <div class="project-name">
+          <p>Tournaments Correct Answers</p>
+        </div>
+      </div>
     </div>
 
   </div>
