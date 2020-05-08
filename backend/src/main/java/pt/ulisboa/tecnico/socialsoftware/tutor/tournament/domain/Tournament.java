@@ -68,7 +68,7 @@ public class Tournament {
 
     public Tournament(){}
 
-    public Tournament(User creator, CourseExecution courseExecution, Quiz quiz, TournamentDto tournamentDto){
+    public Tournament(User creator, CourseExecution courseExecution, TournamentDto tournamentDto){
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -98,7 +98,6 @@ public class Tournament {
         this.creator = creator;
         this.numberOfQuestions = tournamentDto.getNumberOfQuestions();
         this.courseExecution = courseExecution;
-        this.quiz = quiz;
         this.status = Status.CREATED;
     }
 
@@ -157,5 +156,14 @@ public class Tournament {
 
     public void setEnrolled(Set<User> enrolled) {
         this.enrolled = enrolled;
+    }
+
+    public void delete (){
+        if (LocalDateTime.now().isAfter(this.getStartDate())){
+            throw new TutorException(TOURNAMENT_STARTED);
+        }
+        if (getQuiz()!=null)
+            getQuiz().remove();
+
     }
 }

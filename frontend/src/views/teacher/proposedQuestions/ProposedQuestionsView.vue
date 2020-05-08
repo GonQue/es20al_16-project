@@ -40,16 +40,14 @@
       </template>
 
       <template v-slot:item.content="{ item }">
-        <p
-          v-html="convertMarkDownNoFigure(item.content, null)"
-          @click="showQuestionDialog(item)"
+        <p @click="showQuestionDialog(item)"
       /></template>
 
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -60,9 +58,12 @@
         </v-tooltip>
 
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
+          <template
+            v-slot:activator="{ on }"
+            v-if="item.evaluation !== 'AVAILABLE'"
+          >
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="evaluate(item)"
@@ -72,13 +73,30 @@
           </template>
           <span>Evaluate</span>
         </v-tooltip>
+
+        <v-tooltip bottom>
+          <template
+            v-slot:activator="{ on }"
+            v-if="item.evaluation === 'APPROVED'"
+          >
+            <v-icon
+              large
+              class="mr-2"
+              v-on="on"
+              @click="turnAvailable(item)"
+              data-cy="available"
+              >far fa-plus-square</v-icon
+            >
+          </template>
+          <span>Turn Question Available</span>
+        </v-tooltip>
       </template>
     </v-data-table>
 
     <evaluate-dialog
       v-if="currentPropQuestion"
       v-model="evaluateDialog"
-      :evaluate="currentPropQuestion"
+      :propQuestion="currentPropQuestion"
       v-on:save-evaluation="onSaveEvaluation"
     />
 
@@ -88,6 +106,13 @@
       :question="currentPropQuestion.question"
       v-on:close-show-question-dialog="onCloseShowQuestionDialog"
     />
+
+    <turn-available-dialog
+      v-if="currentPropQuestion"
+      v-model="editPropQuestionDialog"
+      :proposedQuestion="currentPropQuestion"
+      v-on:available="onSaveAvailable"
+    />
   </v-card>
 </template>
 
@@ -95,18 +120,17 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
-import Topic from '@/models/management/Topic';
 import ProposedQuestion from '@/models/management/ProposedQuestion';
 import RemoteServices from '@/services/RemoteServices';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 import ShowQuestionDialog from '../questions/ShowQuestionDialog.vue';
 import EvaluateDialog from '@/views/teacher/proposedQuestions/EvaluateDialog.vue';
-import User from '@/models/user/User';
+import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDialog.vue';
 
 @Component({
   components: {
     'show-question-dialog': ShowQuestionDialog,
-    'evaluate-dialog': EvaluateDialog
+    'evaluate-dialog': EvaluateDialog,
+    'turn-available-dialog': EditPropQuestionDialog
   }
 })
 export default class ProposeQuestionView extends Vue {
@@ -116,10 +140,12 @@ export default class ProposeQuestionView extends Vue {
   currentPropQuestion: ProposedQuestion | null = null;
   evaluateDialog: boolean = false;
   questionDialog: boolean = false;
+  editPropQuestionDialog: boolean = false;
   justification: string = '';
   search: string = '';
 
   headers: object = [
+    { text: 'Actions', value: 'action', align: 'center', sortable: false },
     { text: 'Student', value: 'student.name', align: 'center' },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
@@ -136,8 +162,7 @@ export default class ProposeQuestionView extends Vue {
       value: 'question.image.url',
       align: 'center',
       sortable: false
-    },
-    { text: 'Actions', value: 'action', align: 'center', sortable: false }
+    }
   ];
 
   async created() {
@@ -148,10 +173,6 @@ export default class ProposeQuestionView extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
-  }
-
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
   }
 
   showQuestionDialog(propQuestion: ProposedQuestion) {
@@ -181,7 +202,22 @@ export default class ProposeQuestionView extends Vue {
   getEvaluationColor(evaluation: string) {
     if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
+    else if (evaluation === 'AVAILABLE') return 'light-blue';
     else return 'red';
+  }
+
+  turnAvailable(propQuestion: ProposedQuestion) {
+    this.currentPropQuestion = propQuestion;
+    this.editPropQuestionDialog = true;
+  }
+
+  async onSaveAvailable(propQuestion: ProposedQuestion) {
+    this.proposedQuestions = this.proposedQuestions.filter(
+      pq => pq.id !== propQuestion.id
+    );
+    this.proposedQuestions.unshift(propQuestion);
+    this.editPropQuestionDialog = false;
+    this.currentPropQuestion = null;
   }
 }
 </script>

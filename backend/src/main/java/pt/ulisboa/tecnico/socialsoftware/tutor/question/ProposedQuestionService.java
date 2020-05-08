@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.ProposedQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ProposedQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
@@ -21,7 +22,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.util.Comparator;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,7 +78,7 @@ public class ProposedQuestionService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<ProposedQuestionDto> getStudentProposedQuestions(int id) {
-        User student = findStudentById(id);
+        User student = userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
         return student.getProposedQuestions().stream().map(ProposedQuestionDto::new).
                 sorted(Comparator.comparing(ProposedQuestionDto::getId).reversed()).
                 collect(Collectors.toList());
@@ -101,7 +101,6 @@ public class ProposedQuestionService {
     }
 
     private Question createQuestion(Course course, ProposedQuestionDto proposedQuestionDto) {
-        proposedQuestionDto.getQuestion().setCreationDate(LocalDateTime.now().format(Course.formatter));
         Question question = new Question(course, proposedQuestionDto.getQuestion());
         question.setStatus(Question.Status.SUBMITTED);
         questionRepository.save(question);
@@ -134,10 +133,6 @@ public class ProposedQuestionService {
         return userRepository.findByUsername(pqDto.getTeacher().getUsername());
     }
 
-    private User findStudentById(int id){
-        return userRepository.findById(id).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND));
-    }
-
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Course getCourse(int pqId) {
         ProposedQuestion proposedQuestion = pqRepository.findById(pqId).orElseThrow(() -> new TutorException(ErrorMessage.PQ_NOT_FOUND));
@@ -148,7 +143,7 @@ public class ProposedQuestionService {
     public void deleteProposedQuestion(int proposedQuestionId) {
         ProposedQuestion proposedQuestion = findProposedQuestion(proposedQuestionId);
 
-        if (proposedQuestion.canBeRemoved()) {
+        if (proposedQuestion.canBeRemovedOrUpdated()) {
             Course course = getCourse(proposedQuestionId);
             course.removeProposedQuestion(proposedQuestion);
             pqRepository.delete(proposedQuestion);
@@ -156,5 +151,33 @@ public class ProposedQuestionService {
         }
         else
             throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_REMOVED);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestionDto turnAvailable(int pqId, ProposedQuestionDto pqDto) {
+        ProposedQuestion pq = findProposedQuestion(pqId);
+        pq.evaluate("", ProposedQuestion.Evaluation.AVAILABLE);
+
+        QuestionDto questionDto = pqDto.getQuestion();
+        int questionId = pq.getQuestion().getId();
+        questionService.questionSetStatus(questionId, Question.Status.AVAILABLE);
+        questionService.updateQuestion(questionId, questionDto);
+
+        Course course = getCourse(pqId);
+        course.removeProposedQuestion(pq);
+
+        return new ProposedQuestionDto(pq);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ProposedQuestionDto updateProposedQuestion(Integer propQuestionId, ProposedQuestionDto proposedQuestionDto) {
+        ProposedQuestion proposedQuestion = findProposedQuestion(propQuestionId);
+        if (proposedQuestion.canBeRemovedOrUpdated()) {
+            questionService.updateQuestion(proposedQuestion.getQuestion().getId(), proposedQuestionDto.getQuestion());
+            proposedQuestion.setEvaluation(ProposedQuestion.Evaluation.AWAITING);
+            return new ProposedQuestionDto(proposedQuestion);
+        }
+        else
+            throw new TutorException(ErrorMessage.PROPQUESTION_CANT_BE_UPDATED);
     }
 }

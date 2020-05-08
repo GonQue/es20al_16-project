@@ -14,7 +14,11 @@
       show-expand
       class="elevation-1"
     >
+
+
+
       <template v-slot:top>
+
         <v-card-title>
           <v-text-field
             v-model="search"
@@ -31,9 +35,11 @@
             >New Tournament</v-btn
           >
         </v-card-title>
+
       </template>
 
       <template v-slot:item.enrollment="{ item }">
+
         <v-tooltip>
           <template v-slot:activator="{ on }">
             <v-btn
@@ -48,11 +54,33 @@
               Enroll
             </v-btn>
             <v-btn
-              disabled
+              class="white--text"
+              color="green"
+              data-cy="joinButton"
               v-show="checkIfEnrolled(item) || enrollButtons.includes(item.id)"
-              >Enrolled</v-btn
+              @click="solveTournamentQuiz(item)"
+              >Join</v-btn
             >
           </template>
+        </v-tooltip>
+      </template>
+      <template v-slot:item.delete="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              large
+              class="mr-2"
+
+              v-show="checkIfCreator(item)"
+
+              v-on="on"
+              @click="deleteTournament(item)"
+              color="red"
+              data-cy="deleteTournament"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Tournament</span>
         </v-tooltip>
       </template>
 
@@ -87,6 +115,8 @@ import { Tournament } from '@/models/user/Tournament';
 import CreateTournamentDialog from '@/views/student/tournaments/CreateTournamentDialog.vue';
 import RemoteServices from '@/services/RemoteServices';
 import Topic from '@/models/management/Topic';
+import StatementManager from '@/models/statement/StatementManager';
+import ProposedQuestion from '@/models/management/ProposedQuestion';
 
 @Component({
   components: {
@@ -99,7 +129,14 @@ export default class TournamentsListView extends Vue {
   tournaments: Tournament[] = [];
   topics: Topic[] = [];
   search: string = '';
+  sucessAlert: boolean = true;
   headers: object = [
+    {
+      value: 'delete',
+      align: 'center',
+      width: '2%',
+      sortable: false
+    },
     {
       text: 'Tournament Name',
       value: 'name',
@@ -137,6 +174,7 @@ export default class TournamentsListView extends Vue {
       width: '7%',
       sortable: false
     },
+
     { text: 'topics', value: 'data-table-expand', width: '1%' }
   ];
 
@@ -147,6 +185,9 @@ export default class TournamentsListView extends Vue {
     try {
       this.tournaments = (await RemoteServices.getOpenTournaments()).reverse();
       this.topics = await RemoteServices.getTopics();
+
+      this.sucessAlert = true;
+
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -169,6 +210,28 @@ export default class TournamentsListView extends Vue {
     this.tournament = null;
   }
 
+  async solveTournamentQuiz(tournament: Tournament) {
+    await this.$store.dispatch('loading');
+    try {
+      let statementManager: StatementManager = StatementManager.getInstance;
+
+      statementManager.statementQuiz = await RemoteServices.getTournamentQuiz(
+        tournament.id
+      );
+      statementManager.statementQuiz.tournamentId = tournament.id;
+      console.log(
+        'List',
+        statementManager.statementQuiz.timeToAvailability,
+        statementManager.statementQuiz.tournamentId
+      );
+
+      await this.$router.push({ name: 'tournament-start' });
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
+  }
+
   async enrolled(tournament: Tournament) {
     try {
       await RemoteServices.enrollStudent(tournament);
@@ -183,13 +246,42 @@ export default class TournamentsListView extends Vue {
     let user = this.$store.getters.getUser;
     let usersMap = tournament.enrolled;
     for (let i = 0; i < usersMap.length; i++) {
-      if (usersMap[i] == user.username) {
+
+      if (usersMap[i] != null && usersMap[i] == user.username) {
+
         return true;
       }
     }
     return false;
   }
+
+
+  checkIfCreator(tournament: Tournament): boolean {
+    let user = this.$store.getters.getUser;
+    let creator = tournament.creator;
+    if (creator.username == user.username) return true;
+
+    return false;
+  }
+
+  async deleteTournament(tournament: Tournament) {
+    if (
+      tournament.id &&
+      confirm('Are you sure you want to delete this tournament?')
+    ) {
+      try {
+        await RemoteServices.deleteTournament(tournament.id);
+        this.tournaments = this.tournaments.filter(
+          tourn => tourn.id != tournament.id
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+</style>

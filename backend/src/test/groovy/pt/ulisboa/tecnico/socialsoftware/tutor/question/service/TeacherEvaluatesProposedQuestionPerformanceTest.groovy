@@ -22,8 +22,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto
 import spock.lang.Specification
 
-import java.time.LocalDateTime
-
 @DataJpaTest
 class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
 
@@ -95,7 +93,6 @@ class TeacherEvaluatesProposedQuestionPerformanceTest extends Specification {
             questionDto.setContent("QUESTION_CONTENT")
             questionDto.setStatus(Question.Status.SUBMITTED.name())
             questionDto.setOptions(options)
-            questionDto.setCreationDate(LocalDateTime.now().format(Course.formatter))
 
             def question = new Question(course, questionDto)
             questionRepository.save(question)

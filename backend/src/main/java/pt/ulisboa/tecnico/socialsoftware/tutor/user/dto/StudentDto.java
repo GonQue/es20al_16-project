@@ -1,13 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.user.dto;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
-import java.time.format.DateTimeFormatter;
 
 public class StudentDto implements Serializable {
     private String username;
     private String name;
+    private Boolean publicDashboard;
     private Integer numberOfTeacherQuizzes;
     private Integer numberOfInClassQuizzes;
     private Integer numberOfStudentQuizzes;
@@ -15,6 +16,10 @@ public class StudentDto implements Serializable {
     private Integer numberOfTeacherAnswers;
     private Integer numberOfInClassAnswers;
     private Integer numberOfStudentAnswers;
+    private Integer numberOfClarificationQuestions;
+    private Integer numberOfPublicClarificationQuestions;
+    private Integer numberOfProposedQuestions;
+    private Integer numberOfApprovedProposedQuestions;
     private int percentageOfCorrectAnswers = 0;
     private int percentageOfCorrectTeacherAnswers = 0;
     private int percentageOfCorrectInClassAnswers = 0;
@@ -25,15 +30,20 @@ public class StudentDto implements Serializable {
     public StudentDto(User user) {
         this.username = user.getUsername();
         this.name = user.getName();
-
+        this.publicDashboard = user.getPublicDashboard();
         this.numberOfTeacherQuizzes = user.getNumberOfTeacherQuizzes();
         this.numberOfInClassQuizzes = user.getNumberOfInClassQuizzes();
         this.numberOfStudentQuizzes = user.getNumberOfStudentQuizzes();
-
         this.numberOfAnswers = user.getNumberOfTeacherAnswers() + user.getNumberOfInClassAnswers() + user.getNumberOfStudentAnswers();
         this.numberOfTeacherAnswers = user.getNumberOfTeacherAnswers();
         this.numberOfInClassAnswers = user.getNumberOfInClassAnswers();
         this.numberOfStudentAnswers = user.getNumberOfStudentAnswers();
+        this.numberOfClarificationQuestions = user.getNumberOfClarificationQuestions();
+        this.numberOfPublicClarificationQuestions = user.getNumberOfPublicClarificationQuestions();
+        this.numberOfProposedQuestions = user.getNumberOfProposedQuestions();
+        this.numberOfApprovedProposedQuestions = user.getNumberOfApprovedProposedQuestions();
+        this.lastAccess = DateHandler.toISOString(user.getLastAccess());
+        this.creationDate = DateHandler.toISOString(user.getCreationDate());
 
         if (this.numberOfTeacherAnswers != 0)
             this.percentageOfCorrectTeacherAnswers = user.getNumberOfCorrectTeacherAnswers() * 100 / this.numberOfTeacherAnswers;
@@ -44,10 +54,6 @@ public class StudentDto implements Serializable {
         if (this.numberOfAnswers != 0)
             this.percentageOfCorrectAnswers = (user.getNumberOfCorrectTeacherAnswers() + user.getNumberOfCorrectInClassAnswers() + user.getNumberOfCorrectStudentAnswers())  * 100 / this.numberOfAnswers;
 
-        if (user.getLastAccess() != null)
-            this.lastAccess = user.getLastAccess().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        if (user.getCreationDate() != null)
-            this.creationDate = user.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 
     public String getUsername() {
@@ -64,6 +70,18 @@ public class StudentDto implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getPublicDashboard() {
+        return publicDashboard;
+    }
+
+    public void setPublicDashboard(Boolean publicDashboard) {
+        this.publicDashboard = publicDashboard;
+    }
+
+    public void togglePublicDashboard(){
+        this.publicDashboard = !this.publicDashboard;
     }
 
     public Integer getNumberOfTeacherQuizzes() {
@@ -154,6 +172,32 @@ public class StudentDto implements Serializable {
         this.numberOfStudentAnswers = numberOfStudentAnswers;
     }
 
+    public Integer getNumberOfClarificationQuestions() { return numberOfClarificationQuestions; }
+
+    public void setNumberOfClarificationQuestions(Integer numberOfClarificationQuestions) {
+        this.numberOfClarificationQuestions = numberOfClarificationQuestions;
+    }
+
+    public Integer getNumberOfPublicClarificationQuestions() {
+        return numberOfPublicClarificationQuestions;
+    }
+
+    public void setNumberOfPublicClarificationQuestions(Integer numberOfPublicClarificationQuestions) {
+        this.numberOfPublicClarificationQuestions = numberOfPublicClarificationQuestions;
+    }
+
+    public Integer getNumberOfProposedQuestions() { return numberOfProposedQuestions; }
+
+    public void setNumberOfProposedQuestions(Integer numberOfProposedQuestions) {
+        this.numberOfProposedQuestions = numberOfProposedQuestions;
+    }
+
+    public Integer getNumberOfApprovedProposedQuestions() { return numberOfApprovedProposedQuestions; }
+
+    public void setNumberOfApprovedProposedQuestions(Integer numberOfApprovedProposedQuestions) {
+        this.numberOfApprovedProposedQuestions = numberOfApprovedProposedQuestions;
+    }
+
     public int getPercentageOfCorrectInClassAnswers() {
         return percentageOfCorrectInClassAnswers;
     }
@@ -175,12 +219,15 @@ public class StudentDto implements Serializable {
         return "StudentDto{" +
                 "username='" + username + '\'' +
                 ", name='" + name + '\'' +
+                ", publicDashboard='" + publicDashboard + '\'' +
                 ", numberOfTeacherQuizzes=" + numberOfTeacherQuizzes +
                 ", numberOfStudentQuizzes=" + numberOfStudentQuizzes +
                 ", numberOfAnswers=" + numberOfAnswers +
                 ", numberOfTeacherAnswers=" + numberOfTeacherAnswers +
                 ", percentageOfCorrectAnswers=" + percentageOfCorrectAnswers +
                 ", percentageOfCorrectTeacherAnswers=" + percentageOfCorrectTeacherAnswers +
+                ", numberOfClarificationQuestions=" + numberOfClarificationQuestions +
+                ", numberOfPublicClarificationQuestions=" + numberOfPublicClarificationQuestions +
                 ", creationDate='" + creationDate + '\'' +
                 ", lastAccess='" + lastAccess + '\'' +
                 '}';

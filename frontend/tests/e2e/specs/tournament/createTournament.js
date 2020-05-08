@@ -7,11 +7,14 @@ describe('Student walkthrough', () => {
       .click()
       .wait(5000);
 
-    tournamentName = 'Demo Tournament';
-    topics = ['Adventure Builder'];
+    tournamentName = 'Demo Tournament 1';
+    tournamentName2 = 'Demo Tournament 2';
+
+    topics = ['Availability'];
     startDay = 20;
-    endDay = 20;
-    nextMonth = true;
+    endDay = 21;
+    startMonthBefore = false;
+    endNextMonth = true;
     pickQuestionNumber = true;
   });
 
@@ -19,22 +22,26 @@ describe('Student walkthrough', () => {
     cy.contains('Logout').click();
   });
 
-  it('Login creates tournament and checks creation', () => {
+  it('Login creates tournament, checks creation and deletes', () => {
     cy.createTournament(
       tournamentName,
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
 
     cy.checkTournament(tournamentName, 1);
+    cy.deleteTournament(tournamentName);
+
     cy.removeTournamentFromDB(tournamentName);
+
   });
 
   it('Login creates tournament with wrong date', () => {
-    nextMonth = false;
+    endNextMonth = false;
     endDay = 10;
 
     cy.log('try to create with wrong date');
@@ -43,7 +50,8 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
 
@@ -64,7 +72,8 @@ describe('Student walkthrough', () => {
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
 
@@ -77,26 +86,28 @@ describe('Student walkthrough', () => {
   });
 
   it('Login creates 2 tournaments with multiple topics', () => {
-    topics = ['Adventure Builder', 'Architectural Style', 'Chrome'];
+    topics = ['Availability', 'Architectural Style', 'Chrome'];
 
-    cy.log('try to create with 0 questions');
     cy.createTournament(
       tournamentName,
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
     cy.createTournament(
-      tournamentName,
+      tournamentName2,
       topics,
       startDay,
       endDay,
-      nextMonth,
+      startMonthBefore,
+      endNextMonth,
       pickQuestionNumber
     );
 
     cy.removeTournamentFromDB(tournamentName)
+    cy.removeTournamentFromDB(tournamentName2)
   });
 });

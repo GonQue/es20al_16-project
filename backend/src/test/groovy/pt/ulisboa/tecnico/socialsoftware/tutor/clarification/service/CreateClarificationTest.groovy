@@ -74,6 +74,7 @@ class CreateClarificationTest extends Specification{
         student.setRole(User.Role.STUDENT)
 
         question = new Question()
+        question.setTitle("question title")
         question.setKey(1)
         question.setContent(CONTENT)
 
@@ -84,6 +85,9 @@ class CreateClarificationTest extends Specification{
         quizAnswer = new QuizAnswer()
 
         option = new Option()
+        option.setContent("option content")
+        option.setCorrect(true)
+        option.setSequence(0)
 
         option.setQuestion(question)
         quizQuestion.setQuestion(question)
@@ -122,9 +126,9 @@ class CreateClarificationTest extends Specification{
         result.getContent() == CONTENT
         result.getCreationDate() != null
         and: "clarification questions list of the student, question and answer"
-        student.getClarification_questions().size() == 1L
-        question.getClarification_questions().size() == 1L
-        answer.getClarification_questions().size() == 1L
+        student.getClarificationQuestions().size() == 1L
+        question.getClarificationQuestions().size() == 1L
+        answer.getClarificationQuestions().size() == 1L
     }
 
     def 'create a clarification request with non-existing question'() {
@@ -152,6 +156,7 @@ class CreateClarificationTest extends Specification{
         clarificationQuestionDto.setStatus(ClarificationQuestion.Status.NOT_ANSWERED.name())
         and: "new question, quizQuestion not answered"
         def newQuestion = new Question()
+        newQuestion.setTitle("question title")
         newQuestion.setKey(2)
         newQuestion.setContent(CONTENT)
         questionRepository.save(newQuestion)

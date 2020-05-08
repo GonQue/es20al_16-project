@@ -13,7 +13,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.Clarificatio
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.domain.ClarificationQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationResponseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.clarification.dto.ClarificationQuestionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
@@ -21,9 +20,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,7 +108,7 @@ public class ClarificationService {
                 List<QuestionAnswer> questionAnswers = iQuizAnswer.getQuestionAnswers();
                 if(!questionAnswers.isEmpty())
                     for (QuestionAnswer iAnswer: questionAnswers) {
-                        if(iAnswer.getQuizQuestion() != null && iAnswer.getQuizQuestion().getQuestion() != null && iAnswer.getQuizQuestion().getQuestion().getId() == questionId) {
+                        if(iAnswer.getQuizQuestion() != null && iAnswer.getQuizQuestion().getQuestion() != null && iAnswer.getQuizQuestion().getQuestion().getId().equals(questionId)) {
                             valid = true;
                             break;
                         }
@@ -210,6 +207,10 @@ public class ClarificationService {
     private ClarificationResponse createClarificationResponse(ClarificationResponseDto clarificationResponseDto, User teacher, ClarificationQuestion clarificationQuestion) {
         clarificationQuestion.setStatus(ClarificationQuestion.Status.ANSWERED);
 
+        clarificationQuestion.setNeedClarification(false);
+
+        clarificationQuestion.setAvailableToOtherStudents(false);
+
         ClarificationResponse clarificationResponse = new ClarificationResponse(clarificationQuestion, teacher, clarificationResponseDto);
         clarificationResponseRepository.save(clarificationResponse);
 
@@ -233,7 +234,27 @@ public class ClarificationService {
     }
 
     private List<ClarificationQuestionDto> listOfClarificationQuestionsDto(User student) {
-        return student.getClarification_questions().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+        return student.getClarificationQuestions().stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<ClarificationQuestionDto> listPublicClarificationQuestions(Integer studentId, Integer questionId) {
+
+        checkStudentId(studentId);
+
+        User student = getStudent(studentId);
+
+        checkQuestionAnswers(questionId, student);
+
+        return listPublicClarificationQuestionsDto(questionId, studentId);
+    }
+
+
+    private List<ClarificationQuestionDto> listPublicClarificationQuestionsDto(Integer questionId, Integer studentId) {
+        return clarificationQuestionRepository.findOtherPublicClarificationQuestions(questionId, studentId).stream().map(ClarificationQuestionDto::new).collect(Collectors.toList());
     }
 
     @Retryable(
@@ -279,6 +300,26 @@ public class ClarificationService {
 
     private ClarificationResponse getClarificationResponse(Integer clarificationResponseId){
         return clarificationResponseRepository.findById(clarificationResponseId).orElseThrow(() -> new TutorException(QUESTION_CLARIFICATION_RESPONSE_NOT_FOUND, clarificationResponseId));
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void askForAdditionalClarification(Integer clarificationQuestionId) {
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        clarificationQuestion.askForAdditionalClarification();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void changeClarificationAvailability(Integer clarificationQuestionId) {
+        ClarificationQuestion clarificationQuestion = getClarificationQuestion(clarificationQuestionId);
+
+        clarificationQuestion.changeClarificationAvailability();
     }
 
 }

@@ -32,6 +32,21 @@
         </v-tooltip>
       </template>
 
+      <template v-slot:item.needClarification="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              data-cy="NeedClarificationIcon"
+              class="mr-2"
+              :color="needClarificationColor(item.needClarification)"
+              v-on="on"
+              >{{ needClarificationIcon(item.needClarification) }}</v-icon
+            >
+          </template>
+          <span>{{ needClarificationSpan(item.needClarification) }}</span>
+        </v-tooltip>
+      </template>
+
       <template v-slot:item.responses="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -89,15 +104,21 @@ export default class ListClarificationQuestionsView extends Vue {
       text: 'Clarification Content',
       value: 'content',
       align: 'center',
-      width: '35%'
+      width: '30%'
     },
     {
       text: 'Question To Be Clarified',
       value: 'questionContent',
       align: 'center',
-      width: '35%'
+      width: '30%'
     },
-    { text: 'Status', value: 'status', align: 'center', width: '5%' },
+    { text: 'Answered?', value: 'status', align: 'center', width: '5%' },
+    {
+      text: 'Clarified?',
+      value: 'needClarification',
+      align: 'center',
+      width: '10%'
+    },
     {
       text: 'Creation Date',
       value: 'creationDate',
@@ -130,10 +151,25 @@ export default class ListClarificationQuestionsView extends Vue {
     else return '#D32F2F';
   }
 
-  statusSpan(status: string) {
-    if (status == 'NOT_ANSWERED') return 'Not Answered';
-    else if (status == 'ANSWERED') return 'Answered';
+  statusSpan(needClarification: string) {
+    if (needClarification == 'NOT_ANSWERED') return 'Not Answered';
+    else if (needClarification == 'ANSWERED') return 'Answered';
     else return 'Not Answered';
+  }
+
+  needClarificationIcon(needClarification: boolean) {
+    if (needClarification) return 'mdi-comment-remove';
+    else return 'mdi-comment-check';
+  }
+
+  needClarificationColor(needClarification: boolean) {
+    if (needClarification) return '#D32F2F';
+    else return '#2E7D32';
+  }
+
+  needClarificationSpan(needClarification: boolean) {
+    if (needClarification) return 'Needs clarification';
+    else return 'Already clarified';
   }
 
   async deleteClarificationQuestion(clarificationId: number) {

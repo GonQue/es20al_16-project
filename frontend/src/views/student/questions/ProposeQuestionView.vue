@@ -27,9 +27,7 @@
       </template>
 
       <template v-slot:item.question.content="{ item }">
-        <p
-          v-html="convertMarkDownNoFigure(item.question.content, null)"
-          @click="showQuestionDialog(item)"
+        <p @click="showQuestionDialog(item)"
       /></template>
 
       <template v-slot:item.question.topics="{ item }">
@@ -65,7 +63,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -76,9 +74,14 @@
           <span>Show Question</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
+          <template
+            v-slot:activator="{ on }"
+            v-if="
+              item.evaluation === 'AWAITING' || item.evaluation === 'REJECTED'
+            "
+          >
             <v-icon
-              small
+              large
               class="mr-2"
               v-on="on"
               @click="deleteProposedQuestion(item)"
@@ -88,6 +91,22 @@
             >
           </template>
           <span>Delete Proposed Question</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              large
+              class="mr-2"
+              v-on="on"
+              v-if="
+                item.evaluation === 'AWAITING' || item.evaluation === 'REJECTED'
+              "
+              @click="editPropQuestion(item)"
+              data-cy="editProposedQuestion"
+              >edit</v-icon
+            >
+          </template>
+          <span>Edit Question</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -108,6 +127,7 @@
       v-model="justificationDialog"
       :proposedQuestion="currentPropQuestion"
       v-on:close-show-justification-dialog="onCloseShowJustificationDialog"
+      v-on:save-proposed-question="onSaveProposedQuestion"
     />
   </v-card>
 </template>
@@ -121,7 +141,6 @@ import EditPropQuestionDialog from '@/views/student/questions/EditPropQuestionDi
 import ShowQuestionDialog from '@/views/teacher/questions/ShowQuestionDialog.vue';
 import Question from '@/models/management/Question';
 import Image from '@/models/management/Image';
-import { convertMarkDownNoFigure } from '@/services/ConvertMarkdownService';
 
 @Component({
   components: {
@@ -139,6 +158,7 @@ export default class ProposeQuestionView extends Vue {
   search: string = '';
 
   headers: object = [
+    { text: 'Actions', value: 'action', align: 'left', sortable: false },
     { text: 'Title', value: 'question.title', align: 'center' },
     { text: 'Question', value: 'question.content', align: 'left' },
     {
@@ -155,8 +175,12 @@ export default class ProposeQuestionView extends Vue {
       sortable: false
     },
     { text: 'Proposal Date', value: 'question.creationDate', align: 'center' },
-    { text: 'Image', value: 'question.image.url', align: 'center' },
-    { text: 'Actions', value: 'action', align: 'center', sortable: false }
+    {
+      text: 'Image',
+      value: 'question.image.url',
+      align: 'center',
+      sortable: false
+    }
   ];
 
   async created() {
@@ -172,7 +196,13 @@ export default class ProposeQuestionView extends Vue {
   getEvaluationColor(evaluation: string) {
     if (evaluation === 'AWAITING') return 'grey lighten-1';
     else if (evaluation === 'APPROVED') return 'green';
+    else if (evaluation === 'AVAILABLE') return 'light-blue';
     else return 'red';
+  }
+
+  editPropQuestion(proposedQuestion: ProposedQuestion) {
+    this.currentPropQuestion = proposedQuestion;
+    this.editPropQuestionDialog = true;
   }
 
   showQuestionDialog(proposedQuestion: ProposedQuestion) {
@@ -182,10 +212,6 @@ export default class ProposeQuestionView extends Vue {
 
   onCloseShowQuestionDialog() {
     this.questionDialog = false;
-  }
-
-  convertMarkDownNoFigure(text: string, image: Image | null = null): string {
-    return convertMarkDownNoFigure(text, image);
   }
 
   showJustificationDialog(propQuestion: ProposedQuestion) {
@@ -224,6 +250,7 @@ export default class ProposeQuestionView extends Vue {
     );
     this.proposedQuestions.unshift(proposedQuestion);
     this.editPropQuestionDialog = false;
+    this.justificationDialog = false;
     this.currentPropQuestion = null;
   }
 }
